@@ -1,0 +1,6 @@
+hopla - another habitica cli
+
+usage:
+    hopla --help
+    hopla --version
+    hopla add todo "todo name" [--trivial|--easy|--medium|--hard] [--due-date dd-mm-yyyy] [--tasks @file]

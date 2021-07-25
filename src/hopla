@@ -3,19 +3,50 @@
 user_id=${HABITICA_USER_ID}
 api_token=${HABITICA_API_TOKEN}
 x_client_header=79551d98-31e9-42b4-b7fa-9d89b0944319-Testing
-
 domain="https://habitica.com"
 api_version="v3"
 api_base_url="${domain}/api/${api_version}"
 
-
-test_api_call() {
-  curl --verbose "${api_base_url}/user" -XGET --compressed \
-  --header "application/json" \
-  --header "x-api-user: ${user_id}" \
-  --header "x-api-key: ${api_token}" \
-  --header "x-client ${x_client_header}"
+print_script_dir() {
+  this_script=$(perl -e 'use Cwd "abs_path"; print abs_path(shift)' "$0")
+  this_script_dir=$(dirname "${this_script}")
+  echo "${this_script_dir}"
 }
+script_dirname=$(print_script_dir)
 
+handle_global_options() {
+  if [[ "$1" == "--help" ]]; then
+    cat "${script_dirname}/hopla.help"
+    exit 0
+  fi
 
-test_api_call
+  if [[ "$1" == "--version" ]]; then
+    cat "${script_dirname}/hopla.version"
+    exit 0
+  fi
+}
+handle_global_options "$@"
+
+function print_command_file() {
+  command_file="${script_dirname}"
+  command_counter=1
+  while [[ -d "${command_file}" && "${command_counter}" -le $# ]]; do
+    command_file="${command_file}/${!command_counter}"
+    command_counter=$((command_counter + 1))
+  done
+
+  echo "${command_file}"
+}
+command_file="$(print_command_file "$@")"
+
+"$command_file"
+
+#test_api_call() {
+#  curl --verbose "${api_base_url}/user" -XGET --compressed \
+#    --header "application/json" \
+#    --header "x-api-user: ${user_id}" \
+#    --header "x-api-key: ${api_token}" \
+#    --header "x-client ${x_client_header}"
+#}
+
+#test_api_call
