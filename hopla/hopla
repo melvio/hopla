@@ -27,19 +27,16 @@ handle_global_options() {
 }
 handle_global_options "$@"
 
-function print_command_file() {
-  command_file="${script_dirname}"
-  command_counter=1
-  while [[ -d "${command_file}" && "${command_counter}" -le $# ]]; do
-    command_file="${command_file}/${!command_counter}"
-    command_counter=$((command_counter + 1))
-  done
+command_file="${script_dirname}"
+command_counter=1
+while [[ -d "${command_file}" && "${command_counter}" -le $# ]]; do
+  command_file="${command_file}/${!command_counter}"
+  command_counter=$((command_counter + 1))
+done
 
-  echo "${command_file}"
-}
-command_file="$(print_command_file "$@")"
 
-"$command_file"
+echo "file to be executed: ${command_file}"
+echo "commands to be passed: ${@:$command_counter}"
 
 #test_api_call() {
 #  curl --verbose "${api_base_url}/user" -XGET --compressed \
