@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+user_id=${HABITICA_USER_ID}
+api_token=${HABITICA_API_TOKEN}
+x_client_header=79551d98-31e9-42b4-b7fa-9d89b0944319-Testing
+
+domain="https://habitica.com"
+api_version="v3"
+api_base_url="${domain}/api/${api_version}"
+
+
+test_api_call() {
+  curl --verbose "${api_base_url}/user" -XGET --compressed \
+  --header "application/json" \
+  --header "x-api-user: ${user_id}" \
+  --header "x-api-key: ${api_token}" \
+  --header "x-client ${x_client_header}"
+}
+
+
+test_api_call
