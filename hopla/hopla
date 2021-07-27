@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 
-user_id=${HABITICA_USER_ID}
-api_token=${HABITICA_API_TOKEN}
-x_client_header=79551d98-31e9-42b4-b7fa-9d89b0944319-Testing
+set -o errexit
+
+export user_id=${HABITICA_USER_ID}
+export api_token=${HABITICA_API_TOKEN}
+export x_client_header=79551d98-31e9-42b4-b7fa-9d89b0944319-Testing
 domain="https://habitica.com"
-api_version="v3"
-api_base_url="${domain}/api/${api_version}"
+export api_version="v3"
+export api_base_url="${domain}/api/${api_version}"
 
 print_script_dir() {
   this_script=$(perl -e 'use Cwd "abs_path"; print abs_path(shift)' "$0")
@@ -36,14 +38,50 @@ done
 
 
 echo "file to be executed: ${command_file}"
-echo "commands to be passed: ${@:$command_counter}"
+echo "commands to be passed: ${*:$command_counter}"
 
-#test_api_call() {
-#  curl --verbose "${api_base_url}/user" -XGET --compressed \
-#    --header "application/json" \
-#    --header "x-api-user: ${user_id}" \
-#    --header "x-api-key: ${api_token}" \
-#    --header "x-client ${x_client_header}"
-#}
+arguments="${*:$command_counter}"
 
+"${command_file}" "${arguments}"
+
+
+
+## quick test stuff
+
+test_api_call() {
+  curl --verbose "${api_base_url}/user" -XGET --compressed \
+    --header "application/json" \
+    --header "x-api-user: ${user_id}" \
+    --header "x-api-key: ${api_token}" \
+    --header "x-client ${x_client_header}"
+}
 #test_api_call
+
+
+
+habitica_text="my todo POSTed from remote"
+habitica_type="todo"
+habitica_date="2021-07-30"
+# Allowed values: "0.1", "1", "1.5", "2"
+habitica_priority="2"
+
+data_json="{"
+data_json+="\"text\":\"${habitica_text}\", "
+data_json+="\"type\":\"${habitica_type}\", "
+data_json+="\"date\":\"${habitica_date}\", "
+data_json+="\"priority\":\"${habitica_priority}\""
+data_json+="}"
+
+
+test_api_call_add_todo() {
+  curl --verbose -XPOST "${api_base_url}/tasks/user"  \
+    --header "content-type: application/json" \
+    --header "x-api-user: ${user_id}" \
+    --header "x-api-key: ${api_token}" \
+    --header "x-client ${x_client_header}" \
+    --data "${data_json}"
+}
+#test_api_call_add_todo
+
+
+
