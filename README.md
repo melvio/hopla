@@ -1,6 +1,6 @@
 # hopla
 
-hopla - see [help file](./src/hopla.help)
+hopla - see [help file](./hopla/hopla.help)
 
 
 
