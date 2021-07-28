@@ -2,6 +2,13 @@
 
 set -o errexit
 
+readonly default_auth_file="${HOME}/.local/share/hopla/auth.conf"
+export auth_file_path=${HOPLA_AUTH_FILE:-${default_auth_file}}
+
+read_credentials() {
+  exit 1
+}
+
 export user_id=${HABITICA_USER_ID:?"habitica user id is not set"}
 export api_token=${HABITICA_API_TOKEN?"habitica api token is not set"}
 export x_client_header=${X_CLIENT_HEADER:?x_client_header not set}
