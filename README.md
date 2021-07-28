@@ -13,6 +13,9 @@ TODOs:
 * provide reasonable documentation
 * finally, go through the Comrade requirements to ensure the API is used properly
 
+Nice to haves:
+* Tab-autocompletion
+
 #### external documentation
 * [habitica apidoc](https://habitica.com/apidoc/)
 * [habitica API wiki](https://habitica.fandom.com/wiki/Application_Programming_Interface#Version_3_of_the_API)

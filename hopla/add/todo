@@ -19,7 +19,7 @@ for _ in "${args[@]}"; do
   --trivial)
     habitica_priority="0.1"
     ;;
-  --due-date)
+  --due-date|--deadline)
     cur_arg=$(( "${cur_arg}" + 1 ))
     habitica_date=${args[${cur_arg}]}
     ;;
