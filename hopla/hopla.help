@@ -3,4 +3,6 @@ hopla - another habitica cli
 usage:
     hopla --help
     hopla --version
-    hopla add todo "todo name" [--trivial|--easy|--medium|--hard] [--due-date dd-mm-yyyy] [--tasks @file]
+    hopla add todo [--trivial|--easy|--medium|--hard] [--due-date yyyy-mm-dd] [--tasks absolute_file_path] "todo name"
+    hopla api version
+    hopla api status
