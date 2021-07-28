@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+get_status() {
+  curl --silent "${api_base_url}/status" --compressed \
+    --header "application/json" \
+    --header "x-api-user: ${user_id}" \
+    --header "x-api-key: ${api_token}" \
+    --header "x-client ${x_client_header}"
+}
+
+get_status | jq .data
+_path
