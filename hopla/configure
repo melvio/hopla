@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+default_auth_file="${HOME}/.local/share/hopla/auth.conf"
+auth_file_path=${HOPLA_AUTH_FILE:-${default_auth_file}}
+
+create_auth_file() {
+  auth_dir_name=${auth_file_path%/*}
+  mkdir -p "$auth_dir_name"
+  touch "${auth_file_path}"
+
+  echo "created an authentication file in ${auth_dir_name}"
+  echo 'Set an environment variable HOPLA_AUTH_FILE to use another path'
+}
+
+if [[ ! -f ${auth_file_path} ]] ; then
+  create_auth_file
+fi
+
+
+
+
+
