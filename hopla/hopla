@@ -2,9 +2,9 @@
 
 set -o errexit
 
-export user_id=${HABITICA_USER_ID}
-export api_token=${HABITICA_API_TOKEN}
-export x_client_header=79551d98-31e9-42b4-b7fa-9d89b0944319-Testing
+export user_id=${HABITICA_USER_ID:?"habitica user id is not set"}
+export api_token=${HABITICA_API_TOKEN?"habitica api token is not set"}
+export x_client_header=${X_CLIENT_HEADER:?x_client_header not set}
 domain="https://habitica.com"
 export api_version="v3"
 export api_base_url="${domain}/api/${api_version}"
@@ -37,12 +37,15 @@ while [[ -d "${command_file}" && "${command_counter}" -le $# ]]; do
 done
 
 
-echo "file to be executed: ${command_file}"
-echo "commands to be passed: ${*:$command_counter}"
+#echo "file to be executed: ${command_file}"
+#echo "commands to be passed: ${*:$command_counter}"
 
 arguments="${*:$command_counter}"
 
 "${command_file}" "${arguments}"
+
+
+
 
 
 
@@ -56,32 +59,6 @@ test_api_call() {
     --header "x-client ${x_client_header}"
 }
 #test_api_call
-
-
-
-habitica_text="my todo POSTed from remote"
-habitica_type="todo"
-habitica_date="2021-07-30"
-# Allowed values: "0.1", "1", "1.5", "2"
-habitica_priority="2"
-
-data_json="{"
-data_json+="\"text\":\"${habitica_text}\", "
-data_json+="\"type\":\"${habitica_type}\", "
-data_json+="\"date\":\"${habitica_date}\", "
-data_json+="\"priority\":\"${habitica_priority}\""
-data_json+="}"
-
-
-test_api_call_add_todo() {
-  curl --verbose -XPOST "${api_base_url}/tasks/user"  \
-    --header "content-type: application/json" \
-    --header "x-api-user: ${user_id}" \
-    --header "x-api-key: ${api_token}" \
-    --header "x-client ${x_client_header}" \
-    --data "${data_json}"
-}
-#test_api_call_add_todo
 
 
 

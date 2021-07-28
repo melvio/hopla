@@ -1,2 +1,105 @@
+#!/usr/bin/env bash
 
-echo "Unimplemented"
+set -o errexit
+
+args=($@)
+
+cur_arg=0
+for _ in "${args[@]}"; do
+  case "${args[${cur_arg}]}" in
+  --hard)
+    habitica_priority="2"
+    ;;
+  --medium)
+    habitica_priority="1.5"
+    ;;
+  --easy)
+    habitica_priority="1"
+    ;;
+  --trivial)
+    habitica_priority="0.1"
+    ;;
+  --due-date)
+    cur_arg=$(( "${cur_arg}" + 1 ))
+    due_date=${args[${cur_arg}]} ;
+    ;;
+  --checklist)
+    cur_arg=$(( "${cur_arg}" + 1 ))
+    checklist_file=${args[${cur_arg}]}
+    ;;
+  *)
+    # parse the "text" and remove multiple spaces between words
+    habitica_text+=${args[${cur_arg}]}
+    cur_arg=$(( "${cur_arg}" + 1 ))
+    while [[ -n "${args[$cur_arg]}" ]] ; do
+      habitica_text+=" ${args[${cur_arg}]}"
+      cur_arg=$(( "${cur_arg}" + 1 ))
+    done
+    ;;
+  esac
+  cur_arg=$(( "${cur_arg}" + 1 ))
+done
+
+
+
+
+print_task_id() {
+  echo "$1" | jq --raw-output .data.id
+}
+
+
+post_todo() {
+  # <https://habitica.com/apidoc/#api-Task-CreateUserTasks>
+  habitica_type="todo"
+
+  post_data="{"
+  post_data+="\"text\":\"${habitica_text}\", "
+  if [[ -n "${habitica_priority}" ]]; then
+    post_data+="\"priority\":\"${habitica_priority}\", "
+  fi
+  if [[ -n "${habitica_date}" ]]; then
+    post_data+="\"date\":\"${habitica_date}\", "
+  fi
+  post_data+="\"type\":\"${habitica_type}\" "
+  post_data+="}"
+
+  http_response=$(curl --silent -XPOST "${api_base_url}/tasks/user" \
+    --header "content-type: application/json" \
+    --header "x-api-user: ${user_id}" \
+    --header "x-api-key: ${api_token}" \
+    --header "x-client ${x_client_header}" \
+    --data "${post_data}")
+
+    print_task_id "$http_response"
+}
+
+add_tasks_to_todo_checklist() {
+  # <https://habitica.com/apidoc/#api-Task-AddChecklistItem>
+  task_id="$1"
+
+  # every line in the file is interpreted to be a seperated checklist item
+  while read -r task ; do
+    post_data="{\"text\":"
+    post_data+="\"${task}\""
+    post_data+="}"
+
+    curl --verbose -XPOST "${api_base_url}/tasks/${task_id}/checklist" \
+      --header "content-type: application/json" \
+      --header "x-api-user: ${user_id}" \
+      --header "x-api-key: ${api_token}" \
+      --header "x-client ${x_client_header}" \
+      --data "${post_data}"
+  done < "${checklist_file}"
+}
+
+task_id=$(post_todo)
+
+if [[ -n "${checklist_file}" ]] ; then
+  if [[ ! -f "${checklist_file}" ]] ; then
+    echo "cannot find ${checklist_file}: try an absolute paths instead"
+    exit 1
+  fi
+
+  add_tasks_to_todo_checklist "$task_id"
+fi
+
