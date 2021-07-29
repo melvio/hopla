@@ -13,7 +13,7 @@ get_curl() {
     --header "Content-Type: application/json" \
     --header "x-api-user: ${user_id}" \
     --header "x-api-key: ${api_token}" \
-    --header "x-client ${x_client_header}"
+    --header "x-client: ${x_client_header}"
 }
 
 
@@ -25,6 +25,6 @@ post_curl() {
     --header "Content-Type: application/json" \
     --header "x-api-user: ${user_id}" \
     --header "x-api-key: ${api_token}" \
-    --header "x-client ${x_client_header}" \
+    --header "x-client: ${x_client_header}" \
     --data "${json_data}"
 }
