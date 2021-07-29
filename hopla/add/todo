@@ -84,14 +84,16 @@ add_tasks_to_todo_checklist() {
   done < "${checklist_file}"
 }
 
-task_id=$(post_todo)
+main() {
+  task_id=$(post_todo)
 
-if [[ -n "${checklist_file}" ]] ; then
-  if [[ ! -f "${checklist_file}" ]] ; then
-    echo "cannot find ${checklist_file}: try an absolute paths instead"
-    exit 1
+  if [[ -n "${checklist_file}" ]] ; then
+    if [[ ! -f "${checklist_file}" ]] ; then
+      echo "cannot find ${checklist_file}: try an absolute paths instead"
+      exit 1
+    fi
+
+    add_tasks_to_todo_checklist "$task_id"
   fi
-
-  add_tasks_to_todo_checklist "$task_id"
-fi
-
+}
+main
