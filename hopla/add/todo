@@ -2,6 +2,8 @@
 
 set -o errexit
 
+source "${library_dir}/api_proxy.sh"
+
 readonly args=($@)
 
 cur_arg=0
@@ -51,7 +53,7 @@ print_task_id() {
 
 post_todo() {
   # <https://habitica.com/apidoc/#api-Task-CreateUserTasks>
-  habitica_type="todo"
+  local habitica_type="todo"
 
   post_data="{"
   post_data+="\"text\":\"${habitica_text}\", "
@@ -64,14 +66,8 @@ post_todo() {
   post_data+="\"type\":\"${habitica_type}\" "
   post_data+="}"
 
-  http_response=$(curl --silent -XPOST "${api_base_url}/tasks/user" \
-    --header "content-type: application/json" \
-    --header "x-api-user: ${user_id}" \
-    --header "x-api-key: ${api_token}" \
-    --header "x-client ${x_client_header}" \
-    --data "${post_data}")
-
-    print_task_id "$http_response"
+  http_response=$(post_curl "tasks/user" "${post_data}")
+  print_task_id "$http_response"
 }
 
 add_tasks_to_todo_checklist() {
@@ -84,7 +80,7 @@ add_tasks_to_todo_checklist() {
     post_data+="\"${task}\""
     post_data+="}"
 
-    curl --verbose -XPOST "${api_base_url}/tasks/${task_id}/checklist" \
+    curl --silent -XPOST "${api_base_url}/tasks/${task_id}/checklist" \
       --header "content-type: application/json" \
       --header "x-api-user: ${user_id}" \
       --header "x-api-key: ${api_token}" \
