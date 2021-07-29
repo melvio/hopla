@@ -51,9 +51,9 @@ while [[ -d "${command_file}" && "${command_counter}" -le $# ]]; do
   command_counter=$((command_counter + 1))
 done
 
-echo "file to be executed: ${command_file}"
+echo "[DEBUG] File to be executed: ${command_file}"
 # TODO: add error handling for command_file not existing or being a directory
-echo "commands to be passed: ${*:$command_counter}"
+echo "[DEBUG] Commands to be passed: ${*:$command_counter}"
 
 arguments="${*:$command_counter}"
 
