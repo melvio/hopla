@@ -2,7 +2,7 @@
 
 get_status() {
   curl --silent "${api_base_url}/status" --compressed \
-    --header "application/json" \
+    --header "Content-Type: application/json" \
     --header "x-api-user: ${user_id}" \
     --header "x-api-key: ${api_token}" \
     --header "x-client ${x_client_header}"
