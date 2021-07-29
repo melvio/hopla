@@ -3,21 +3,18 @@
 set -o errexit
 
 
-
-readonly default_auth_file="${HOME}/.local/share/hopla/auth.conf"
-export auth_file_path=${HOPLA_AUTH_FILE:-${default_auth_file}}
-
 print_script_dir() {
   this_script=$(perl -e 'use Cwd "abs_path"; print abs_path(shift)' "$0")
   this_script_dir=$(dirname "${this_script}")
   echo "${this_script_dir}"
 }
 script_dirname=$(print_script_dir)
-echo "script: ${script_dirname}"
 
-library_dir="$(realpath "${script_dirname}/../library/")"
+export library_dir="$(realpath "${script_dirname}/../library/")"
 source "${library_dir}/api_proxy.sh"
 
+readonly default_auth_file="${HOME}/.local/share/hopla/auth.conf"
+export auth_file_path=${HOPLA_AUTH_FILE:-${default_auth_file}}
 
 
 read_credentials() {
@@ -38,12 +35,12 @@ read_credentials() {
 }
 read_credentials
 
-readonly x_client_header="79551d98-31e9-42b4-b7fa-9d89b0944319-hopla"
-export x_client_header
+#readonly x_client_header="79551d98-31e9-42b4-b7fa-9d89b0944319-hopla"
+#export x_client_header
 
-domain="https://habitica.com"
-export api_version="v3"
-export api_base_url="${domain}/api/${api_version}"
+#domain="https://habitica.com"
+#export api_version="v3"
+#export api_base_url="${domain}/api/${api_version}"
 
 handle_global_options() {
   if [[ "$1" == "--help" ]]; then
@@ -62,7 +59,7 @@ done
 
 echo "file to be executed: ${command_file}"
 # TODO: add error handling for command_file not existing or being a directory
-#echo "commands to be passed: ${*:$command_counter}"
+echo "commands to be passed: ${*:$command_counter}"
 
 arguments="${*:$command_counter}"
 

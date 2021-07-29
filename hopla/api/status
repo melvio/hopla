@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 
+source "${library_dir}/api_proxy.sh"
+
 get_status() {
-  curl --silent "${api_base_url}/status" --compressed \
-    --header "Content-Type: application/json" \
-    --header "x-api-user: ${user_id}" \
-    --header "x-api-key: ${api_token}" \
-    --header "x-client ${x_client_header}"
+  get_curl "status"
+#  curl --silent "${api_base_url}/status" --compressed \
+#    --header "Content-Type: application/json" \
+#    --header "x-api-user: ${user_id}" \
+#    --header "x-api-key: ${api_token}" \
+#    --header "x-client ${x_client_header}"
 }
 
 get_status | jq .data
