@@ -6,14 +6,13 @@ hopla - see [help file](./hopla/hopla.help)
 #### TODOs before submitting as comrade
 
 TODOs: 
-* implement rate limiting
-* do generic error checking after curls
-* use an official `x_client_header`
 * provide reasonable documentation
 * finally, go through the Comrade requirements to ensure the API is used properly
 
 Nice to haves:
+* do error handling after curls
 * Tab-autocompletion
+* provide generic help mechanism
 
 #### external documentation
 * [habitica apidoc](https://habitica.com/apidoc/)
