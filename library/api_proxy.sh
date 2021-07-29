@@ -27,6 +27,4 @@ post_curl() {
     --header "x-api-key: ${api_token}" \
     --header "x-client ${x_client_header}" \
     --data "${json_data}"
-
-
 }

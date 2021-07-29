@@ -80,12 +80,7 @@ add_tasks_to_todo_checklist() {
     post_data+="\"${task}\""
     post_data+="}"
 
-    curl --silent -XPOST "${api_base_url}/tasks/${task_id}/checklist" \
-      --header "content-type: application/json" \
-      --header "x-api-user: ${user_id}" \
-      --header "x-api-key: ${api_token}" \
-      --header "x-client ${x_client_header}" \
-      --data "${post_data}"
+    post_curl "tasks/${task_id}/checklist" "${post_data}"
   done < "${checklist_file}"
 }
 
