@@ -2,12 +2,8 @@
 
 set -o errexit
 
-export user_id=${HABITICA_USER_ID:?"habitica user id is not set"}
-export api_token=${HABITICA_API_TOKEN?"habitica api token is not set"}
-export x_client_header=${X_CLIENT_HEADER:?x_client_header not set}
-domain="https://habitica.com"
-export api_version="v3"
-export api_base_url="${domain}/api/${api_version}"
+readonly default_auth_file="${HOME}/.local/share/hopla/auth.conf"
+export auth_file_path=${HOPLA_AUTH_FILE:-${default_auth_file}}
 
 print_script_dir() {
   this_script=$(perl -e 'use Cwd "abs_path"; print abs_path(shift)' "$0")
@@ -15,6 +11,33 @@ print_script_dir() {
   echo "${this_script_dir}"
 }
 script_dirname=$(print_script_dir)
+echo "script: ${script_dirname}"
+
+
+read_credentials() {
+  echo "[DEBUG] read_credentials"
+  if [[ -f ${auth_file_path} ]]; then
+    source "${auth_file_path}"
+    export user_id="${auth_file_user_id}"
+    export api_token="${auth_file_api_token}"
+
+    if [[ -z "${user_id}" || -z "${api_token}" ]]; then
+      echo "no credentials found:"
+      "${script_dirname}/set/credentials"
+    fi
+  else
+    echo "no credential file found"
+    "${script_dirname}/set/credentials"
+  fi
+}
+read_credentials
+
+readonly x_client_header="79551d98-31e9-42b4-b7fa-9d89b0944319-hopla"
+export x_client_header
+
+domain="https://habitica.com"
+export api_version="v3"
+export api_base_url="${domain}/api/${api_version}"
 
 handle_global_options() {
   if [[ "$1" == "--help" ]]; then
@@ -36,18 +59,13 @@ while [[ -d "${command_file}" && "${command_counter}" -le $# ]]; do
   command_counter=$((command_counter + 1))
 done
 
-
-#echo "file to be executed: ${command_file}"
+echo "file to be executed: ${command_file}"
+# TODO: add error handling for command_file not existing or being a directory
 #echo "commands to be passed: ${*:$command_counter}"
 
 arguments="${*:$command_counter}"
 
 "${command_file}" "${arguments}"
-
-
-
-
-
 
 ## quick test stuff
 
@@ -59,6 +77,3 @@ test_api_call() {
     --header "x-client ${x_client_header}"
 }
 #test_api_call
-
-
-

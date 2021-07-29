@@ -9,4 +9,3 @@ get_status() {
 }
 
 get_status | jq .data
-_path

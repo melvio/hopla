@@ -2,7 +2,7 @@
 
 set -o errexit
 
-args=($@)
+readonly args=($@)
 
 cur_arg=0
 for _ in "${args[@]}"; do
@@ -19,16 +19,17 @@ for _ in "${args[@]}"; do
   --trivial)
     habitica_priority="0.1"
     ;;
-  --due-date)
+  --due-date|--deadline)
     cur_arg=$(( "${cur_arg}" + 1 ))
-    due_date=${args[${cur_arg}]} ;
+    habitica_date=${args[${cur_arg}]}
     ;;
   --checklist)
     cur_arg=$(( "${cur_arg}" + 1 ))
     checklist_file=${args[${cur_arg}]}
     ;;
   *)
-    # parse the "text" and remove multiple spaces between words
+    # We are at the end of a (properly) formatted command.
+    # Now parse the "text" and remove multiple spaces between words.
     habitica_text+=${args[${cur_arg}]}
     cur_arg=$(( "${cur_arg}" + 1 ))
     while [[ -n "${args[$cur_arg]}" ]] ; do
