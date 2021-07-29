@@ -6,7 +6,6 @@ hopla - see [help file](./hopla/hopla.help)
 #### TODOs before submitting as comrade
 
 TODOs: 
-* implement `hopla set credentials`
 * implement rate limiting
 * do generic error checking after curls
 * use an official `x_client_header`
