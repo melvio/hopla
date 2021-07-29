@@ -44,11 +44,6 @@ handle_global_options() {
     cat "${script_dirname}/hopla.help"
     exit 0
   fi
-
-  if [[ "$1" == "--version" ]]; then
-    cat "${script_dirname}/hopla.version"
-    exit 0
-  fi
 }
 handle_global_options "$@"
 
