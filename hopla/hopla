@@ -2,6 +2,8 @@
 
 set -o errexit
 
+
+
 readonly default_auth_file="${HOME}/.local/share/hopla/auth.conf"
 export auth_file_path=${HOPLA_AUTH_FILE:-${default_auth_file}}
 
@@ -12,6 +14,10 @@ print_script_dir() {
 }
 script_dirname=$(print_script_dir)
 echo "script: ${script_dirname}"
+
+library_dir="$(realpath "${script_dirname}/../library/")"
+source "${library_dir}/api_proxy.sh"
+
 
 
 read_credentials() {
