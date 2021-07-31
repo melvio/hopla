@@ -81,7 +81,7 @@ add_tasks_to_todo_checklist() {
     post_data+="\"${task}\""
     post_data+="}"
 
-    post_curl "tasks/${task_id}/checklist" "${post_data}"
+    post_curl "tasks/${task_id}/checklist" "${post_data}" >> /dev/null
   done < "${checklist_file}"
 }
 

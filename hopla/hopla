@@ -9,7 +9,13 @@ print_script_dir() {
 }
 script_dirname=$(print_script_dir)
 
-declare -xr library_dir="$(realpath "${script_dirname}/../library/")"
+print_library_dir() {
+  local script_dirname="$(print_script_dir)"
+  local library_dirname="$(realpath "${script_dirname}/../library/")"
+  echo "${library_dirname}"
+}
+
+declare -xr library_dir=$(print_library_dir)
 source "${library_dir}/api_proxy.sh"
 source "${library_dir}/logging.sh"
 
