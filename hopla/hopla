@@ -2,7 +2,6 @@
 
 set -o errexit
 
-
 print_script_dir() {
   this_script=$(perl -e 'use Cwd "abs_path"; print abs_path(shift)' "$0")
   this_script_dir=$(dirname "${this_script}")
@@ -10,15 +9,23 @@ print_script_dir() {
 }
 script_dirname=$(print_script_dir)
 
-export library_dir="$(realpath "${script_dirname}/../library/")"
+print_library_dir() {
+  local script_dirname="$(print_script_dir)"
+  local library_dirname="$(realpath "${script_dirname}/../library/")"
+  echo "${library_dirname}"
+}
+
+declare -xr library_dir=$(print_library_dir)
 source "${library_dir}/api_proxy.sh"
+source "${library_dir}/logging.sh"
+
 
 readonly default_auth_file="${HOME}/.local/share/hopla/auth.conf"
 export auth_file_path=${HOPLA_AUTH_FILE:-${default_auth_file}}
 
 
 read_credentials() {
-  echo "[DEBUG] read_credentials"
+  debug "read_credentials"
   if [[ -f ${auth_file_path} ]]; then
     source "${auth_file_path}"
     export user_id="${auth_file_user_id}"
@@ -51,10 +58,10 @@ while [[ -d "${command_file}" && "${command_counter}" -le $# ]]; do
   command_counter=$((command_counter + 1))
 done
 
-echo "[DEBUG] File to be executed: ${command_file}"
-# TODO: add error handling for command_file not existing or being a directory
-echo "[DEBUG] Commands to be passed: ${*:$command_counter}"
+debug "File to be executed: ${command_file}"
+debug "Commands to be passed: ${*:$command_counter}"
 
+# TODO: add error handling for command_file not existing or being a directory
 arguments="${*:$command_counter}"
 
 "${command_file}" "${arguments}"
