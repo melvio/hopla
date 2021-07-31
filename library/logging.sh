@@ -1,6 +1,10 @@
+#!/usr/bin/env bash
 
+debug_enabled=0
 
 debug () {
   message="$1"
-  echo "[DEBUG] ${message}" >&2
+  if [[ "${debug_enabled}" != 0 ]] ; then
+    echo "[DEBUG] ${message}" >&2
+  fi
 }
