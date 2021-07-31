@@ -4,15 +4,15 @@ hopla - a command line interface for habitica.com
 
 
 ### background
-Hopla is an XDG-compliant bash-based command line interface (CLI).
-It was created because no other CLI supported the creation of To Do's with both a due date and a checklist.
-Hopla provides the following command to create these todo's:
+Hopla is a XDG-compliant bash-based command line interface (CLI).
+It was created because no other CLI supported the creation of To-Does with both a due date and a checklist.
+Hopla provides the following command to create these with the following command:
 
 ```bash
-$ hopla add todo --hard --due-date 2021-07-07 --checklist ~/abs_file.txt "my todo name here"
+$ hopla add todo --hard --due-date 2021-12-07 --checklist ~/abs_file.txt "my todo name here"
 ```
 
-Every line in the specified file will be added as a task to a To Do's checklist.
+Every line in the specified file will be added as a task to a To-Do's checklist.
 
 Caveat: Every task of a checklist requires a separate habitica API call. This means that long checklists (29+) are subject to 
 the rate-limiting requirements of the Habitica API. This CLI provides this rate-limiting automatically, 
@@ -33,7 +33,7 @@ This will create a credentials file at `~/.local/share/hopla/auth.conf` that
 for Hopla to use. If you want to use a different file, you can set the `${HOPLA_AUTH_FILE}`
 environment variable to choose your own path.
     
-After this you can use hopla. The supported commands can be found by running:
+After this, you can use hopla. The supported commands can be found by running:
 ```bash
 $ hopla --help
 hopla - another habitica cli
