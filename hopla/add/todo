@@ -3,6 +3,7 @@
 set -o errexit
 
 source "${library_dir}/api_proxy.sh"
+source "${library_dir}/logging.sh"
 
 readonly args=($@)
 
@@ -47,19 +48,18 @@ done
 
 
 print_task_id() {
-  echo "$1" | jq --raw-output .data.id
+  echo "$1" | jq --raw-output '.data.id'
 }
 
 
 post_todo() {
+  debug "post_todo"
   # <https://habitica.com/apidoc/#api-Task-CreateUserTasks>
   local habitica_type="todo"
 
   post_data="{"
   post_data+="\"text\":\"${habitica_text}\", "
-  if [[ -n "${habitica_priority}" ]]; then
-    post_data+="\"priority\":\"${habitica_priority}\", "
-  fi
+  post_data+="\"priority\":\"${habitica_priority:-"1.0"}\", " # 1.0 is the default for habitica
   if [[ -n "${habitica_date}" ]]; then
     post_data+="\"date\":\"${habitica_date}\", "
   fi
@@ -71,6 +71,7 @@ post_todo() {
 }
 
 add_tasks_to_todo_checklist() {
+  debug "add_tasks_to_todo_checklist"
   # <https://habitica.com/apidoc/#api-Task-AddChecklistItem>
   task_id="$1"
 

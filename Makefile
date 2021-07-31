@@ -9,3 +9,6 @@ version:
 
 api_status:
 	./hopla/hopla api status
+
+api_version:
+	./hopla/hopla api version

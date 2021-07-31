@@ -1,14 +1,17 @@
 #!/usr/bin/env bash
 
 source "${library_dir}/api_proxy.sh"
+source "${library_dir}/logging.sh"
 
 get_status() {
+  debug "get_status"
   get_curl "status"
-#  curl --silent "${api_base_url}/status" --compressed \
-#    --header "Content-Type: application/json" \
-#    --header "x-api-user: ${user_id}" \
-#    --header "x-api-key: ${api_token}" \
-#    --header "x-client ${x_client_header}"
 }
 
-get_status | jq .data
+parse_habitica_status_result (){
+  debug "parse_habitica_status_result"
+  local json="$1"
+  echo "${json}" | jq --raw-output '.data.status'
+}
+
+parse_habitica_status_result "$(get_status)"

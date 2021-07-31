@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+source "${library_dir}/logging.sh"
 
 readonly x_client_header="79551d98-31e9-42b4-b7fa-9d89b0944319-hopla"
 readonly domain="https://habitica.com"
@@ -13,6 +14,7 @@ readonly curl_retry=9
 readonly curl_retry_max_time=260
 
 get_curl() {
+  debug "get_curl"
   url_path="$1"
 
   http_response=$(curl --silent --show-error "${api_base_url}/${url_path}" --compressed \
@@ -26,6 +28,7 @@ get_curl() {
 }
 
 post_curl() {
+  debug "post_curl"
   url_path="$1"
   json_data="$2"
 
