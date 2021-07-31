@@ -1,23 +1,65 @@
 # hopla
 
-hopla - see [help file](./hopla/hopla.help)
+hopla - a command line interface for habitica.com
 
 
-#### TODOs before submitting as comrade
+### background
+Hopla is an XDG-compliant bash-based command line interface (CLI).
+It was created because no other CLI supported the creation of To Do's with both a due date and a checklist.
+Hopla provides the following command to create these todo's:
 
-TODOs: 
-* provide reasonable documentation
-* finally, go through the Comrade requirements to ensure the API is used properly
+```bash
+$ hopla add todo --hard --due-date 2021-07-07 --checklist ~/abs_file.txt "my todo name here"
+```
 
-Nice to haves:
-* do error handling after curls
-* Tab-autocompletion
-* provide generic help mechanism
-* provide error checking on typos in options
+Every line in the specified file will be added as a task to a To Do's checklist.
 
-#### external documentation
+Caveat: Every task of a checklist requires a separate habitica API call. This means that long checklists (29+) are subject to 
+the rate-limiting requirements of the Habitica API. This CLI provides this rate-limiting automatically, 
+however, be aware that long checklists may result in long waiting times.
+
+### How to use
+Hopla needs your `User Id` and `API Token` to connect to habitica on your behalve.
+You can find these over at `https://habitica.com/user/settings/api`.
+Run the following command to configure this automatically:
+
+```bash
+$ hopla set credentials
+Please enter your habitica 'User ID': ****-****-****-***-*********
+Please enter your habitica 'API Token': ****-****-****-***-*********
+```
+
+This will create a credentials file at `~/.local/share/hopla/auth.conf` that
+for Hopla to use. If you want to use a different file, you can set the `${HOPLA_AUTH_FILE}`
+environment variable to choose your own path.
+    
+After this you can use hopla. The supported commands can be found by running:
+```bash
+$ hopla --help
+hopla - another habitica cli
+
+usage:
+    hopla --help
+    hopla version
+    hopla set credentials
+    hopla add todo [--trivial|--easy|--medium|--hard] [{--due-date|--deadline} yyyy-mm-dd] [--checklist absolute_file_path] "the name of your todo"
+    hopla api version
+    hopla api status
+```
+
+More advanced features and functionality may be implemented later.
+Hopla is open-source. Pull request and issues are welcome over at <https://github.com/melvio/hopla>.
+If you want to contribute, but don't know where to start, you might want to look in the `./developers`. folder.
+
+
+
+
+
+
+#### External Documentation
 * [habitica apidoc](https://habitica.com/apidoc/)
 * [habitica API wiki](https://habitica.fandom.com/wiki/Application_Programming_Interface#Version_3_of_the_API)
 * [guide for the habitica API users](https://habitica.fandom.com/wiki/Guidance_for_Comrades)
 * [API users chat](https://habitica.com/groups/guild/2ff9822b-27f2-4774-98da-db349b57a38e)
 * <https://habitica.fandom.com/wiki/API_Options>
+* [Fandom Markup Language](https://community.fandom.com/wiki/Help:Wikitext)
