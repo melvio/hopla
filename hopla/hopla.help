@@ -2,7 +2,7 @@ hopla - another habitica cli
 
 usage:
     hopla --help
-    hopla --version
+    hopla version
     hopla set credentials
     hopla add todo [--trivial|--easy|--medium|--hard] [{--due-date|--deadline} yyyy-mm-dd] [--checklist absolute_file_path] "the name of your todo"
     hopla api version
