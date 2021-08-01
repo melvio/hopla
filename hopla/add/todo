@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 set -o errexit
-set -o nounset
 
 
 source "${library_dir}/api_proxy.sh"
@@ -37,7 +36,7 @@ for _ in "${args[@]}"; do
     # Now parse the "text" and remove multiple spaces between words.
     habitica_text+=${args[${cur_arg}]}
     cur_arg=$(( "${cur_arg}" + 1 ))
-    while [[ -n "${args[$cur_arg]}" ]] ; do
+    while [[ -n "${args[${cur_arg}]}" ]] ; do
       habitica_text+=" ${args[${cur_arg}]}"
       cur_arg=$(( "${cur_arg}" + 1 ))
     done
