@@ -2,6 +2,7 @@
 
 set -o errexit
 set -o nounset
+set -o pipefail
 
 print_script_dir() {
   local this_script=$(perl -e 'use Cwd "abs_path"; print abs_path(shift)' "$0")
