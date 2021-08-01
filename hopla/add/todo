@@ -100,8 +100,9 @@ main() {
   fi
 
   task_id=$(post_todo)
-
-
+  if [[ -n "${checklist_file}" ]] ; then
     add_tasks_to_todo_checklist "$task_id"
+  fi
+
 }
 main

@@ -1,0 +1,17 @@
+hopla add todo - Add todos to habitica
+
+
+usage:
+    hopla add todo [--trivial|--easy|--medium|--hard] [{--due-date|--deadline} yyyy-mm-dd] [--checklist absolute_file_path] "the name of your todo"
+    hopla add todo [--trivial|--easy|--medium|--hard] [{--due-date|--deadline} yyyy-mm-dd] [--checklist <(redirection)] "the name of your todo"
+
+
+
+Examples:
+```bash
+hopla add todo --hard --due-date $(date '+%Y-%m-%d') "Feed pet"
+hopla add todo --easy --checklist ~/my/absolute_file.txt "My Important Project"
+hopla add todo --checklist <(sort ./tasks.txt) "Sorted Checklist"
+```
+
+
