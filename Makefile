@@ -13,8 +13,13 @@ configure:
 
 
 ## hopla CLI examples ##
-hopla_add_todo:
+hopla_add_todo_checklist:
 	hopla add todo --hard --due-date 2021-07-31 --checklist ~/.local/share/hopla/fake_tasks.txt "my todo thingy here"
+
+hopla_add_todo_no_checklist:
+	hopla add todo --hard --due-date $$(date '+%Y-%m-%d')  "my todo thingy here"
+
+
 
 hopla_version:
 	./hopla/hopla version
