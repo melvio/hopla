@@ -21,9 +21,23 @@ declare -xr library_dir=$(print_library_dir)
 source "${library_dir}/api_proxy.sh"
 source "${library_dir}/logging.sh"
 
+# TODO: check XDG_DATA_HOME too
+print_hopla_auth_file() {
+  local auth_file_path=
+  if [[ -n "${HOPLA_AUTH_FILE-}" && -f "${HOPLA_AUTH_FILE-}" ]] ; then
+    auth_file_path="${HOPLA_AUTH_FILE}"
+  elif [[ -n "${XDG_DATA_HOME-}" && -f "${XDG_DATA_HOME-}" ]] ; then
+    auth_file_path="${XDG_DATA_HOME}/auth.conf"
+  else
+    auth_file_path="${HOME}/.local/share/hopla/auth.conf"
+  fi
+  echo "${auth_file_path}"
+}
 
-readonly default_auth_file="${HOME}/.local/share/hopla/auth.conf"
-export auth_file_path=${HOPLA_AUTH_FILE:-${default_auth_file}}
+declare -xr auth_file_path=$(print_hopla_auth_file)
+echo "auth_file_path $auth_file_path"
+
+
 
 
 read_credentials() {
