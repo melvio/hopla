@@ -23,19 +23,33 @@ source "${library_dir}/logging.sh"
 
 # TODO: check XDG_DATA_HOME too
 print_hopla_auth_file() {
-  local auth_file_path=
+  local file_path=
   if [[ -n "${HOPLA_AUTH_FILE-}" && -f "${HOPLA_AUTH_FILE-}" ]] ; then
-    auth_file_path="${HOPLA_AUTH_FILE}"
-  elif [[ -n "${XDG_DATA_HOME-}" && -f "${XDG_DATA_HOME-}" ]] ; then
-    auth_file_path="${XDG_DATA_HOME}/auth.conf"
+    file_path="${HOPLA_AUTH_FILE}"
+  elif [[ -n "${XDG_DATA_HOME-}" && -d "${XDG_DATA_HOME-}" ]] ; then
+    file_path="${XDG_DATA_HOME}/hopla/auth.conf"
   else
-    auth_file_path="${HOME}/.local/share/hopla/auth.conf"
+    file_path="${HOME}/.local/share/hopla/auth.conf"
   fi
-  echo "${auth_file_path}"
+  echo "${file_path}"
 }
-
 declare -xr auth_file_path=$(print_hopla_auth_file)
-echo "auth_file_path $auth_file_path"
+debug "auth_file_path ${auth_file_path}"
+
+
+print_hopla_config_file() {
+  local file_path=
+  if [[ -n "${HOPLA_CONFIG_FILE-}" && -f "${HOPLA_CONFIG_FILE-}" ]] ; then
+    file_path="${HOPLA_CONFIG_FILE}"
+  elif [[ -n "${XDG_CONFIG_HOME-}" && -d "${XDG_CONFIG_HOME-}" ]] ; then
+    file_path="${XDG_CONFIG_HOME}/auth.conf"
+  else
+    file_path="${HOME}/.config/hopla/hopla.conf"
+  fi
+  echo "${file_path}"
+}
+declare -xr config_file_path=$(print_hopla_config_file)
+debug "config_file_path: ${config_file_path}"
 
 
 
@@ -44,8 +58,8 @@ read_credentials() {
   debug "read_credentials"
   if [[ -f ${auth_file_path} ]]; then
     source "${auth_file_path}"
-    export user_id="${auth_file_user_id}"
-    export api_token="${auth_file_api_token}"
+    export user_id="${auth_file_user_id:?"user id is not set in the credentials file"}"
+    export api_token="${auth_file_api_token:?"api token is not set in the credentials file"}"
 
     if [[ -z "${user_id}" || -z "${api_token}" ]]; then
       echo "no credentials found:"
