@@ -6,6 +6,8 @@ set -o errexit
 source "${library_dir}/api_proxy.sh"
 source "${library_dir}/logging.sh"
 
+# TODO: the $@ splitting here causes the "todo   name" to be interpreted as "todo name"
+#       Consider if this is a feature or a bug
 readonly args=($@)
 
 cur_arg=0
