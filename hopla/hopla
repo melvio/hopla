@@ -73,7 +73,7 @@ read_credentials
 
 
 handle_global_options() {
-  if [[ "$1" == "--help" ]]; then
+  if [[ "${1:-"--help"}" == "--help" ]]; then
     cat "${script_dirname}/hopla.help"
     exit 0
   fi
