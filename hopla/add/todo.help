@@ -9,8 +9,14 @@ usage:
 
 Examples:
 ```bash
+# using $(date '+Y-%m-%d') as the due date will result in the due-date being set to 'today'
 hopla add todo --hard --due-date $(date '+%Y-%m-%d') "Feed pet"
+
+# --due-date and --deadline work as synonyms
 hopla add todo --easy --checklist ~/my/absolute_file.txt "My Important Project"
+hopla add todo --easy --due-date  ~/my/absolute_file.txt "My Important Project"
+
+# when no --trivial, --easy, --medium, --hard is used, --medium is the default
 hopla add todo --checklist <(sort ./tasks.txt) "Sorted Checklist"
 ```
 
