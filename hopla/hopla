@@ -54,8 +54,11 @@ debug "config_file_path: ${config_file_path}"
 read_configs() {
   debug "read_configs"
   if [[ -f ${config_file_path} ]]; then
-    source "${config_file_path}"
-    # TODO: export the variables that are read here
+    while read -r config_setting ; do
+      # we want to export every line of the config file
+      # shellcheck disable=SC2163
+      export "${config_setting}"
+    done < "${config_file_path}"
   else
     debug "config file ${config_file_path} is not a file"
   fi
