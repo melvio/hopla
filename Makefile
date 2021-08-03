@@ -16,6 +16,10 @@ configure:
 hopla_add_todo_checklist:
 	hopla add todo --hard --due-date 2021-07-31 --checklist ~/.local/share/hopla/fake_tasks.txt "my todo thingy here"
 
+hopla_add_todo_checklist_daily:
+	hopla add todo --medium --due-date $$(date '+%Y-%m-%d') --checklist ~/checklist.md "$$(date '+%Y-%m-%d') + 1"
+
+
 hopla_add_todo_no_checklist:
 	hopla add todo --hard --due-date $$(date '+%Y-%m-%d')  "my todo thingy here"
 
