@@ -24,6 +24,9 @@ hopla_add_todo_no_checklist:
 	hopla add todo --hard --due-date $$(date '+%Y-%m-%d')  "my todo thingy here"
 
 
+hopla_enable_debug:
+	hopla set config debug_enabled 1
+
 
 hopla_version:
 	./hopla/hopla version
