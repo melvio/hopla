@@ -17,7 +17,16 @@ hopla add todo --easy --checklist ~/my/absolute_file.txt "My Important Project"
 hopla add todo --easy --due-date  ~/my/absolute_file.txt "My Important Project"
 
 # when no --trivial, --easy, --medium, --hard is used, --medium is the default
+#
+hopla add todo "My Todo"
+
+# You can use cool shell tricks to provide checklists on the fly
+# e.g. sort a list in a file:
 hopla add todo --checklist <(sort ./tasks.txt) "Sorted Checklist"
+
+# e.g. cut that checklist in your calender file on lines 12-30
+#      and send it to Habitica as a todo
+hopla add todo --checklist <(sed -n '12,30p' ./my-cal.txt) "Checklist from my cal file"
 ```
 
 

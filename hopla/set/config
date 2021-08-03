@@ -24,11 +24,24 @@ create_config_file() {
   echo "If you want to use another file, set an environment variable called HOPLA_CONFIG_FILE."
 }
 
-add_configuration_to_config_file() {
-  debug "add_configuration_to_config_file"
+config_key_is_in_file() {
+  # return 0 on match (or error), 1 no match
+  grep --silent "^${config_key}" "${config_file_path}"
+  return $?
+}
 
-  # TODO: implement replacement of pre-existing configuration
-  echo "${config_key}=${config_value}" >> "${config_file_path}"
+update_configuration() {
+  debug "update_configuration"
+
+  local config_line="${config_key}=${config_value}"
+
+  if config_key_is_in_file ; then
+    # replace current value
+    sed -i "s/^${config_key}.*/${config_line}/" "${config_file_path}"
+  else
+    # append the new configuration
+    echo "${config_line}" >> "${config_file_path}"
+  fi
 }
 
 
@@ -36,7 +49,7 @@ main() {
   if [[ ! -f ${config_file_path} ]] ; then
       create_config_file
   fi
-  add_configuration_to_config_file
+  update_configuration
 }
 main
 
