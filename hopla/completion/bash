@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+_autocomplete_hopla() {
+  local wordlist cur
+  # Todo: make dynamic based on available commands
+  wordlist="add api buy completion set"
+  cur="${COMP_WORDS[COMP_CWORD]}"
+
+  COMPREPLY=( $(compgen -W "${wordlist}" -- "${cur}" ) )
+}
+
+complete -F _autocomplete_hopla "hopla"
