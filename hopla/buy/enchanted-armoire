@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+
+source "${library_dir}/logging.sh"
+source "${library_dir}/api_proxy.sh"
+
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+
+main() {
+  local path="user/buy-armoire"
+  local http_response=$( post_curl "user/buy-armoire" )
+  local success=$( echo "${http_response}" | jq '.success')
+  if [[ "${success}" == "success" ]] ; then
+     echo "${http_response}" | jq .data.armoire.dropKey
+  else
+     echo "${http_response}"
+  fi
+
+}
+main
+
+
+
+
