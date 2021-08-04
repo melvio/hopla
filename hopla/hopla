@@ -27,10 +27,10 @@ print_hopla_auth_file() {
   local file_path=
   if [[ -n "${HOPLA_AUTH_FILE:-}" && -f "${HOPLA_AUTH_FILE:-}" ]] ; then
     file_path="${HOPLA_AUTH_FILE}"
-  elif [[ -n "${XDG_DATA_HOME:-}" && -d "${XDG_DATA_HOME:-}" ]] ; then
-    file_path="${XDG_DATA_HOME}/hopla/auth.conf"
+  elif [[ -n "${XDG_CONFIG_HOME:-}" && -d "${XDG_CONFIG_HOME:-}" ]] ; then
+    file_path="${XDG_CONFIG_HOME}/hopla/auth.conf"
   else
-    file_path="${HOME}/.local/share/hopla/auth.conf"
+    file_path="${HOME}/.config/hopla/auth.conf"
   fi
   echo "${file_path}"
 }
