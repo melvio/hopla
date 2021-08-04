@@ -1,6 +1,5 @@
 
 Nice to haves:
-* config files
 * do error handling after curls
 * Tab-autocompletion
 * provide generic help mechanism
