@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+
+source "${library_dir}/logging.sh"
+source "${library_dir}/api_proxy.sh"
+
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+
+display_buy_attempt_result() {
+  debug "display_buy_attempt_result"
+  declare -r http_response="$1"
+
+  declare -r success=$( echo "${http_response}" | jq '.success')
+  if [[ "${success}" == "true" ]] ; then
+     echo "${http_response}" | jq --raw-output .data.armoire
+  else
+     echo "${http_response}" | jq --raw-output .message
+  fi
+
+}
+
+buy_from_armoire() {
+  debug "buy_from_armoire"
+  declare -r path="user/buy-armoire"
+  declare -r http_response=$( post_curl "user/buy-armoire" )
+
+  echo "${http_response}"
+}
+
+
+main() {
+  declare -r http_response=$(buy_from_armoire)
+  display_buy_attempt_result "${http_response}"
+}
+main
+
+
+
+
