@@ -33,7 +33,7 @@ get_curl() {
 post_curl() {
   debug "post_curl"
   url_path="$1"
-  json_data="$2"
+  json_data="${2:-}"
 
   http_response=$(curl --silent --show-error -XPOST "${api_base_url}/${url_path}" \
     --retry "${curl_retry}" \
