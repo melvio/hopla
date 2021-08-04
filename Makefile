@@ -28,6 +28,9 @@ hopla_add_todo_no_checklist:
 hopla_enable_debug:
 	hopla set config debug_enabled 1
 
+hopla_buy_armoire:
+	hopla buy enchanted-armoire
+
 
 hopla_version:
 	./hopla/hopla version
