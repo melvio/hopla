@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+
+_autocomplete_hopla_add(){
+  local wordlist cur
+  wordlist="todo"
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  COMPREPLY=( $(compgen -W "${wordlist}" -- "${cur}" ) )
+}
+
+_autocomplete_hopla_api(){
+  local wordlist cur
+  wordlist="status version"
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  COMPREPLY=( $(compgen -W "${wordlist}" -- "${cur}" ) )
+}
+
+
+_autocomplete_hopla_buy(){
+  local wordlist cur
+  wordlist="enchanted-armoire"
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  COMPREPLY=( $(compgen -W "${wordlist}" -- "${cur}" ) )
+}
+
+_autocomplete_hopla_completion(){
+  local wordlist cur
+  wordlist="bash"
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  COMPREPLY=( $(compgen -W "${wordlist}" -- "${cur}" ) )
+}
+
+_autocomplete_hopla_set(){
+  local wordlist cur
+  wordlist="config credentials"
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  COMPREPLY=( $(compgen -W "${wordlist}" -- "${cur}" ) )
+}
+
+_autocomplete_hopla() {
+  local wordlist cur prev
+  # Todo: make dynamic based on available commands
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  prev="${COMP_WORDS[$((COMP_CWORD - 1))]}"
+
+  if [[ ${COMP_CWORD} -eq 1 ]] ; then
+    wordlist="add api buy completion set"
+    COMPREPLY=( $(compgen -W "${wordlist}" -- "${cur}" ) )
+  elif [[ $prev == "add" ]] ; then
+    _autocomplete_hopla_add
+  elif [[ $prev == "api" ]] ; then
+    _autocomplete_hopla_api
+  elif [[ $prev == "buy" ]] ; then
+    _autocomplete_hopla_buy
+  elif [[ $prev == "completion" ]] ; then
+    _autocomplete_hopla_completion
+  elif [[ $prev == "set" ]] ; then
+    _autocomplete_hopla_set
+  else
+    COMPREPLY=( )
+  fi
+}
+complete -F _autocomplete_hopla "hopla"
