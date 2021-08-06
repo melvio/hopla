@@ -26,7 +26,7 @@ display_buy_attempt_result() {
 buy_from_armoire() {
   debug "buy_from_armoire"
   declare -r path="user/buy-armoire"
-  declare -r http_response=$( post_curl "user/buy-armoire" )
+  declare -r http_response=$( post_curl "${path}" )
 
   echo "${http_response}"
 }
