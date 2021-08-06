@@ -67,18 +67,22 @@ handle_global_options() {
 }
 handle_global_options "$@"
 
+# TODO: add error handling for command_file not existing or being a directory
+# TODO: better parsing than this, try to preserve the "$@" structure
 command_file="${script_dirname}"
 command_counter=1
 while [[ -d "${command_file}" && "${command_counter}" -le $# ]]; do
   command_file="${command_file}/${!command_counter}"
   command_counter=$((command_counter + 1))
 done
-# TODO: add error handling for command_file not existing or being a directory
 
 arguments="${*:$command_counter}"
 
-debug "File to be executed: ${command_file}"
-debug "Commands to be passed: ${arguments}"
+main () {
+  debug "File to be executed: '${command_file}'"
+  debug "String to be passed: '${arguments}'"
+  "${command_file}" "${arguments}"
+}
+main
 
-"${command_file}" "${arguments}"
 
