@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+source "${library_dir}/api_proxy.sh"
+source "${library_dir}/logging.sh"
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+
+get_api_content() {
+  debug "get_api_content"
+  get_curl "content"
+}
+
+parse_habitica_content_result() {
+  debug "parse_habitica_content_result"
+  local json="$1"
+  echo "${json}" | jq '.data'
+}
+
+main () {
+  parse_habitica_content_result "$(get_api_content)"
+}
+main

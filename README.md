@@ -22,16 +22,15 @@ however, be aware that long checklists may result in long waiting times.
 #### Installation
 Clone this repository by running:
 ```
-git clone git@github.com:melvio/hopla.git
+$ git clone git@github.com:melvio/hopla.git 
 ```
 
 Now `cd` into the repository and run the installation script.
 ```
-cd ./hopla
-./install.sh
+$ cd ./hopla
+$ ./install.sh
 ```
-`install.sh` will create a symbolic link such that 
-the `hopla` command becomes available on your `$PATH`.
+`install.sh` will create a symbolic link to make the `hopla` command available on your `$PATH`.
 
 
 #### First Time Usage
@@ -45,10 +44,16 @@ Please enter your habitica 'User ID': ****-****-****-***-*********
 Please enter your habitica 'API Token': ****-****-****-***-*********
 ```
 
-
 This will create a credentials file at `~/.local/share/hopla/auth.conf` that
-for Hopla to use. If you want to use a different file, you can set the `${HOPLA_AUTH_FILE}`
+Hopla uses. If you want to use a different file, you can set the `${HOPLA_AUTH_FILE}`
 environment variable to choose your own path.
+
+If you want autocompletion you add this to your `.bashrc`
+```bash
+source <(hopla completion bash)
+```
+
+
 
 #### Everyday Usage
 After this, you can use hopla. The supported commands can be found by running:
@@ -60,9 +65,14 @@ usage:
     hopla --help
     hopla version
     hopla set credentials
+    hpola set config {config_key} {config_value}
     hopla add todo [--trivial|--easy|--medium|--hard] [{--due-date|--deadline} yyyy-mm-dd] [--checklist absolute_file_path] "the name of your todo"
     hopla api version
     hopla api status
+    hopla completion bash
+    hopla get user-info level
+    hopla get user-info gold
+    hopla get user-info pets
 ```
 
 More advanced features and functionality may be implemented later.

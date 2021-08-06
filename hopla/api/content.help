@@ -1,0 +1,11 @@
+hopla api content - get detailed information on what content is provided by the habitica api
+
+usage:
+    hopla api content
+
+Example
+```bash
+# Tip: the content is pretty long so try piping it to an editor or pager
+hopla api content | vim -
+hopla api content | less
+```
