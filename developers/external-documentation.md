@@ -19,14 +19,16 @@ Other:
 
 
 
-#### interesting CLI bash/Python tools
+#### other interesting habitica tools
 
 bash:
 * [habash](https://habitica.fandom.com/wiki/Habash)
 * <https://habitica.fandom.com/wiki/Habitican_Curse>
 * <https://habitica.fandom.com/wiki/Habitica_utilities>
+* 
 
-
+Other:
+* <https://github.com/Alys/>
 
 For all comrade tools see: 
 * <https://habitica.fandom.com/wiki/Extensions,_Add-Ons,_and_Customizations?cb=7596>

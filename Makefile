@@ -41,4 +41,11 @@ hopla_api_status:
 hopla_api_version:
 	hopla api version
 
+hopla_get_user_info_pets:
+	hopla get user-info pets
 
+hopla_get_user_info_gold:
+	hopla get user-info gp
+
+hopla_get_user_info_stats:
+	hopla get user-info stats
