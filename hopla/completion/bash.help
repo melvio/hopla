@@ -1,0 +1,10 @@
+hopla completion bash - output the completion code for hopla
+
+usage:
+    hopla completion bash
+
+Example
+```bash
+# Tip: to source the autocompletion, add the following to your `~/.bashrc`:
+source <(hopla completion bash)
+```
