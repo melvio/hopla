@@ -1,0 +1,3 @@
+#!/usr/bin/env
+
+source <(hopla completion bash)
