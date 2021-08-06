@@ -36,6 +36,15 @@ _autocomplete_hopla_set(){
   COMPREPLY=( $(compgen -W "${wordlist}" -- "${cur}" ) )
 }
 
+_autocomplete_hopla_get(){
+  local wordlist cur
+  # TODO: we can autocomplete this even further
+  wordlist="user-info"
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  COMPREPLY=( $(compgen -W "${wordlist}" -- "${cur}" ) )
+}
+
+
 _autocomplete_hopla() {
   local wordlist cur prev
   # Todo: make dynamic based on available commands
@@ -43,7 +52,7 @@ _autocomplete_hopla() {
   prev="${COMP_WORDS[$((COMP_CWORD - 1))]}"
 
   if [[ ${COMP_CWORD} -eq 1 ]] ; then
-    wordlist="add api buy completion set"
+    wordlist="add api buy completion set get"
     COMPREPLY=( $(compgen -W "${wordlist}" -- "${cur}" ) )
   elif [[ $prev == "add" ]] ; then
     _autocomplete_hopla_add
@@ -55,6 +64,8 @@ _autocomplete_hopla() {
     _autocomplete_hopla_completion
   elif [[ $prev == "set" ]] ; then
     _autocomplete_hopla_set
+  elif [[ $prev == "get" ]] ; then
+    _autocomplete_hopla_get
   else
     COMPREPLY=( )
   fi
