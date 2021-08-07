@@ -21,14 +21,17 @@ however, be aware that long checklists may result in long waiting times.
 ### How to Use
 #### Installation
 Clone this repository by running:
-```
+```bash
 $ git clone git@github.com:melvio/hopla.git 
+# Or, by using HTTPS:
+$ git clone https://github.com/melvio/hopla.git
+# or (my favorite), by using gh:
+$ gh repo clone melvio/hopla
 ```
 
 Now `cd` into the repository and run the installation script.
-```
-$ cd ./hopla
-$ ./install.sh
+```bash
+$ cd ./hopla && ./install.sh
 ```
 `install.sh` will create a symbolic link to make the `hopla` command available on your `$PATH`.
 
@@ -44,7 +47,7 @@ Please enter your habitica 'User ID': ****-****-****-***-*********
 Please enter your habitica 'API Token': ****-****-****-***-*********
 ```
 
-This will create a credentials file at `~/.local/share/hopla/auth.conf` that
+This will create a credentials file at `~/.config/hopla/auth.conf` that
 Hopla uses. If you want to use a different file, you can set the `${HOPLA_AUTH_FILE}`
 environment variable to choose your own path.
 
