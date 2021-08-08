@@ -8,43 +8,37 @@ source "${library_dir}/logging.sh"
 
 # TODO: the $@ splitting here causes the "todo   name" to be interpreted as "todo name"
 #       Consider if this is a feature or a bug
-readonly args=($@)
+readonly args=("$@")
 
-cur_arg=0
+declare -i cur_arg=0
+declare habitica_task_priority="1.0" # the default
 for _ in "${args[@]}"; do
   case "${args[${cur_arg}]}" in
   --hard)
-    habitica_priority="2"
+    habitica_task_priority="2"
     ;;
   --medium)
-    habitica_priority="1.5"
+    habitica_task_priority="1.5"
     ;;
   --easy)
-    habitica_priority="1"
+    habitica_task_priority="1"
     ;;
   --trivial)
-    habitica_priority="0.1"
+    habitica_task_priority="0.1"
     ;;
   --due-date|--deadline)
-    cur_arg=$(( "${cur_arg}" + 1 ))
+    cur_arg+=1
     habitica_date=${args[${cur_arg}]}
     ;;
   --checklist)
-    cur_arg=$(( "${cur_arg}" + 1 ))
+    cur_arg+=1
     checklist_file=${args[${cur_arg}]}
     ;;
   *)
-    # We are at the end of a (properly) formatted command.
-    # Now parse the "text" and remove multiple spaces between words.
     habitica_text+=${args[${cur_arg}]}
-    cur_arg=$(( "${cur_arg}" + 1 ))
-    while [[ -n "${args[${cur_arg}]}" ]] ; do
-      habitica_text+=" ${args[${cur_arg}]}"
-      cur_arg=$(( "${cur_arg}" + 1 ))
-    done
     ;;
   esac
-  cur_arg=$(( "${cur_arg}" + 1 ))
+  cur_arg+=1
 done
 
 
@@ -62,7 +56,7 @@ post_todo() {
 
   post_data="{"
   post_data+="\"text\":\"${habitica_text}\", "
-  post_data+="\"priority\":\"${habitica_priority:-"1.0"}\", " # 1.0 is the default for habitica
+  post_data+="\"priority\":\"${habitica_task_priority}\", "
   if [[ -n "${habitica_date}" ]]; then
     post_data+="\"date\":\"${habitica_date}\", "
   fi
