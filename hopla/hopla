@@ -49,7 +49,7 @@ show_help() {
 declare command_file="$(print_script_dir)"
 declare -a subcmd_arguments=()
 assign_subcmd_and_arguments() {
-  debug "print_sub_command"
+  debug "assign_subcmd_and_arguments"
   for argument in "${args_without_globals[@]}" ; do
     if [[ -e "${command_file}/${argument}" ]] ; then
       command_file+="/${argument}"
