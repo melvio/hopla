@@ -70,7 +70,7 @@ assign_subcmd_and_arguments() {
 
   if [[ ! -f "${command_file}" ]] ; then
     # User didn't finish with full command, they probably want help:
-    echo "${command_file}"
+    echo "could not find the following command file: ${command_file}"
   fi
 
   # TODO: add error handling for command_file not existing or being a directory
