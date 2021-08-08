@@ -1,46 +1,45 @@
 #!/usr/bin/env bash
 
 set -o errexit
-
+set -o pipefail
 
 source "${library_dir}/api_proxy.sh"
 source "${library_dir}/logging.sh"
 
 # TODO: the $@ splitting here causes the "todo   name" to be interpreted as "todo name"
 #       Consider if this is a feature or a bug
-readonly args=("$@")
 
-declare -i cur_arg=0
-declare habitica_task_priority="1.0" # the default
-for _ in "${args[@]}"; do
-  case "${args[${cur_arg}]}" in
-  --hard)
-    habitica_task_priority="2"
-    ;;
-  --medium)
-    habitica_task_priority="1.5"
-    ;;
-  --easy)
-    habitica_task_priority="1"
-    ;;
-  --trivial)
-    habitica_task_priority="0.1"
-    ;;
-  --due-date|--deadline)
-    cur_arg+=1
-    habitica_date=${args[${cur_arg}]}
-    ;;
-  --checklist)
-    cur_arg+=1
-    checklist_file=${args[${cur_arg}]}
-    ;;
-  *)
-    habitica_text+=${args[${cur_arg}]}
-    ;;
-  esac
-  cur_arg+=1
-done
 
+# data that we want to send to the API for this
+declare habitica_task_priority="1.0" # 1.0 is the default
+declare habitica_text=""
+declare habitica_date=""
+declare checklist_file=""
+
+parse_cmdline (){
+  declare -i cur_arg=0
+  declare -r commandline_args=("$@")
+  for _ in "$@"; do
+    case "${commandline_args[${cur_arg}]}" in
+    --hard)    habitica_task_priority="2"   ;;
+    --medium)  habitica_task_priority="1.5" ;;
+    --easy)    habitica_task_priority="1"   ;;
+    --trivial) habitica_task_priority="0.1" ;;
+    --due-date|--deadline)
+      cur_arg+=1
+      habitica_date=${commandline_args[${cur_arg}]}
+      ;;
+    --checklist)
+      cur_arg+=1
+      checklist_file=${commandline_args[${cur_arg}]}
+      ;;
+    *)
+      habitica_text+=${commandline_args[${cur_arg}]}
+      ;;
+    esac
+    cur_arg+=1
+  done
+}
 
 
 
@@ -83,6 +82,8 @@ add_tasks_to_todo_checklist() {
 }
 
 main() {
+  parse_cmdline "$@"
+
   task_id=$(post_todo)
   if [[ -n "${checklist_file}" ]] ; then
     # validate checklist file if any
@@ -97,6 +98,7 @@ main() {
 
     add_tasks_to_todo_checklist "$task_id"
   fi
-
 }
-main
+
+main "$@"
+
