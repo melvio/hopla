@@ -1,59 +1,45 @@
 #!/usr/bin/env bash
 
 set -o errexit
-
+set -o pipefail
 
 source "${library_dir}/api_proxy.sh"
 source "${library_dir}/logging.sh"
 
-# TODO: the $@ splitting here causes the "todo   name" to be interpreted as "todo name"
-#       Consider if this is a feature or a bug
-readonly args=($@)
+# data that we want to send to the API for this
+declare habitica_task_priority="1.0" # 1.0 is the default
+declare habitica_text=""
+declare habitica_date=""
+declare checklist_file=""
 
-cur_arg=0
-for _ in "${args[@]}"; do
-  case "${args[${cur_arg}]}" in
-  --hard)
-    habitica_priority="2"
-    ;;
-  --medium)
-    habitica_priority="1.5"
-    ;;
-  --easy)
-    habitica_priority="1"
-    ;;
-  --trivial)
-    habitica_priority="0.1"
-    ;;
-  --due-date|--deadline)
-    cur_arg=$(( "${cur_arg}" + 1 ))
-    habitica_date=${args[${cur_arg}]}
-    ;;
-  --checklist)
-    cur_arg=$(( "${cur_arg}" + 1 ))
-    checklist_file=${args[${cur_arg}]}
-    ;;
-  *)
-    # We are at the end of a (properly) formatted command.
-    # Now parse the "text" and remove multiple spaces between words.
-    habitica_text+=${args[${cur_arg}]}
-    cur_arg=$(( "${cur_arg}" + 1 ))
-    while [[ -n "${args[${cur_arg}]}" ]] ; do
-      habitica_text+=" ${args[${cur_arg}]}"
-      cur_arg=$(( "${cur_arg}" + 1 ))
-    done
-    ;;
-  esac
-  cur_arg=$(( "${cur_arg}" + 1 ))
-done
-
-
-
+parse_cmdline() {
+  declare -i cur_arg=0
+  declare -r commandline_args=("$@")
+  for _ in "$@"; do
+    case "${commandline_args[${cur_arg}]}" in
+      --hard) habitica_task_priority="2" ;;
+      --medium) habitica_task_priority="1.5" ;;
+      --easy) habitica_task_priority="1" ;;
+      --trivial) habitica_task_priority="0.1" ;;
+      --due-date|--deadline)
+        cur_arg+=1
+        habitica_date=${commandline_args[${cur_arg}]}
+        ;;
+      --checklist)
+        cur_arg+=1
+        checklist_file=${commandline_args[${cur_arg}]}
+        ;;
+      *)
+        habitica_text+=${commandline_args[${cur_arg}]}
+        ;;
+    esac
+    cur_arg+=1
+  done
+}
 
 print_task_id() {
   echo "$1" | jq --raw-output '.data.id'
 }
-
 
 post_todo() {
   debug "post_todo"
@@ -62,7 +48,7 @@ post_todo() {
 
   post_data="{"
   post_data+="\"text\":\"${habitica_text}\", "
-  post_data+="\"priority\":\"${habitica_priority:-"1.0"}\", " # 1.0 is the default for habitica
+  post_data+="\"priority\":\"${habitica_task_priority}\", "
   if [[ -n "${habitica_date}" ]]; then
     post_data+="\"date\":\"${habitica_date}\", "
   fi
@@ -79,7 +65,7 @@ add_tasks_to_todo_checklist() {
   task_id="$1"
 
   # every line in the file is interpreted to be a seperated checklist item
-  while read -r task ; do
+  while read -r task; do
     post_data="{\"text\":"
     post_data+="\"${task}\""
     post_data+="}"
@@ -89,20 +75,22 @@ add_tasks_to_todo_checklist() {
 }
 
 main() {
+  parse_cmdline "$@"
+
   task_id=$(post_todo)
-  if [[ -n "${checklist_file}" ]] ; then
+  if [[ -n "${checklist_file}" ]]; then
     # validate checklist file if any
-    if [[ -d "${checklist_file}" ]] ; then
+    if [[ -d "${checklist_file}" ]]; then
       echo "${checklist_file} is a directory"
       exit 1
     fi
-    if [[ ! -e "${checklist_file}" ]] ; then
+    if [[ ! -e "${checklist_file}" ]]; then
       echo "cannot find ${checklist_file}: try an absolute paths instead"
       exit 1
     fi
 
     add_tasks_to_todo_checklist "$task_id"
   fi
-
 }
-main
+
+main "$@"

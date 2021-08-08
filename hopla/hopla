@@ -21,67 +21,57 @@ declare -xr library_dir=$(print_library_dir)
 source "${library_dir}/api_proxy.sh"
 source "${library_dir}/logging.sh"
 source "${library_dir}/load_config.sh"
+source "${library_dir}/load_auth.sh"
 
 
-print_hopla_auth_file() {
-  local file_path=
-  if [[ -n "${HOPLA_AUTH_FILE:-}" && -f "${HOPLA_AUTH_FILE:-}" ]] ; then
-    file_path="${HOPLA_AUTH_FILE}"
-  elif [[ -n "${XDG_CONFIG_HOME:-}" && -d "${XDG_CONFIG_HOME:-}" ]] ; then
-    file_path="${XDG_CONFIG_HOME}/hopla/auth.conf"
-  else
-    file_path="${HOME}/.config/hopla/auth.conf"
-  fi
-  echo "${file_path}"
+declare -i global_option_help=0
+declare -a args_without_globals=()
+# <https://stackoverflow.com/questions/12022592/how-can-i-use-long-options-with-the-bash-getopts-builtin>
+parse_global_options() {
+  debug "parse_global_options"
+  for argument in "$@"; do
+    case "${argument}" in
+      # just set a variable, don't change other options
+      "--help"|"-h")     global_option_help=1 ;;
+      # don't change other options and parameters
+      *)                 args_without_globals+=("${argument}")   ;;
+    esac
+  done
 }
-declare -xr auth_file_path=$(print_hopla_auth_file)
-debug "auth_file_path ${auth_file_path}"
+parse_global_options "$@"
 
-
-
-read_credentials() {
-  debug "read_credentials"
-  if [[ -f ${auth_file_path} ]]; then
-    source "${auth_file_path}"
-    # TODO: syntax checking
-    export user_id="${auth_file_user_id:?"user id is not set in the credentials file"}"
-    export api_token="${auth_file_api_token:?"api token is not set in the credentials file"}"
-
-    if [[ -z "${user_id}" || -z "${api_token}" ]]; then
-      echo "no credentials found:"
-      "${script_dirname}/set/credentials"
+declare command_file="${script_dirname}"
+declare -a subcmd_arguments=()
+assign_subcmd_and_arguments() {
+  debug "print_sub_command"
+  for argument in "${args_without_globals[@]}" ; do
+    if [[ -e "${command_file}/${argument}" ]] ; then
+      command_file+="/${argument}"
+    else
+      subcmd_arguments+=("${argument}")
     fi
-  else
-    echo "no credential file found"
-    "${script_dirname}/set/credentials"
-  fi
+  done
+  # TODO: add error handling for command_file not existing or being a directory
 }
-read_credentials
+assign_subcmd_and_arguments
+
 
 
 handle_global_options() {
-  if [[ "${1:-"--help"}" == "--help" ]]; then
-    cat "${script_dirname}/hopla.help"
+  if (( global_option_help )) ; then
+    cat "${command_file}.help"
     exit 0
   fi
 }
-handle_global_options "$@"
+handle_global_options
 
-# TODO: add error handling for command_file not existing or being a directory
-# TODO: better parsing than this, try to preserve the "$@" structure
-command_file="${script_dirname}"
-command_counter=1
-while [[ -d "${command_file}" && "${command_counter}" -le $# ]]; do
-  command_file="${command_file}/${!command_counter}"
-  command_counter=$((command_counter + 1))
-done
 
-arguments="${*:$command_counter}"
 
 main () {
   debug "File to be executed: '${command_file}'"
-  debug "String to be passed: '${arguments}'"
-  "${command_file}" "${arguments}"
+  debug "Arguments to be passed: '${subcmd_arguments[*]}'"
+  debug "# of Arguments to be passed: '${#subcmd_arguments[@]}'"
+  "${command_file}" "${subcmd_arguments[@]}"
 }
 main
 
