@@ -41,8 +41,12 @@ parse_global_options() {
 parse_global_options "$@"
 
 show_help() {
-  declare -r file="$1"
-  cat "${file}.help"
+  declare help_file="${1}.help"
+  # edge case: user called `hopla --help`
+  if [[ ! -f "${help_file}" ]]  ; then help_file="${1}/hopla.help" ; fi
+
+  debug "show_help: help_file=${help_file}}"
+  cat "${help_file}"
   exit 0
 }
 
@@ -66,8 +70,7 @@ assign_subcmd_and_arguments() {
 
   if [[ ! -f "${command_file}" ]] ; then
     # User didn't finish with full command, they probably want help:
-    echo "${}"
-    show_help "${command_file}"
+    echo "${command_file}"
   fi
 
   # TODO: add error handling for command_file not existing or being a directory

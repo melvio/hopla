@@ -3,10 +3,13 @@ hopla - another habitica cli
 syntax:
     hopla [GLOBAL_OPTIONS]... [SUB_COMMANDS|GROUPS]... [SUB_COMMAND_OPTIONS]... [PARAMETERS]...
 
+For more help on SUB_COMMANDs use: `hopla --help {SUB_COMMAND}`
+
+
 GLOBAL_OPTIONS:
     --help
 
-COMMANDS:
+COMMANDS examples:
     hopla version
     hopla set credentials
     hopla set config {config_key} {config_value}
@@ -15,4 +18,4 @@ COMMANDS:
     hopla api version
     hopla api status
     hopla api content
-    hopla buy enchanted armoire
+    hopla buy enchanted-armoire
