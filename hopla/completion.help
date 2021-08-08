@@ -1,9 +1,9 @@
-hopla get - group command
+hopla completion - group command
 
-For more help use `hopla --help get {SUB_COMMAND}`
+For more help use `hopla --help completion [SUB_COMMAND]`
 
 syntax:
-    hopla [global_options] get {SUB_COMMAND}...
+    hopla [global_options] completion {SUB_COMMAND}...
 
 SUPPORTED SUB COMMANDS:
-    hopla get user-info   -- get information about the currently authenticated user
+    hopla completion bash   -- provide completion for the bash shell

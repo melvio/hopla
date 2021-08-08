@@ -5,15 +5,14 @@ set -o nounset
 set -o pipefail
 
 print_script_dir() {
-  local this_script=$(perl -e 'use Cwd "abs_path"; print abs_path(shift)' "$0")
-  local this_script_dir=$(dirname "${this_script}")
+  declare -r this_script=$(perl -e 'use Cwd "abs_path"; print abs_path(shift)' "$0")
+  declare -r this_script_dir=$(dirname "${this_script}")
   echo "${this_script_dir}"
 }
-script_dirname=$(print_script_dir)
 
 print_library_dir() {
-  local script_dirname="$(print_script_dir)"
-  local library_dirname="$(realpath "${script_dirname}/../library/")"
+  declare -r script_dirname="$(print_script_dir)"
+  declare -r library_dirname="$(realpath "${script_dirname}/../library/")"
   echo "${library_dirname}"
 }
 
@@ -23,10 +22,8 @@ source "${library_dir}/logging.sh"
 source "${library_dir}/load_config.sh"
 source "${library_dir}/load_auth.sh"
 
-
 declare -i global_option_help=0
 declare -a args_without_globals=()
-# <https://stackoverflow.com/questions/12022592/how-can-i-use-long-options-with-the-bash-getopts-builtin>
 parse_global_options() {
   debug "parse_global_options"
   for argument in "$@"; do
@@ -38,7 +35,6 @@ parse_global_options() {
     esac
   done
 }
-parse_global_options "$@"
 
 show_help() {
   declare help_file="${1}.help"
@@ -50,8 +46,7 @@ show_help() {
   exit 0
 }
 
-
-declare command_file="${script_dirname}"
+declare command_file="$(print_script_dir)"
 declare -a subcmd_arguments=()
 assign_subcmd_and_arguments() {
   debug "print_sub_command"
@@ -72,12 +67,7 @@ assign_subcmd_and_arguments() {
     # User didn't finish with full command, they probably want help:
     echo "could not find the following command file: ${command_file}"
   fi
-
-  # TODO: add error handling for command_file not existing or being a directory
 }
-assign_subcmd_and_arguments
-
-
 
 
 handle_global_options() {
@@ -85,16 +75,18 @@ handle_global_options() {
     show_help "${command_file}"
   fi
 }
-handle_global_options
-
 
 
 main () {
+  parse_global_options "$@"
+  assign_subcmd_and_arguments
+  handle_global_options
+
   debug "File to be executed: '${command_file}'"
   debug "Arguments to be passed: '${subcmd_arguments[*]}'"
   debug "# of Arguments to be passed: '${#subcmd_arguments[@]}'"
   "${command_file}" "${subcmd_arguments[@]}"
 }
-main
+main "$@"
 
 
