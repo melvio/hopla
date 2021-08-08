@@ -24,15 +24,35 @@ source "${library_dir}/load_config.sh"
 source "${library_dir}/load_auth.sh"
 
 
+declare -a replacement_arguments=()
+# <https://stackoverflow.com/questions/12022592/how-can-i-use-long-options-with-the-bash-getopts-builtin>
+transform_global_options_from_long_to_short() {
+  debug "transform_global_options_from_long_to_short"
+  for argument in "$@"; do
+    shift
+    case "${argument}" in
+      "--help")     replacement_arguments+=("-h") ;;
+
+      # don't change other options
+      *)            replacement_arguments+=("${argument}")   ;;
+    esac
+  done
+}
+transform_global_options_from_long_to_short "$@"
+echo "replacement_arguments: ${replacement_arguments[*]}"
+echo "replacement_arguments length: ${#replacement_arguments[*]}"
+
+
+
 
 
 handle_global_options() {
-  if [[ "${1:-"--help"}" == "--help" ]]; then
+  if [[ "${1:-"-h"}" == "-h" ]]; then
     cat "${script_dirname}/hopla.help"
     exit 0
   fi
 }
-handle_global_options "$@"
+handle_global_options "${replacement_arguments[@]}"
 
 # TODO: add error handling for command_file not existing or being a directory
 # TODO: better parsing than this, try to preserve the "$@" structure
