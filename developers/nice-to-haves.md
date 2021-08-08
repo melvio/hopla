@@ -1,8 +1,8 @@
 
 Nice to haves:
-* get better command passing to all subcommand
 * do error handling after curls
-* provide generic help mechanism
+* provide help output for all commands and command groups 
+  + if the user specifies a dir (i.e. a command group) than also give --help
 * provide error checking on typos in options
 * apply: <http://redsymbol.net/articles/unofficial-bash-strict-mode/>
 * hopla add todo --checklist {relative_file.md}

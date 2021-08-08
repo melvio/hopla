@@ -1,4 +1,9 @@
 hopla add - group command
 
+For more help use `hopla --help add [SUB_COMMAND]`
+
 syntax:
-    hopla [global_opts] add todo [todo_opts] "todo name"
+    hopla [global_options] add {SUB_COMMAND}...
+
+SUPPORTED SUB COMMANDS:
+    hopla add todo

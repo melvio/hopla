@@ -24,7 +24,7 @@ if [[ -f "${entry_command}" && -d "${target_dir}" ]] ; then
   if [[ -h "${target_dir}/hopla" ]] ; then
     echo "symbolic link to hopla already exists in ${target_dir}"
   else
-    sudo ln -s "${entry_command}" "${target_dir}"
+    sudo ln --symbolic "${entry_command}" "${target_dir}"
   fi
   exit 0
 else
