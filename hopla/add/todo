@@ -6,7 +6,6 @@ set -o pipefail
 source "${library_dir}/api_proxy.sh"
 source "${library_dir}/logging.sh"
 
-
 # data that we want to send to the API for this
 declare habitica_task_priority="1.0" # 1.0 is the default
 declare habitica_text=""
@@ -18,21 +17,21 @@ parse_cmdline() {
   declare -r commandline_args=("$@")
   for _ in "$@"; do
     case "${commandline_args[${cur_arg}]}" in
-    --hard) habitica_task_priority="2" ;;
-    --medium) habitica_task_priority="1.5" ;;
-    --easy) habitica_task_priority="1" ;;
-    --trivial) habitica_task_priority="0.1" ;;
-    --due-date | --deadline)
-      cur_arg+=1
-      habitica_date=${commandline_args[${cur_arg}]}
-      ;;
-    --checklist)
-      cur_arg+=1
-      checklist_file=${commandline_args[${cur_arg}]}
-      ;;
-    *)
-      habitica_text+=${commandline_args[${cur_arg}]}
-      ;;
+      --hard) habitica_task_priority="2" ;;
+      --medium) habitica_task_priority="1.5" ;;
+      --easy) habitica_task_priority="1" ;;
+      --trivial) habitica_task_priority="0.1" ;;
+      --due-date|--deadline)
+        cur_arg+=1
+        habitica_date=${commandline_args[${cur_arg}]}
+        ;;
+      --checklist)
+        cur_arg+=1
+        checklist_file=${commandline_args[${cur_arg}]}
+        ;;
+      *)
+        habitica_text+=${commandline_args[${cur_arg}]}
+        ;;
     esac
     cur_arg+=1
   done
@@ -71,7 +70,7 @@ add_tasks_to_todo_checklist() {
     post_data+="\"${task}\""
     post_data+="}"
 
-    post_curl "tasks/${task_id}/checklist" "${post_data}" >>/dev/null
+    post_curl "tasks/${task_id}/checklist" "${post_data}" >> /dev/null
   done < "${checklist_file}"
 }
 
