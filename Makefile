@@ -51,3 +51,6 @@ hopla_get_user_info_gold:
 
 hopla_get_user_info_stats:
 	hopla get user-info stats
+
+hopla_get_user_info_all:
+	hopla get user-info all

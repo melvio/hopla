@@ -6,13 +6,8 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-
-readonly args=($@)
-
-readonly config_key="${args[0]:?"missing config_key and config_value"}"
-readonly config_value="${args[1]:?"missing config_value"}"
-
-
+declare -r config_key="${1:?"missing config_key and config_value"}"
+declare -r config_value="${2:?"missing config_value"}"
 
 create_config_file() {
   debug "create_config_file"
@@ -33,8 +28,7 @@ config_key_is_in_file() {
 update_configuration() {
   debug "update_configuration"
 
-  local config_line="${config_key}=${config_value}"
-
+  declare -r config_line="${config_key}=${config_value}"
   if config_key_is_in_file ; then
     # replace current value
     sed -i "s/^${config_key}.*/${config_line}/" "${config_file_path}"

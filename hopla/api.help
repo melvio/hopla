@@ -1,0 +1,11 @@
+hopla api - group command
+
+For more help use `hopla --help api [SUB_COMMAND]`
+
+syntax:
+    hopla [global_options] api {SUB_COMMAND}...
+
+SUPPORTED SUB COMMANDS:
+    hopla api content
+    hopla api status
+    hopla api version

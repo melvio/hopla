@@ -2,7 +2,7 @@
 
 _autocomplete_hopla_add(){
   local wordlist cur
-  wordlist="todo"
+  wordlist="todo --help"
   cur="${COMP_WORDS[COMP_CWORD]}"
   COMPREPLY=( $(compgen -W "${wordlist}" -- "${cur}" ) )
 }
@@ -11,7 +11,7 @@ _autocomplete_hopla_api(){
   local wordlist cur
   # todo: You can ls in the right directory to get this list dynamically
   #       This way you don't have to remember to add new autocomplete words
-  wordlist="status version content"
+  wordlist="status version content --help"
   cur="${COMP_WORDS[COMP_CWORD]}"
   COMPREPLY=( $(compgen -W "${wordlist}" -- "${cur}" ) )
 }
@@ -19,21 +19,21 @@ _autocomplete_hopla_api(){
 
 _autocomplete_hopla_buy(){
   local wordlist cur
-  wordlist="enchanted-armoire"
+  wordlist="enchanted-armoire --help"
   cur="${COMP_WORDS[COMP_CWORD]}"
   COMPREPLY=( $(compgen -W "${wordlist}" -- "${cur}" ) )
 }
 
 _autocomplete_hopla_completion(){
   local wordlist cur
-  wordlist="bash"
+  wordlist="bash --help"
   cur="${COMP_WORDS[COMP_CWORD]}"
   COMPREPLY=( $(compgen -W "${wordlist}" -- "${cur}" ) )
 }
 
 _autocomplete_hopla_set(){
   local wordlist cur
-  wordlist="config credentials"
+  wordlist="config credentials --help"
   cur="${COMP_WORDS[COMP_CWORD]}"
   COMPREPLY=( $(compgen -W "${wordlist}" -- "${cur}" ) )
 }
@@ -41,7 +41,7 @@ _autocomplete_hopla_set(){
 _autocomplete_hopla_get(){
   local wordlist cur
   # TODO: we can autocomplete this even further
-  wordlist="user-info"
+  wordlist="user-info --help"
   cur="${COMP_WORDS[COMP_CWORD]}"
   COMPREPLY=( $(compgen -W "${wordlist}" -- "${cur}" ) )
 }
@@ -54,7 +54,7 @@ _autocomplete_hopla() {
   prev="${COMP_WORDS[$((COMP_CWORD - 1))]}"
 
   if [[ ${COMP_CWORD} -eq 1 ]] ; then
-    wordlist="add api buy completion set get"
+    wordlist="add api buy completion set get --help"
     COMPREPLY=( $(compgen -W "${wordlist}" -- "${cur}" ) )
   elif [[ $prev == "add" ]] ; then
     _autocomplete_hopla_add

@@ -40,6 +40,17 @@ parse_global_options() {
 }
 parse_global_options "$@"
 
+show_help() {
+  declare help_file="${1}.help"
+  # edge case: user called `hopla --help`
+  if [[ ! -f "${help_file}" ]]  ; then help_file="${1}/hopla.help" ; fi
+
+  debug "show_help: help_file=${help_file}}"
+  cat "${help_file}"
+  exit 0
+}
+
+
 declare command_file="${script_dirname}"
 declare -a subcmd_arguments=()
 assign_subcmd_and_arguments() {
@@ -51,16 +62,27 @@ assign_subcmd_and_arguments() {
       subcmd_arguments+=("${argument}")
     fi
   done
+
+  if [[ -d "${command_file}" ]] ; then
+    # User didn't finish with full command, they probably want help:
+    show_help "${command_file}"
+  fi
+
+  if [[ ! -f "${command_file}" ]] ; then
+    # User didn't finish with full command, they probably want help:
+    echo "${command_file}"
+  fi
+
   # TODO: add error handling for command_file not existing or being a directory
 }
 assign_subcmd_and_arguments
 
 
 
+
 handle_global_options() {
   if (( global_option_help )) ; then
-    cat "${command_file}.help"
-    exit 0
+    show_help "${command_file}"
   fi
 }
 handle_global_options
