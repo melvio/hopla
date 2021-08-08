@@ -24,51 +24,54 @@ source "${library_dir}/load_config.sh"
 source "${library_dir}/load_auth.sh"
 
 
-declare -a replacement_arguments=()
+declare -i global_option_help=0
+declare -a args_without_globals=()
 # <https://stackoverflow.com/questions/12022592/how-can-i-use-long-options-with-the-bash-getopts-builtin>
-transform_global_options_from_long_to_short() {
-  debug "transform_global_options_from_long_to_short"
+parse_global_options() {
+  debug "parse_global_options"
   for argument in "$@"; do
-    shift
     case "${argument}" in
-      "--help")     replacement_arguments+=("-h") ;;
-
-      # don't change other options
-      *)            replacement_arguments+=("${argument}")   ;;
+      # just set a variable, don't change other options
+      "--help"|"-h")     global_option_help=1 ;;
+      # don't change other options and parameters
+      *)                 args_without_globals+=("${argument}")   ;;
     esac
   done
 }
-transform_global_options_from_long_to_short "$@"
-echo "replacement_arguments: ${replacement_arguments[*]}"
-echo "replacement_arguments length: ${#replacement_arguments[*]}"
+parse_global_options "$@"
 
-
+declare command_file="${script_dirname}"
+declare -a subcmd_arguments=()
+assign_subcmd_and_arguments() {
+  debug "print_sub_command"
+  for argument in "${args_without_globals[@]}" ; do
+    if [[ -e "${command_file}/${argument}" ]] ; then
+      command_file+="/${argument}"
+    else
+      subcmd_arguments+=("${argument}")
+    fi
+  done
+  # TODO: add error handling for command_file not existing or being a directory
+}
+assign_subcmd_and_arguments
 
 
 
 handle_global_options() {
-  if [[ "${1:-"-h"}" == "-h" ]]; then
-    cat "${script_dirname}/hopla.help"
+  if (( global_option_help )) ; then
+    cat "${command_file}.help"
     exit 0
   fi
 }
-handle_global_options "${replacement_arguments[@]}"
+handle_global_options
 
-# TODO: add error handling for command_file not existing or being a directory
-# TODO: better parsing than this, try to preserve the "$@" structure
-command_file="${script_dirname}"
-command_counter=1
-while [[ -d "${command_file}" && "${command_counter}" -le $# ]]; do
-  command_file="${command_file}/${!command_counter}"
-  command_counter=$((command_counter + 1))
-done
 
-arguments="${*:$command_counter}"
 
 main () {
   debug "File to be executed: '${command_file}'"
-  debug "String to be passed: '${arguments}'"
-  "${command_file}" "${arguments}"
+  debug "Arguments to be passed: '${subcmd_arguments[*]}'"
+  debug "# of Arguments to be passed: '${#subcmd_arguments[@]}'"
+  "${command_file}" "${subcmd_arguments[@]}"
 }
 main
 
