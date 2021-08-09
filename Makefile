@@ -18,8 +18,11 @@ hopla_add_todo_checklist:
 
 tomorrow="$$(date --date tomorrow '+%Y-%m-%d')"
 hopla_add_todo_checklist_tomorrow:
-	hopla add todo --medium --due-date $(tomorrow) --checklist ~/checklist.md "$(tomorrow) checklist"
+	hopla add todo --medium --due-date $(tomorrow) --checklist ~/todo/todo_list/checklist.md "$(tomorrow) checklist"
 
+today="$$(date '+%Y-%m-%d')"
+hopla_add_todo_checklist_today:
+	hopla add todo --medium --due-date $(today) --checklist ~/todo/todo_list/today.md "$(today) checklist"
 
 hopla_add_todo_no_checklist:
 	hopla add todo --hard --due-date $$(date '+%Y-%m-%d')  "my todo thingy here"
