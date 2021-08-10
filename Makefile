@@ -20,6 +20,10 @@ tomorrow="$$(date --date tomorrow '+%Y-%m-%d')"
 hopla_add_todo_checklist_tomorrow:
 	hopla add todo --medium --due-date $(tomorrow) --checklist ~/todo/todo_list/checklist.md "$(tomorrow) checklist"
 
+hopla_add_todo_checklist_studroll:
+	hopla add todo --medium --due-date $(tomorrow) --checklist ~/todo/todo_list/roll.md "$(tomorrow) stud"
+
+
 today="$$(date '+%Y-%m-%d')"
 hopla_add_todo_checklist_today:
 	hopla add todo --medium --due-date $(today) --checklist ~/todo/todo_list/today.md "$(today) checklist"

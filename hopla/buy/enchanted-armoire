@@ -2,6 +2,7 @@
 
 source "${library_dir}/logging.sh"
 source "${library_dir}/api_proxy.sh"
+source "${library_dir}/math.sh"
 
 
 set -o errexit
@@ -63,17 +64,21 @@ buy_from_armoire_n_times() {
   declare -ri n_times="$1"
   debug "buy_from_armoire_n_times n=${n_times}"
 
-  for (( i=0 ; i < n_times ; i++ )) ; do
+  for ((i=0 ; i < n_times ; i++ )) ; do
     _buy_from_armoire
+    if (( n_times > 25 )) ; then
+      sleep 2s # self throttle slightly: you can only do 30 requests/minute
+    fi
   done
 }
 
 buy_from_armoire_until_poor() {
-    gold=$(hopla get user-info gold)
-    echo "gold=${gold}"
-    # Todo: parse gold to integer and // 100 it
-
-    echo "unimplemented option_until_poor_enabled "
+  debug "buy_from_armoire_until_poor"
+  gold=$(hopla get user-info gold)
+  declare -i gold=$(round_down_positive_float "${gold}")
+  debug "user gold rounded down=${gold}"
+  declare -ri buy_times=gold/100
+  buy_from_armoire_n_times "${buy_times}"
 }
 
 
