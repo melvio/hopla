@@ -39,7 +39,7 @@ parse_global_options() {
 show_help() {
   declare help_file="${1}.help"
   # edge case: user called `hopla --help`
-  if [[ ! -f "${help_file}" ]]  ; then help_file="${1}/hopla.help" ; fi
+  if [[ ! -f "${help_file}" ]]  ; then declare help_file="${1}/hopla.help" ; fi
 
   debug "show_help: help_file=${help_file}}"
   cat "${help_file}"

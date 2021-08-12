@@ -48,25 +48,25 @@ _autocomplete_hopla_get(){
 
 
 _autocomplete_hopla() {
-  local wordlist cur prev
+  local wordlist cur second_word
   # Todo: make dynamic based on available commands
   cur="${COMP_WORDS[COMP_CWORD]}"
-  prev="${COMP_WORDS[$((COMP_CWORD - 1))]}"
+  second_word="${COMP_WORDS[$((COMP_CWORD - 1))]}"
 
   if [[ ${COMP_CWORD} -eq 1 ]] ; then
     wordlist="add api buy completion set get --help"
     COMPREPLY=( $(compgen -W "${wordlist}" -- "${cur}" ) )
-  elif [[ $prev == "add" ]] ; then
+  elif [[ $second_word == "add" ]] ; then
     _autocomplete_hopla_add
-  elif [[ $prev == "api" ]] ; then
+  elif [[ $second_word == "api" ]] ; then
     _autocomplete_hopla_api
-  elif [[ $prev == "buy" ]] ; then
+  elif [[ $second_word == "buy" ]] ; then
     _autocomplete_hopla_buy
-  elif [[ $prev == "completion" ]] ; then
+  elif [[ $second_word == "completion" ]] ; then
     _autocomplete_hopla_completion
-  elif [[ $prev == "set" ]] ; then
+  elif [[ $second_word == "set" ]] ; then
     _autocomplete_hopla_set
-  elif [[ $prev == "get" ]] ; then
+  elif [[ $second_word == "get" ]] ; then
     _autocomplete_hopla_get
   else
     COMPREPLY=( )
