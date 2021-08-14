@@ -24,9 +24,16 @@ _autocomplete_hopla_buy(){
   COMPREPLY=( $(compgen -W "${wordlist}" -- "${cur}" ) )
 }
 
-_autocomplete_hopla_completion(){
+_autocomplete_hopla_complete(){
   local wordlist cur
   wordlist="bash --help"
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  COMPREPLY=( $(compgen -W "${wordlist}" -- "${cur}" ) )
+}
+
+_autocomplete_hopla_feed(){
+  local wordlist cur
+  wordlist="pet --help"
   cur="${COMP_WORDS[COMP_CWORD]}"
   COMPREPLY=( $(compgen -W "${wordlist}" -- "${cur}" ) )
 }
@@ -54,7 +61,7 @@ _autocomplete_hopla() {
   second_word="${COMP_WORDS[$((COMP_CWORD - 1))]}"
 
   if [[ ${COMP_CWORD} -eq 1 ]] ; then
-    wordlist="add api buy complete set get --help"
+    wordlist="add api buy complete feed set get --help"
     COMPREPLY=( $(compgen -W "${wordlist}" -- "${cur}" ) )
   elif [[ $second_word == "add" ]] ; then
     _autocomplete_hopla_add
@@ -62,8 +69,10 @@ _autocomplete_hopla() {
     _autocomplete_hopla_api
   elif [[ $second_word == "buy" ]] ; then
     _autocomplete_hopla_buy
-  elif [[ $second_word == "completion" ]] ; then
-    _autocomplete_hopla_completion
+  elif [[ $second_word == "complete" ]] ; then
+    _autocomplete_hopla_complete
+  elif [[ $second_word == "feed" ]] ; then
+    _autocomplete_hopla_feed
   elif [[ $second_word == "set" ]] ; then
     _autocomplete_hopla_set
   elif [[ $second_word == "get" ]] ; then

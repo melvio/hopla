@@ -1,0 +1,8 @@
+hopla feed pet - feed a pet
+
+
+usage:
+    hopla feed pet --help
+    hopla feed pet {pet_name} {food_name}
+
+

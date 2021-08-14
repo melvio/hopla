@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+source "${library_dir}/api_proxy.sh"
+source "${library_dir}/logging.sh"
+
+
+
+
+
+
+
+main() {
+  declare -r pet_name="$1"
+  declare -r food_name="$2"
+  debug "hopla feed pet: pet=${pet_name}, food=${food_name}"
+
+  declare -r path="user/feed/${pet_name}/${food_name}"
+
+  post_curl "${path}"
+}
+main "$@"
