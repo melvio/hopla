@@ -1,6 +1,16 @@
 hopla get user-stats - get stats of a user in JSON
 
 
+syntax:
+    hopla get user-stats --help
+    hopla get user-stats
+    hopla get user-stats all
+    hopla get user-stats manapoints|mana|mp
+    hopla get user-stats experience|exp|xp
+    hopla get user-stats gold|gp
+    hopla get user-stats --jq-filter|-j {FILTER}
+
+
 Example:
 ```bash
 # get maximum mana points

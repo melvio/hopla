@@ -3,11 +3,13 @@ hopla get user-info - get user info in JSON
 usage:
     hopla get user-info
     hopla get user-info all
-    hopla get user-info authentication|auth
     hopla get user-info --jq-filter|-j FILTER
 
 Example:
 ```bash
 # get all user info as specified in: <https://habitica.com/apidoc/#api-User-UserGet>
 hopla get user-info all
+
+# get the last free rebirth
+hopla get user-info -j .data.flags.lastFreeRebirth
 ```

@@ -13,10 +13,6 @@ get_all_user_info() {
 }
 
 
-get_auth_info(){
-  get_curl_user_with_filter ".data.auth.local"
-}
-
 
 get_convenience_info () {
   local -r default_filter='.data.profile'
@@ -25,6 +21,8 @@ get_convenience_info () {
 
 
 main () {
+  debug "hopla get user-info $*"
+
   if (( $# == 0 )) ; then
     get_convenience_info
   else
@@ -35,12 +33,10 @@ main () {
       # get all data
       all) get_all_user_info ;;
       # other
-      authentication|auth) get_auth_info ;;
       *) echo "did not recognize argument: '$1'"
     esac
   fi
 }
-# splitting is wanted here:
-main $@
+main "$@"
 
 
