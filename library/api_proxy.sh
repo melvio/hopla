@@ -18,7 +18,7 @@ get_curl() {
   # Since curl 7.66.0, curl will comply with the Retry-After: response header if one
   # was present to know when to issue the next retry.
   # Ubuntu 20.04 uses curl 7.68 (anno July 2021)
-  http_response=$(curl --silent --show-error "${api_base_url}/${url_path}" \
+  declare http_response=$(curl --silent --show-error "${api_base_url}/${url_path}" \
     --compressed \
     --retry "${curl_retry}" \
     --retry-max-time "${curl_retry_max_time}" \
@@ -34,7 +34,7 @@ post_curl() {
   debug "post_curl ${url_path}"
   local -r json_data="${2:-}"
 
-  http_response=$(curl --silent --show-error -XPOST "${api_base_url}/${url_path}" \
+  declare http_response=$(curl --silent --show-error -XPOST "${api_base_url}/${url_path}" \
     --retry "${curl_retry}" \
     --retry-max-time "${curl_retry_max_time}" \
     --header "Content-Type: application/json" \

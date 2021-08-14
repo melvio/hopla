@@ -2,10 +2,15 @@ hopla api content - get detailed information on what content is provided by the 
 
 usage:
     hopla api content
+    hopla api content --help
+    hopla api content --jq-filter|-j {FILTER}
 
 Example
 ```bash
 # Tip: the content is pretty long so try piping it to an editor or pager
 hopla api content | vim -
 hopla api content | less
+
+# get information on the ruby quest: [wiki](https://habitica.fandom.com/wiki/Ruby_Rapport#:~:text=Ruby%20Rapport%20is%20the%20fourth,Quest%20Shop%20for%204%20gems)
+hopla api content -j .data.quests.ruby
 ```

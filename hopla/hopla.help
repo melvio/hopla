@@ -4,18 +4,33 @@ syntax:
     hopla [GLOBAL_OPTIONS]... [SUB_COMMANDS|GROUPS]... [SUB_COMMAND_OPTIONS]... [PARAMETERS]...
 
 For more help on SUB_COMMANDs use: `hopla --help {SUB_COMMAND}`
+For more help on SUB_GROUPS use:   `hopla --help {SUB_GROUP}`
 
 
 GLOBAL_OPTIONS:
-    --help
+    hopla [SUB_GROUPS|SUB_COMMANDS] --help
 
-COMMANDS examples:
+SUPPORTED SUB_COMMANDS:
     hopla version
-    hopla set credentials
-    hopla set config {config_key} {config_value}
-    hopla add todo [--trivial|--easy|--medium|--hard] [--due-date|--deadline yyyy-mm-dd]
-                   [--checklist absolute_file_path] "the name of your todo"
-    hopla api version
-    hopla api status
-    hopla api content
-    hopla buy enchanted-armoire
+
+SUPPORTED SUB_GROUPS
+    hopla add [subcmd]
+    hopla api [subcmd]
+    hopla buy [subcmd]
+    hopla complete [subcmd]
+    hopla feed [subcmd]
+    hopla set [subcmd]
+
+
+Examples:
+```bash
+hopla version
+hopla set credentials
+hopla set config {config_key} {config_value}
+hopla add todo [--trivial|--easy|--medium|--hard] [--due-date|--deadline yyyy-mm-dd]
+               [--checklist absolute_file_path] "the name of your todo"
+hopla api version
+hopla api status
+hopla api content
+hopla buy enchanted-armoire
+```
