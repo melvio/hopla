@@ -6,4 +6,4 @@ syntax:
     hopla [global_options] complete {SUB_COMMAND}...
 
 SUPPORTED SUB COMMANDS:
-    hopla complete bash   -- provide auto completion for the bash shell
+    hopla complete bash   -- print auto completion for the bash shell

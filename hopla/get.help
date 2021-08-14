@@ -6,5 +6,8 @@ syntax:
     hopla [global_options] get {SUB_COMMAND}...
 
 SUPPORTED SUB COMMANDS:
+    hopla get user-auth   -- get user authentication info
     hopla get user-info   -- get information about the currently authenticated user
+    hopla get user-stats  -- get the user's stats (e.g. lvl and experience)
+    hopla get user-items  -- get the user's inventory  (e.g. pets)
 

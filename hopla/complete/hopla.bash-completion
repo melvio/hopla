@@ -11,7 +11,7 @@ _autocomplete_hopla_api(){
   local wordlist cur
   # todo: You can ls in the right directory to get this list dynamically
   #       This way you don't have to remember to add new autocomplete words
-  wordlist="status version content --help"
+  wordlist="status version content model --help"
   cur="${COMP_WORDS[COMP_CWORD]}"
   COMPREPLY=( $(compgen -W "${wordlist}" -- "${cur}" ) )
 }

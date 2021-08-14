@@ -9,3 +9,4 @@ SUPPORTED SUB COMMANDS:
     hopla api content
     hopla api status
     hopla api version
+    hopla api model
