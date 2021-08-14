@@ -41,7 +41,7 @@ _autocomplete_hopla_set(){
 _autocomplete_hopla_get(){
   local wordlist cur
   # TODO: we can autocomplete this even further
-  wordlist="user-info user-stats user-items --help"
+  wordlist="user-info user-stats user-items user-auth --help"
   cur="${COMP_WORDS[COMP_CWORD]}"
   COMPREPLY=( $(compgen -W "${wordlist}" -- "${cur}" ) )
 }
@@ -54,7 +54,7 @@ _autocomplete_hopla() {
   second_word="${COMP_WORDS[$((COMP_CWORD - 1))]}"
 
   if [[ ${COMP_CWORD} -eq 1 ]] ; then
-    wordlist="add api buy completion set get --help"
+    wordlist="add api buy complete set get --help"
     COMPREPLY=( $(compgen -W "${wordlist}" -- "${cur}" ) )
   elif [[ $second_word == "add" ]] ; then
     _autocomplete_hopla_add
