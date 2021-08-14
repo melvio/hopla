@@ -21,8 +21,8 @@ read_credentials() {
   if [[ -f ${auth_file_path} ]]; then
     source "${auth_file_path}"
     # TODO: syntax checking
-    export user_id="${auth_file_user_id:?"user id is not set in the credentials file"}"
-    export api_token="${auth_file_api_token:?"api token is not set in the credentials file"}"
+    export user_id="${user_id:?"user_id is not set in the credentials file"}"
+    export api_token="${api_token:?"api_token is not set in the credentials file"}"
 
     if [[ -z "${user_id}" || -z "${api_token}" ]]; then
       echo "no credentials found:"
