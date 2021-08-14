@@ -12,4 +12,9 @@ hopla get user-info all
 
 # get the last free rebirth
 hopla get user-info -j .data.flags.lastFreeRebirth
+
+# get the preferred day start time (in hours)
+hopla get user-info --jq-filter .data.preferences.dayStart
+# get your timezone offset compared to UTC (in minutes)
+hopla get user-info --jq-filter .data.preferences.timezoneOffset
 ```

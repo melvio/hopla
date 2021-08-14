@@ -1,0 +1,17 @@
+hopla api model - return the habitica API model structure as JSON
+
+[Relevant docs](https://habitica.com/apidoc/#api-Meta-GetUserModelPaths)
+
+valid model names: "user", "group", "challenge", "tag", "habit", "daily", "todo", "reward"
+
+usage:
+  hopla api model --help
+  hopla api model {model}
+
+
+
+```bash
+hopla api model group
+```
+
+
