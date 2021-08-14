@@ -50,14 +50,33 @@ hopla_api_status:
 hopla_api_version:
 	hopla api version
 
-hopla_get_user_info_pets:
-	hopla get user-info pets
 
-hopla_get_user_info_gold:
-	hopla get user-info gp
+# hopla get-user auth
+hopla_get_user_auth:
+	hopla get user-auth  \
+	&& hopla get user-auth all \
+	&& hopla get-user-auth email \
+	&& hopla get user-auth username \
+	&& hopla get user-auth profile \
+	&& hopla get user-auth --jq-filter '.timestamps.created'
 
-hopla_get_user_info_stats:
-	hopla get user-info stats
+# hopla get-user stats
+hopla_get_user_stats:
+	hopla get user-stats \
+	&& hopla get user-stats all  \
+    && hopla get user-stats --help \
+    && hopla get user-stats \
+    && hopla get user-stats manapoints \
+    && hopla get user-stats experience \
+    && hopla get user-stats gold \
+    && hopla get user-stats -j '.class'
 
-hopla_get_user_info_all:
-	hopla get user-info all
+
+hopla_get_user_items:
+	hopla get user-items \
+	&& hopla get user-items --help \
+	&& hopla get user-items all \
+	&& hopla get user-items pets \
+	&& hopla get user-items mounts \
+	&& hopla get user-items food \
+	&& hopla get user-items -j '.lastDrop'
