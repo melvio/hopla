@@ -51,9 +51,9 @@ This will create a credentials file at `~/.config/hopla/auth.conf` that
 Hopla uses. If you want to use a different file, you can set the `${HOPLA_AUTH_FILE}`
 environment variable to choose your own path.
 
-If you want autocompletion you add this to your `.bashrc`
+If you want autocompletion you add this to your `~/.bashrc`
 ```bash
-source <(hopla completion bash)
+source <(hopla complete bash)
 ```
 
 

@@ -1,9 +1,0 @@
-hopla completion - group command
-
-For more help use `hopla --help completion [SUB_COMMAND]`
-
-syntax:
-    hopla [global_options] completion {SUB_COMMAND}...
-
-SUPPORTED SUB COMMANDS:
-    hopla completion bash   -- provide completion for the bash shell

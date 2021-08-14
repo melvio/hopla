@@ -13,4 +13,12 @@ curl -XGET "https://habitica.com/api/v3/user?userFields=achievements,items.mount
   --header "x-api-key: ${api_token}" \
   --header "x-client: Testing" | jq .
 
+curl -XGET "https://habitica.com/api/v3/user?userFields=achievements,items.mounts" \
+  --verbose \
+  --header "Content-Type: application/json" \
+  --header "x-api-user: ${user_id}" \
+  --header "x-api-key: ${api_token}" \
+  --header "x-client: Testing" | jq .
+
+
 
