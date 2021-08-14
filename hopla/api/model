@@ -24,8 +24,14 @@ parse_habitica_model_result() {
 }
 
 main () {
-  # allowed values for $1: "user", "group", "challenge", "tag", "habit", "daily", "todo", "reward"
-  parse_habitica_model_result "$(get_model "$1")"
+  if (( $# == 0 )) ; then
+    # allowed values for 1:
+    hopla api model --help
+    echo "valid values for {model} are: user, group, challenge, tag, habit, daily, todo, reward"
+    exit 1
+  fi
+  parse_habitica_model_result "$(get_model "$1"
+  )"
 }
 main "$@"
  
