@@ -41,7 +41,7 @@ _autocomplete_hopla_set(){
 _autocomplete_hopla_get(){
   local wordlist cur
   # TODO: we can autocomplete this even further
-  wordlist="user-info --help"
+  wordlist="user-info user-stats user-items --help"
   cur="${COMP_WORDS[COMP_CWORD]}"
   COMPREPLY=( $(compgen -W "${wordlist}" -- "${cur}" ) )
 }

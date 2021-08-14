@@ -1,1 +1,11 @@
-TODO
+hopla get user-stats - get stats of a user in JSON
+
+
+Example:
+```bash
+# get maximum mana points
+hopla get user-stats -j .maxMP
+
+# get class (e.g. wizard)
+hopla get user-stats -j .class
+```

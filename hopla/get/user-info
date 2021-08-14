@@ -13,21 +13,6 @@ get_all_user_info() {
 }
 
 
-get_all_items_info(){
-  get_curl_user_with_filter ".data.items"
-}
-
-get_pet_info(){
-  get_curl_user_with_filter ".data.items.pets"
-}
-
-get_mount_info(){
-  get_curl_user_with_filter ".data.items.mounts"
-}
-get_food_info(){
-  get_curl_user_with_filter ".data.items.food"
-}
-
 get_auth_info(){
   get_curl_user_with_filter ".data.auth.local"
 }
@@ -50,16 +35,6 @@ main () {
         get_curl_user_with_filter "${jq_filter}" ;;
       # get all data
       all) get_all_user_info ;;
-      # stats
-      stats) get_all_stats_info ;;
-      gp|gold) get_gp_info ;;
-      mana-points|manapoints|mana|mp) get_mp_info ;;
-      experience|exp) gp_experience_info ;;
-      # items
-      items) get_all_items_info ;;
-      pets) get_pet_info ;;
-      mounts) get_mount_info ;;
-      food) get_food_info ;;
       # other
       authentication|auth) get_auth_info ;;
       *) echo "did not recognize argument: '$1'"
