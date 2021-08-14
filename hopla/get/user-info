@@ -13,27 +13,6 @@ get_all_user_info() {
 }
 
 
-get_all_stats_info() {
-  get_curl_user_with_filter ".data.stats"
-}
-
-get_gp_info() {
-  get_curl_user_with_filter ".data.stats.gp"
-}
-
-get_mp_info() {
-  get_curl_user_with_filter ".data.stats.mp"
-}
-
-get_experience_info() {
-  get_curl_user_with_filter ".data.stats.exp"
-}
-
-get_level_info() {
-  get_curl_user_with_filter ".data.stats.lvl"
-}
-
-
 get_all_items_info(){
   get_curl_user_with_filter ".data.items"
 }
@@ -61,7 +40,7 @@ get_convenience_info () {
 
 
 main () {
-  if [[  $# -eq 0 ]] ; then
+  if (( $# == 0 )) ; then
     get_convenience_info
   else
     case $1 in

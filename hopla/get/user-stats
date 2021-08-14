@@ -4,87 +4,51 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-source "${library_dir}/api_proxy.sh"
 source "${library_dir}/logging.sh"
 source "${library_dir}/user_data.sh"
 
 
-
-get_all_user_info() {
-  _get_curl_user_with_filter "."
+get_all_stats() {
+  get_curl_user_with_filter ".data.stats"
 }
 
-
-get_all_stats_info() {
-  _get_curl_user_with_filter ".data.stats"
+get_gp() {
+  get_curl_user_with_filter ".data.stats.gp"
 }
 
-get_gp_info() {
-  _get_curl_user_with_filter ".data.stats.gp"
+get_mp() {
+  get_curl_user_with_filter ".data.stats.mp"
 }
 
-get_mp_info() {
-  _get_curl_user_with_filter ".data.stats.mp"
+get_exp() {
+  get_curl_user_with_filter ".data.stats.exp"
 }
 
-get_experience_info() {
-  _get_curl_user_with_filter ".data.stats.exp"
+get_lvl() {
+  get_curl_user_with_filter ".data.stats.lvl"
 }
 
-get_level_info() {
-  _get_curl_user_with_filter ".data.stats.lvl"
-}
-
-
-get_all_items_info(){
-  _get_curl_user_with_filter ".data.items"
-}
-
-get_pet_info(){
-  _get_curl_user_with_filter ".data.items.pets"
-}
-
-get_mount_info(){
-  _get_curl_user_with_filter ".data.items.mounts"
-}
-get_food_info(){
-  _get_curl_user_with_filter ".data.items.food"
-}
-
-get_auth_info(){
-  _get_curl_user_with_filter ".data.auth.local"
-}
-
-
-get_convenience_info () {
-  local -r default_filter='.data.profile'
-  _get_curl_user_with_filter "${default_filter}"
-}
 
 
 main () {
   if (( $# == 0 )) ; then
-    get_convenience_info
+    get_all_stats
   else
     case $1 in
-      # custom filter
+       # custom filter
       -j|--jq-filter)
-        jq_filter=${2:?"missing a FILTER for '-j/--jq-filter [FILTER]'"}
-        _get_curl_user_with_filter "${jq_filter}" ;;
-      # get all data
-      all) get_all_user_info ;;
-      # stats
-      stats) get_all_stats_info ;;
-      gp|gold) get_gp_info ;;
-      mana-points|manapoints|mana|mp) get_mp_info ;;
-      experience|exp) gp_experience_info ;;
-      # items
-      items) get_all_items_info ;;
-      pets) get_pet_info ;;
-      mounts) get_mount_info ;;
-      food) get_food_info ;;
-      # other
-      authentication|auth) get_auth_info ;;
+        local jq_filter=${2:?"missing a FILTER for '-j/--jq-filter [FILTER]'"}
+        get_curl_user_with_filter "${jq_filter}"
+        ;;
+      gp|gold)
+        get_gp
+        ;;
+      mana-points|manapoints|mana|mp)
+        get_mp
+        ;;
+      experience|exp)
+        get_exp
+        ;;
       *) echo "did not recognize argument: '$1'"
     esac
   fi
