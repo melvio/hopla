@@ -41,7 +41,7 @@ show_help() {
   # edge case: user called `hopla --help`
   if [[ ! -f "${help_file}" ]]  ; then declare help_file="${1}/hopla.help" ; fi
 
-  debug "show_help: help_file=${help_file}}"
+  debug "show_help: help_file=${help_file}"
   cat "${help_file}"
   exit 0
 }
