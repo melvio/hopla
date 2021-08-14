@@ -29,7 +29,6 @@ main () {
     get_convenience_info
   else
     case $1 in
-      # custom filter
       -j|--jq-filter)
         jq_filter=${2:?"missing a FILTER for '-j/--jq-filter [FILTER]'"}
         get_curl_user_with_filter "${jq_filter}" ;;
