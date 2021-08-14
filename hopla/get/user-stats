@@ -31,6 +31,8 @@ get_lvl() {
 
 
 main () {
+  debug "hopla get user-stats $*"
+
   if (( $# == 0 )) ; then
     get_all_stats
   else
@@ -48,11 +50,15 @@ main () {
       experience|exp|xp)
         get_exp
         ;;
-      *) echo "did not recognize argument: '$1'"
+      all)
+        # Has the behavior as passing no argument.
+        get_all_stats
+        ;;
+      *)
+        echo "did not recognize argument: '$1'"
     esac
   fi
 }
-# splitting is wanted here:
-main $@
+main "$@"
 
 

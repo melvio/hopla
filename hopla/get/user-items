@@ -41,12 +41,16 @@ main () {
       food)
         get_food
         ;;
+      all)
+        # same behavior as passing no arguments
+        get_all_items
+        ;;
       *) echo "did not recognize argument: '$1'"
     esac
   fi
 }
 # splitting is wanted here:
-main $@
+main ""$@""
 
 
 
