@@ -41,6 +41,10 @@ hopla_disable_debug:
 hopla_buy_armoire:
 	hopla buy enchanted-armoire
 
+hopla_buy_armoire10:
+	hopla buy enchanted-armoire --times 10
+
+
 hopla_version:
 	hopla version
 
@@ -53,7 +57,7 @@ hopla_api_version:
 
 # hopla get-user auth
 hopla_get_user_auth:
-	hopla get user-auth  \
+	hopla get user-auth \
 	&& hopla get user-auth all \
 	&& hopla get-user-auth email \
 	&& hopla get user-auth username \
