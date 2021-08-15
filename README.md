@@ -5,7 +5,7 @@ hopla - a command line interface for `habitica.com`
 
 ### background
 Hopla is a XDG-compliant bash-based command line interface (CLI).
-It was created because no other CLI supported the creation of To-Does with both a due date and a checklist.
+It was created because no other CLI supported the creation of To-Dos with both a due date and a checklist.
 Hopla provides the following command to create these with the following command:
 
 ```bash
