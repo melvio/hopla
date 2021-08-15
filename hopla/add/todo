@@ -70,14 +70,12 @@ post_todo() {
     post_data+="\"date\":\"${habitica_date}\", "
   fi
   if [[ -s "${checklist_file}" ]] ; then
-    debug "post_data=${post_data}"
     post_data+="$(turn_checklist_file_into_json), "
-    debug "post_data=${post_data}"
   fi
+
   declare -r habitica_type="todo"
   post_data+="\"type\":\"${habitica_type}\" "
   post_data+="}"
-  debug "post_data=${post_data}"
 
   declare -r path="tasks/user"
   http_response=$(post_curl "${path}" "${post_data}")
