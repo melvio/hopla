@@ -38,13 +38,30 @@ parse_cmdline() {
 }
 
 print_task_id() {
-  echo "$1" | jq --raw-output '.data.id'
+  declare -r http_response_from_add_tasks_api_call="$1"
+  echo "${http_response_from_add_tasks_api_call}" | jq --raw-output '.data.id'
+}
+
+
+turn_checklist_file_into_json(){
+  debug "turn_checklist_file_into_json"
+  # <https://habitica.fandom.com/wiki/Application_Programming_Interface#Version_3_of_the_API>
+  declare -l checklist_json=" \"checklist\": ["
+
+  while read -r task; do
+    checklist_json+=" { \"text\":"
+    checklist_json+=" \"${task}\" "
+    checklist_json+=" },"
+  done < "${checklist_file}"
+  checklist_json="${checklist_json::-1}" # remove last ','
+  checklist_json+="]"
+
+  echo "${checklist_json}"
 }
 
 post_todo() {
   debug "post_todo"
   # <https://habitica.com/apidoc/#api-Task-CreateUserTasks>
-  local habitica_type="todo"
 
   post_data="{"
   post_data+="\"text\":\"${habitica_text}\", "
@@ -52,47 +69,52 @@ post_todo() {
   if [[ -n "${habitica_date}" ]]; then
     post_data+="\"date\":\"${habitica_date}\", "
   fi
+  if [[ -s "${checklist_file}" ]] ; then
+    debug "post_data=${post_data}"
+    post_data+="$(turn_checklist_file_into_json), "
+    debug "post_data=${post_data}"
+  fi
+  declare -r habitica_type="todo"
   post_data+="\"type\":\"${habitica_type}\" "
   post_data+="}"
+  debug "post_data=${post_data}"
 
   declare -r path="tasks/user"
-
   http_response=$(post_curl "${path}" "${post_data}")
-  print_task_id "$http_response"
 }
+
 
 add_tasks_to_todo_checklist() {
   debug "add_tasks_to_todo_checklist"
   # <https://habitica.com/apidoc/#api-Task-AddChecklistItem>
-  task_id="$1"
+  declare -r task_id="$1"
+  declare -r post_json="$2"
 
-  # every line in the file is interpreted to be a seperated checklist item
-  while read -r task; do
-    post_data="{\"text\":"
-    post_data+="\"${task}\""
-    post_data+="}"
+  declare -r path="tasks/${task_id}/checklist"
+  post_curl "${path}" "${post_json}"
+}
 
-    post_curl "tasks/${task_id}/checklist" "${post_data}" >> /dev/null
-  done < "${checklist_file}"
+
+validate_checklist_file_exists(){
+  # validate checklist file if any
+  if [[ -d "${checklist_file}" ]]; then
+    echo "${checklist_file} is a directory"
+    exit 1
+  elif [[ ! -e "${checklist_file}" ]]; then
+    echo "cannot find ${checklist_file}: try an absolute paths instead"
+    exit 1
+  elif [[ ! -s "${checklist_file}" ]]; then
+    echo "${checklist_file}: seems to be empty, please try adding a checklist"
+    exit 1
+  fi
 }
 
 main() {
   parse_cmdline "$@"
-
-  task_id=$(post_todo)
   if [[ -n "${checklist_file}" ]]; then
-    # validate checklist file if any
-    if [[ -d "${checklist_file}" ]]; then
-      echo "${checklist_file} is a directory"
-      exit 1
-    fi
-    if [[ ! -e "${checklist_file}" ]]; then
-      echo "cannot find ${checklist_file}: try an absolute paths instead"
-      exit 1
-    fi
-
-    add_tasks_to_todo_checklist "$task_id"
+    validate_checklist_file_exists
   fi
+  post_todo
 }
 
 main "$@"
