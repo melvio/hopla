@@ -27,6 +27,9 @@ config_key_is_in_file() {
 
 update_configuration() {
   debug "update_configuration"
+  if [[ ! -f ${config_file_path} ]] ; then
+      create_config_file
+  fi
 
   declare -r config_line="${config_key}=${config_value}"
   if config_key_is_in_file ; then
@@ -40,12 +43,10 @@ update_configuration() {
 
 
 main() {
-  if [[ ! -f ${config_file_path} ]] ; then
-      create_config_file
-  fi
   update_configuration
 }
 main
+
 
 
 
