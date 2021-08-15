@@ -55,7 +55,9 @@ post_todo() {
   post_data+="\"type\":\"${habitica_type}\" "
   post_data+="}"
 
-  http_response=$(post_curl "tasks/user" "${post_data}")
+  declare -r path="tasks/user"
+
+  http_response=$(post_curl "${path}" "${post_data}")
   print_task_id "$http_response"
 }
 
