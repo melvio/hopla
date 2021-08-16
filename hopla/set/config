@@ -21,7 +21,7 @@ create_config_file() {
 
 config_key_is_in_file() {
   # return 0 on match (or error), 1 no match
-  grep --silent "^${config_key}" "${config_file_path}"
+  grep --silent "^${config_key}=" "${config_file_path}"
   return $?
 }
 
@@ -34,7 +34,7 @@ update_configuration() {
   declare -r config_line="${config_key}=${config_value}"
   if config_key_is_in_file ; then
     # replace current value
-    sed -i "s/^${config_key}.*/${config_line}/" "${config_file_path}"
+    sed --in-place "s/^${config_key}.*/${config_line}/" "${config_file_path}"
   else
     # append the new configuration
     echo "${config_line}" >> "${config_file_path}"
