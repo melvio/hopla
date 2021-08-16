@@ -12,19 +12,23 @@ print_hopla_auth_file() {
   echo "${file_path}"
 }
 declare -xr auth_file_path=$(print_hopla_auth_file)
-debug "auth_file_path ${auth_file_path}"
+debug "auth_file=${auth_file_path}"
 
 
 
 read_credentials() {
-  debug "read_credentials"
-  if [[ -f ${auth_file_path} ]]; then
-    source "${auth_file_path}"
-    # TODO: syntax checking
-    export user_id="${user_id:?"user_id is not set in the credentials file"}"
-    export api_token="${api_token:?"api_token is not set in the credentials file"}"
+  debug "read_credentials auth_file=${auth_file_path:-}"
 
-    if [[ -z "${user_id}" || -z "${api_token}" ]]; then
+  if [[ -f ${auth_file_path} ]]; then
+    while read -r line ; do
+      if echo "${line}" | grep --silent ".*=.*" ; then
+    # TODO: UUID syntax checking
+        export "${line}"
+      fi
+    done < "${auth_file_path}"
+
+
+    if [[ -z "${user_id:-}" || -z "${api_token}" ]]; then
       echo "no credentials found:"
       "${script_dirname}/set/credentials"
     fi

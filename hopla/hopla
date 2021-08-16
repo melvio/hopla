@@ -11,12 +11,12 @@ print_script_dir() {
 }
 
 print_library_dir() {
-  declare -r script_dirname="$(print_script_dir)"
+  declare -rxg script_dirname="$(print_script_dir)"
   declare -r library_dirname="$(realpath "${script_dirname}/../library/")"
   echo "${library_dirname}"
 }
 
-declare -xr library_dir=$(print_library_dir)
+declare -xr library_dir="$(print_library_dir)"
 source "${library_dir}/api_proxy.sh"
 source "${library_dir}/logging.sh"
 source "${library_dir}/load_config.sh"
@@ -65,7 +65,7 @@ assign_subcmd_and_arguments() {
 
   if [[ ! -f "${command_file}" ]] ; then
     # User didn't finish with full command, they probably want help:
-    echo "could not find the following command file: ${command_file}"
+    echo "could not find the following command: ${command_file}"
   fi
 }
 
