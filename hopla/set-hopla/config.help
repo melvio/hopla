@@ -1,0 +1,11 @@
+hopla set-hopla config - set personalized settings in the configuration file
+
+usage:
+    hopla set-hopla config {config_key} {config_value}
+
+
+Example
+```bash
+# enable debug logging to console
+hopla set-hopla config debug_enabled 1
+```

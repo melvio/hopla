@@ -9,7 +9,7 @@ install:
 ## note: On some machines, this command might require a restart of your terminal
 ##       to load the commands on your $PATH
 configure:
-	hopla set credentials
+	hopla set-hopla credentials
 
 
 ## hopla CLI examples ##
@@ -33,10 +33,10 @@ hopla_add_todo_no_checklist:
 
 
 hopla_enable_debug:
-	hopla set config debug_enabled 1
+	hopla set-hopla config debug_enabled 1
 
 hopla_disable_debug:
-	hopla set config debug_enabled 0
+	hopla set-hopla config debug_enabled 0
 
 hopla_buy_armoire:
 	hopla buy enchanted-armoire

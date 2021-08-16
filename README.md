@@ -42,7 +42,7 @@ You can find these over at `https://habitica.com/user/settings/api`.
 Run the following command to configure this automatically:
 
 ```bash
-$ hopla set credentials
+$ hopla set-hopla credentials
 Please enter your habitica 'User ID': ****-****-****-***-*********
 Please enter your habitica 'API Token': ****-****-****-***-*********
 ```
@@ -67,8 +67,8 @@ hopla - another Habitica cli
 usage:
     hopla --help
     hopla version
-    hopla set credentials
-    hpola set config {config_key} {config_value}
+    hopla set-hopla credentials
+    hpola set-hopla config {config_key} {config_value}
     hopla add todo [--trivial|--easy|--medium|--hard] [{--due-date|--deadline} yyyy-mm-dd] [--checklist absolute_file_path] "the name of your todo"
     hopla api version
     hopla api status

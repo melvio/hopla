@@ -19,14 +19,14 @@ SUPPORTED SUB_GROUPS
     hopla buy [subcmd]
     hopla complete [subcmd]
     hopla feed [subcmd]
-    hopla set [subcmd]
+    hopla set-hopla [subcmd]
 
 
 Examples:
 ```bash
 hopla version
-hopla set credentials
-hopla set config {config_key} {config_value}
+hopla set-hopla credentials
+hopla set-hopla config {config_key} {config_value}
 hopla add todo [--trivial|--easy|--medium|--hard] [--due-date|--deadline yyyy-mm-dd]
                [--checklist absolute_file_path] "the name of your todo"
 hopla api version
