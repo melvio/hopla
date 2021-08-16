@@ -9,9 +9,10 @@ print_script_dir() {
   declare -r this_script_dir=$(dirname "${this_script}")
   echo "${this_script_dir}"
 }
+declare -xr script_dirname="$(print_script_dir)"
 
 print_library_dir() {
-  declare -rxg script_dirname="$(print_script_dir)"
+  declare -r script_dirname="$(print_script_dir)"
   declare -r library_dirname="$(realpath "${script_dirname}/../library/")"
   echo "${library_dirname}"
 }
