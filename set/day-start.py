@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
+import json
 
 import requests
 import configparser
 from configparser import ConfigParser
+from argparse import ArgumentParser
 import os
 from pathlib import Path
-
 
 api_version = "v3"
 domain = "https://habitica.com"
 base_url = f"{domain}/api/{api_version}/user"
+custom_day_start_url = f"{base_url}/custom-day-start"
 
 
 class HoplaAuthorization:
@@ -57,13 +59,33 @@ headers = {
     "x-api-key": api_token
 }
 
-url="https://habitica.com/api/v3/user?userFields=items.mounts"
+arg_parser = ArgumentParser()
+day_start_key = "day_start"
+arg_parser.add_argument(
+    day_start_key,
+    nargs="?",
+    help="the hour to start your habitica day",
+    type=int,
+    default=0
+)
 
-response = requests.get(url, headers=headers)
+args = arg_parser.parse_args()
+post_content = {"dayStart": args.day_start}
+
+# set to midnight:
+# python3 day-start.py
+
+# set to 1 AM
+# python3 day-start.py 1
+json_content = json.dumps(post_content)
+print("json_content", json_content)
+
+response: requests.Response = requests.post(
+    url=custom_day_start_url,
+    headers=headers,
+    data=json_content
+)
+
 print(response.json())
-
-
-# response = requests.get(base_url, headers=headers)
-# print(response.json())
-# print(response.headers)
-# print(response.content)
+print(response.headers)
+print(str(response.content))
