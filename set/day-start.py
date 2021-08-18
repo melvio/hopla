@@ -28,7 +28,7 @@ class HoplaAuthorizationParser:
     def __init__(self):
         self.config_parser = ConfigParser()
 
-    def initialize(self):
+    def _parse(self):
         if self.auth_file_exists():
             self.config_parser.read(self.auth_file)
         else:
@@ -58,26 +58,43 @@ class HoplaAuthorizationParser:
 
     @property
     def user_id(self):
+        # violating that @property should be cheap; However, the auth file should be short. So we should be fine to parse
+        self._parse()
         return self.config_parser[AuthorizationConstants.CONFIG_SECTION_CREDENTIALS] \
             .get(AuthorizationConstants.CONFIG_KEY_USER_ID)
 
     @property
     def api_token(self):
+        # violating that @property should be cheap; However, the auth file should be short. So we should be fine to parse
+        self._parse()
         return self.config_parser[AuthorizationConstants.CONFIG_SECTION_CREDENTIALS] \
             .get(AuthorizationConstants.CONFIG_KEY_API_TOKEN)
 
 
-hopla_auth_parser = HoplaAuthorizationParser()
-hopla_auth_parser.initialize()
+class HoplaRequestHeaders:
+    CONTENT_TYPE = "Content-Type"
+    CONTENT_TYPE_JSON = "application/json"
+    X_CLIENT = "x-client"
+    X_API_USER = "x-api-user"
+    X_API_KEY = "x-api-key"
+    X_CLIENT_VALUE = "79551d98-31e9-42b4-b7fa-9d89b0944319-hopla"
 
-x_client_id = "79551d98-31e9-42b4-b7fa-9d89b0944319-hopla"
+    def __init__(self, hopla_auth_parser=None):
+        if hopla_auth_parser:
+            self.hopla_auth_parser = hopla_auth_parser
+        else:
+            self.hopla_auth_parser = HoplaAuthorizationParser()
 
-headers = {
-    "Content-Type": "application/json",
-    "x-client": x_client_id,
-    "x-api-user": hopla_auth_parser.user_id,
-    "x-api-key": hopla_auth_parser.api_token
-}
+    def get_default_request_headers(self):
+        return {
+            HoplaRequestHeaders.CONTENT_TYPE: HoplaRequestHeaders.CONTENT_TYPE_JSON,
+            HoplaRequestHeaders.X_CLIENT: HoplaRequestHeaders.X_CLIENT_VALUE,
+            HoplaRequestHeaders.X_API_USER: self.hopla_auth_parser.user_id,
+            HoplaRequestHeaders.X_API_KEY: self.hopla_auth_parser.api_token
+        }
+
+
+headers = HoplaRequestHeaders().get_default_request_headers()
 
 arg_parser = ArgumentParser()
 day_start_key = "day_start"
