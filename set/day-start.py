@@ -124,15 +124,30 @@ class DayStartArgumentParser:
 day_start_arg_parser = DayStartArgumentParser()
 
 
-post_content = {"dayStart": day_start_arg_parser.day_start}
+class DayStartJsonCreator:
+    DAY_START_KEY = "dayStart"
+
+    def __init__(self, *, day_start: int):
+        self.day_start = day_start
+
+    def _create_post_content(self) -> dict:
+        return {DayStartJsonCreator.DAY_START_KEY: self.day_start}
+
+    @property
+    def json_content(self) -> str:
+        post_content: dict = self._create_post_content()
+        # todo: instead of asserts use unittests
+        assert len(post_content) != 0, "created json is empty"
+
+        return json.dumps(post_content)
+
+json_content = DayStartJsonCreator(day_start=day_start_arg_parser.day_start).json_content
 
 # set to midnight:
 # python3 day-start.py
 
 # set to 1 AM
 # python3 day-start.py 1
-json_content = json.dumps(post_content)
-print("json_content", json_content)
 
 response: requests.Response = requests.post(
     url=custom_day_start_url,
