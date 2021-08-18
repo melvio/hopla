@@ -4,7 +4,7 @@ import json
 import requests
 import configparser
 from configparser import ConfigParser
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
 import os
 from pathlib import Path
 
@@ -23,7 +23,7 @@ class AuthorizationConstants:
     GLOBAL_ENV_VAR_HOPLA_AUTH_FILE = "HOPLA_AUTH_FILE"
 
 
-class HoplaAuthorizationParser:
+class AuthorizationParser:
 
     def __init__(self):
         self.config_parser = ConfigParser()
@@ -44,8 +44,8 @@ class HoplaAuthorizationParser:
     def auth_file(self) -> Path:
         """ Get the file with authorization"""
         auth_file: Path
-        hopla_auth_file_env_var = os.environ.get(AuthorizationConstants.GLOBAL_ENV_VAR_HOPLA_AUTH_FILE)
-        xdg_config_home_env_var = os.environ.get(AuthorizationConstants.GLOBAL_ENV_VAR_XDG_CONFIG_HOME)
+        hopla_auth_file_env_var: str = os.environ.get(AuthorizationConstants.GLOBAL_ENV_VAR_HOPLA_AUTH_FILE)
+        xdg_config_home_env_var: str = os.environ.get(AuthorizationConstants.GLOBAL_ENV_VAR_XDG_CONFIG_HOME)
 
         if hopla_auth_file_env_var:
             auth_file = Path(hopla_auth_file_env_var)
@@ -71,7 +71,7 @@ class HoplaAuthorizationParser:
             .get(AuthorizationConstants.CONFIG_KEY_API_TOKEN)
 
 
-class HoplaRequestHeaders:
+class RequestHeaders:
     CONTENT_TYPE = "Content-Type"
     CONTENT_TYPE_JSON = "application/json"
     X_CLIENT = "x-client"
@@ -79,35 +79,52 @@ class HoplaRequestHeaders:
     X_API_KEY = "x-api-key"
     X_CLIENT_VALUE = "79551d98-31e9-42b4-b7fa-9d89b0944319-hopla"
 
-    def __init__(self, hopla_auth_parser=None):
-        if hopla_auth_parser:
-            self.hopla_auth_parser = hopla_auth_parser
+    def __init__(self, auth_parser: AuthorizationParser = None):
+        if auth_parser:
+            self.hopla_auth_parser = auth_parser
         else:
-            self.hopla_auth_parser = HoplaAuthorizationParser()
+            self.hopla_auth_parser = AuthorizationParser()
 
     def get_default_request_headers(self):
         return {
-            HoplaRequestHeaders.CONTENT_TYPE: HoplaRequestHeaders.CONTENT_TYPE_JSON,
-            HoplaRequestHeaders.X_CLIENT: HoplaRequestHeaders.X_CLIENT_VALUE,
-            HoplaRequestHeaders.X_API_USER: self.hopla_auth_parser.user_id,
-            HoplaRequestHeaders.X_API_KEY: self.hopla_auth_parser.api_token
+            RequestHeaders.CONTENT_TYPE: RequestHeaders.CONTENT_TYPE_JSON,
+            RequestHeaders.X_CLIENT: RequestHeaders.X_CLIENT_VALUE,
+            RequestHeaders.X_API_USER: self.hopla_auth_parser.user_id,
+            RequestHeaders.X_API_KEY: self.hopla_auth_parser.api_token
         }
 
 
-headers = HoplaRequestHeaders().get_default_request_headers()
+headers = RequestHeaders().get_default_request_headers()
 
-arg_parser = ArgumentParser()
-day_start_key = "day_start"
-arg_parser.add_argument(
-    day_start_key,
-    nargs="?",
-    help="the hour to start your habitica day",
-    type=int,
-    default=0
-)
 
-args = arg_parser.parse_args()
-post_content = {"dayStart": args.day_start}
+class DayStartArgumentParser:
+    DAY_START_USER_ARGUMENT = "day_start"
+
+    def __init__(self, arg_parser: ArgumentParser = None):
+        if arg_parser:
+            self.arg_parser = arg_parser
+        else:
+            self.arg_parser = ArgumentParser()
+
+        self.arg_parser.add_argument(
+            DayStartArgumentParser.DAY_START_USER_ARGUMENT,
+            nargs="?",
+            help="the hour to start your habitica day",
+            type=int,
+            default=0
+        )
+
+    @property
+    def day_start(self):
+        # parsing every time is cheap; it is just 1 value the user supplies
+        args: Namespace = self.arg_parser.parse_args()
+        return args.day_start
+
+
+day_start_arg_parser = DayStartArgumentParser()
+
+
+post_content = {"dayStart": day_start_arg_parser.day_start}
 
 # set to midnight:
 # python3 day-start.py
