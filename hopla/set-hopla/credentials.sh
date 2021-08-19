@@ -24,7 +24,7 @@ write_credential_file() {
 
   read -r -p "Please enter your habitica 'User ID': "   new_user_id
   read -r -p "Please enter your habitica 'API Token': " new_api_token
-  # TODO: new_user_id and new_apit_token not empty
+  # TODO: new_user_id and new_api_token not empty
   # TODO: validate UUID
 
   local -r user_id_auth_key="user_id"

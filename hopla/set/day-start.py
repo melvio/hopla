@@ -4,7 +4,6 @@ import os
 
 sys.path.append(os.environ.get("script_dirname"))
 
-import json
 import requests
 from argparse import ArgumentParser, Namespace
 
@@ -15,7 +14,6 @@ try:
 except:
     # jetbrains
     from hopla.hoplalib.Http import UrlBuilder, RequestHeaders
-
 
 
 class DayStartArgumentParser:

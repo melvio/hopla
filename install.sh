@@ -16,15 +16,16 @@ install_dependencies
 
 
 cd -- "$(dirname "$0")" || exit 1
-entry_command="$(realpath ./hopla/hopla)"
-target_dir="/usr/local/bin/"
+declare -r entry_command="$(realpath ./hopla.sh)"
+declare -r link_name="/usr/local/bin/hopla"
 
 
-if [[ -f "${entry_command}" && -d "${target_dir}" ]] ; then
-  if [[ -h "${target_dir}/hopla" ]] ; then
-    echo "symbolic link to hopla already exists in ${target_dir}"
+if [[ -f "${entry_command}" ]] ; then
+  if [[ -h "${link_name}" ]] ; then
+    echo "symbolic link to hopla already exists in ${link_name}"
   else
-    sudo ln --symbolic "${entry_command}" "${target_dir}"
+    sudo ln --symbolic "${entry_command}" "${link_name}"
+    echo "created symbolic link from ${link_name} -> ${entry_command}"
   fi
   exit 0
 else
