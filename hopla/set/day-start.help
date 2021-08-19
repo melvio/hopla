@@ -1,0 +1,20 @@
+hopla set day-start - set the day start (cron) of a user
+
+
+usage:
+    hopla set day-start
+    hopla get day-start {N}
+
+
+> hopla set day-start
+set the day start to the default 0 AM
+
+> hopla set day-start {N}
+set the day start to the N-th hour. N may range from 0 to 23 (inclusive).
+
+
+Example:
+```bash
+# set the the day start to 01:00 AM
+$ hopla set day-start 1
+```

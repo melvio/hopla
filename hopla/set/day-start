@@ -173,18 +173,18 @@ class DayStartPostRequester:
 
 
 # set to midnight:
-# python3 day-start.py
+# python3 day-start
 
 # set to 1 AM
-# python3 day-start.py 1
+# python3 day-start 1
 
+if __name__ == "__main__":
+    headers = RequestHeaders().get_default_request_headers()
+    json_content = DayStartJsonCreator(day_start=day_start_arg_parser.day_start).json_content
+    day_start_request = DayStartPostRequester(request_headers=headers,
+                                              json_body=json_content)
+    response = day_start_request.post_day_start()
 
-headers = RequestHeaders().get_default_request_headers()
-json_content = DayStartJsonCreator(day_start=day_start_arg_parser.day_start).json_content
-day_start_request = DayStartPostRequester(request_headers=headers,
-                                          json_body=json_content)
-
-response = day_start_request.post_day_start()
-
-
-print(response.json())
+    # TODO: (contact:melvio) provide debug logging in python scripts
+    # TODO: (contact:melvio) provide nice use interaction for python scripts
+    print(response.json())
