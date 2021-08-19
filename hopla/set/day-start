@@ -1,92 +1,17 @@
 #!/usr/bin/env python3
-import json
 
-import requests
-import configparser
-from configparser import ConfigParser
-from argparse import ArgumentParser, Namespace
+
+import sys
 import os
-from pathlib import Path
 
+sys.path.append(os.environ.get("script_dirname"))
 
-class AuthorizationConstants:
-    CONFIG_SECTION_CREDENTIALS = "credentials"
-    CONFIG_KEY_USER_ID = "user_id"
-    CONFIG_KEY_API_TOKEN = "api_token"
+import json
+import requests
+from argparse import ArgumentParser, Namespace
 
-    GLOBAL_ENV_VAR_XDG_CONFIG_HOME = "XDG_CONFIG_HOME"
-    GLOBAL_ENV_VAR_HOPLA_AUTH_FILE = "HOPLA_AUTH_FILE"
-
-
-class AuthorizationParser:
-
-    def __init__(self):
-        self.config_parser = ConfigParser()
-
-    def _parse(self):
-        if self.auth_file_exists():
-            self.config_parser.read(self.auth_file)
-        else:
-            # TODO: have better user information (stack traces are not nice!)
-            raise FileNotFoundError(f"could not find authorization file {self.auth_file}"
-                                    f"Try running: `hopla set-hopla credentials")
-
-    def auth_file_exists(self):
-        return self.auth_file.exists \
-               and self.auth_file.is_file()
-
-    @property
-    def auth_file(self) -> Path:
-        """ Get the file with authorization"""
-        auth_file: Path
-        hopla_auth_file_env_var: str = os.environ.get(AuthorizationConstants.GLOBAL_ENV_VAR_HOPLA_AUTH_FILE)
-        xdg_config_home_env_var: str = os.environ.get(AuthorizationConstants.GLOBAL_ENV_VAR_XDG_CONFIG_HOME)
-
-        if hopla_auth_file_env_var:
-            auth_file = Path(hopla_auth_file_env_var)
-        elif xdg_config_home_env_var:
-            auth_file = Path(xdg_config_home_env_var) / "hopla" / "auth.conf"
-        else:
-            auth_file = Path.home() / ".config" / "hopla" / "auth.conf"
-
-        return auth_file.resolve()
-
-    @property
-    def user_id(self):
-        # violating that @property should be cheap; However, the auth file should be short. So we should be fine to parse
-        self._parse()
-        return self.config_parser[AuthorizationConstants.CONFIG_SECTION_CREDENTIALS] \
-            .get(AuthorizationConstants.CONFIG_KEY_USER_ID)
-
-    @property
-    def api_token(self):
-        # violating that @property should be cheap; However, the auth file should be short. So we should be fine to parse
-        self._parse()
-        return self.config_parser[AuthorizationConstants.CONFIG_SECTION_CREDENTIALS] \
-            .get(AuthorizationConstants.CONFIG_KEY_API_TOKEN)
-
-
-class RequestHeaders:
-    CONTENT_TYPE = "Content-Type"
-    CONTENT_TYPE_JSON = "application/json"
-    X_CLIENT = "x-client"
-    X_API_USER = "x-api-user"
-    X_API_KEY = "x-api-key"
-    X_CLIENT_VALUE = "79551d98-31e9-42b4-b7fa-9d89b0944319-hopla"
-
-    def __init__(self, auth_parser: AuthorizationParser = None):
-        if auth_parser:
-            self.hopla_auth_parser = auth_parser
-        else:
-            self.hopla_auth_parser = AuthorizationParser()
-
-    def get_default_request_headers(self):
-        return {
-            RequestHeaders.CONTENT_TYPE: RequestHeaders.CONTENT_TYPE_JSON,
-            RequestHeaders.X_CLIENT: RequestHeaders.X_CLIENT_VALUE,
-            RequestHeaders.X_API_USER: self.hopla_auth_parser.user_id,
-            RequestHeaders.X_API_KEY: self.hopla_auth_parser.api_token
-        }
+from hoplalib.Authorization import AuthorizationConstants, AuthorizationParser
+from hoplalib.Http import RequestHeaders, UrlBuilder
 
 
 class DayStartArgumentParser:
@@ -114,9 +39,6 @@ class DayStartArgumentParser:
         return args.day_start
 
 
-day_start_arg_parser = DayStartArgumentParser()
-
-
 class DayStartJsonCreator:
     DAY_START_KEY = "dayStart"
 
@@ -133,23 +55,6 @@ class DayStartJsonCreator:
         assert len(post_content) != 0, "created json is empty"
 
         return json.dumps(post_content)
-
-
-class UrlBuilder:
-    def __init__(self, *,
-                 domain: str = "https://habitica.com",
-                 api_version: str = "v3",
-                 path: str = ""):
-        self.domain = domain
-        self.api_version = api_version
-        self.path = path
-
-    def _get_base_url(self) -> str:
-        return f"{self.domain}/api/{self.api_version}"
-
-    @property
-    def url(self) -> str:
-        return f"{self._get_base_url()}{self.path}"
 
 
 class DayStartPostRequester:
@@ -173,15 +78,9 @@ class DayStartPostRequester:
         )
 
 
-# set to midnight:
-# python3 day-start
-
-# set to 1 AM
-# python3 day-start 1
-
 if __name__ == "__main__":
     headers = RequestHeaders().get_default_request_headers()
-    json_content = DayStartJsonCreator(day_start=day_start_arg_parser.day_start).json_content
+    json_content = DayStartJsonCreator(day_start=DayStartArgumentParser().day_start).json_content
     day_start_request = DayStartPostRequester(request_headers=headers,
                                               json_body=json_content)
     response = day_start_request.post_day_start()
