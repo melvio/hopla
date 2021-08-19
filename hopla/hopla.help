@@ -19,6 +19,7 @@ SUPPORTED SUB_GROUPS
     hopla buy [subcmd]
     hopla complete [subcmd]
     hopla feed [subcmd]
+    hopla set [subcmd]
     hopla set-hopla [subcmd]
 
 

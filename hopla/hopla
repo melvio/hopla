@@ -46,12 +46,27 @@ show_help() {
   exit 0
 }
 
+find_executable_subcmd(){
+  supposed_cmd="$1"
+  debug "find_script supposed_cmd=$1"
+
+  declare -r python_cmd="${supposed_cmd}.py"
+  declare -r shell_cmd="${supposed_cmd}.sh"
+
+  if   [[ -n "${python_cmd}" && -x "${python_cmd}" ]]   ; then echo "${python_cmd}"
+  elif [[ -n "${shell_cmd}"  && -x "${shell_cmd}" ]]    ; then echo "${shell_cmd}"
+  elif [[ -n ${supposed_cmd} && -x "${supposed_cmd}" ]] ; then echo "${supposed_cmd}"
+  fi
+}
+
 declare command_file="$(print_script_dir)"
 declare -a subcmd_arguments=()
 assign_subcmd_and_arguments() {
   debug "assign_subcmd_and_arguments"
   for argument in "${args_without_globals[@]}" ; do
-    if [[ -e "${command_file}/${argument}" ]] ; then
+    declare possible_cmd="${command_file}/${argument}"
+    # TODO: this should be made file type agnostic
+    if [[ -e "${possible_cmd}" || -e "${possible_cmd}.py" || -e "${possible_cmd}.sh" ]] ; then
       command_file+="/${argument}"
     else
       subcmd_arguments+=("${argument}")
@@ -63,7 +78,9 @@ assign_subcmd_and_arguments() {
     show_help "${command_file}"
   fi
 
-  if [[ ! -f "${command_file}" ]] ; then
+  command_file="$(find_executable_subcmd "${command_file}")"
+
+  if [[ ! -x "${command_file}" ]] ; then
     # User didn't finish with full command, they probably want help:
     echo "could not find the following command: ${command_file}"
   fi
