@@ -103,7 +103,8 @@ class DayStartArgumentParser:
             nargs="?",
             help="the hour to start your habitica day",
             type=int,
-            default=0
+            default=0,
+            choices=range(0, 24)
         )
 
     @property
