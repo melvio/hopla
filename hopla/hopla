@@ -4,19 +4,10 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-print_script_dir() {
-  declare -r this_script=$(perl -e 'use Cwd "abs_path"; print abs_path(shift)' "$0")
-  declare -r this_script_dir=$(dirname "${this_script}")
-  echo "${this_script_dir}"
-}
-declare -xr script_dirname="$(print_script_dir)"
+declare -r this_script=$(perl -e 'use Cwd "abs_path"; print abs_path(shift)' "$0")
+declare -xgr script_dirname=$(dirname "${this_script}")
+declare -xgr library_dir="$(realpath "${script_dirname}/../library/")"
 
-print_library_dir() {
-  declare -r library_dirname="$(realpath "${script_dirname}/../library/")"
-  echo "${library_dirname}"
-}
-
-declare -xr library_dir="$(print_library_dir)"
 source "${library_dir}/api_proxy.sh"
 source "${library_dir}/logging.sh"
 source "${library_dir}/load_config.sh"
@@ -59,7 +50,7 @@ find_executable_subcmd(){
   fi
 }
 
-declare command_file="$(print_script_dir)"
+declare command_file="${script_dirname}"
 declare -a subcmd_arguments=()
 assign_subcmd_and_arguments() {
   debug "assign_subcmd_and_arguments"
@@ -100,10 +91,7 @@ main () {
   assign_subcmd_and_arguments
   handle_global_options
 
-  debug "File to be executed: '${command_file}'"
-  debug "Arguments to be passed: '${subcmd_arguments[*]}'"
-  debug "# of Arguments to be passed: '${#subcmd_arguments[@]}'"
-  "${command_file}" "${subcmd_arguments[@]}"
+  "${script_dirname}/hopla.py" "${command_file}" "${subcmd_arguments[@]}"
 }
 main "$@"
 
