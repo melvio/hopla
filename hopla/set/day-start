@@ -46,19 +46,19 @@ class DayStartJsonCreator:
         return {DayStartJsonCreator.DAY_START_KEY: self.day_start}
 
     @property
-    def json_content(self) -> str:
+    def json_content(self) -> dict:
         post_content: dict = self._create_post_content()
         # todo: instead of asserts use unittests
         assert len(post_content) != 0, "created json is empty"
 
-        return json.dumps(post_content)
+        return post_content
 
 
 class DayStartPostRequester:
     PATH = "/user/custom-day-start"
 
     def __init__(self, *,
-                 json_body: str,
+                 json_body: dict,
                  request_headers: dict):
         self.json_body = json_body
         self.request_headers = request_headers
@@ -71,7 +71,7 @@ class DayStartPostRequester:
         return requests.post(
             url=self.custom_day_start_url,
             headers=self.request_headers,
-            data=self.json_body
+            json=self.json_body
         )
 
 
