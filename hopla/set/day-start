@@ -8,17 +8,24 @@ import json
 import requests
 from argparse import ArgumentParser, Namespace
 
-from hoplalib.Http import RequestHeaders, UrlBuilder
+# TODO: temporary, while hopla is in beta
+try:
+    # cmdline
+    from hoplalib.Http import UrlBuilder, RequestHeaders
+except:
+    # jetbrains
+    from hopla.hoplalib.Http import UrlBuilder, RequestHeaders
+
 
 
 class DayStartArgumentParser:
     DAY_START_USER_ARGUMENT = "day_start"
 
     def __init__(self, arg_parser: ArgumentParser = None):
-        if arg_parser:
-            self.arg_parser = arg_parser
-        else:
+        if arg_parser is None:
             self.arg_parser = ArgumentParser()
+        else:
+            self.arg_parser = arg_parser
 
         self.arg_parser.add_argument(
             DayStartArgumentParser.DAY_START_USER_ARGUMENT,
@@ -55,8 +62,6 @@ class DayStartJsonCreator:
 
 
 class DayStartPostRequester:
-    PATH = "/user/custom-day-start"
-
     def __init__(self, *,
                  json_body: dict,
                  request_headers: dict):
@@ -64,8 +69,12 @@ class DayStartPostRequester:
         self.request_headers = request_headers
 
     @property
-    def custom_day_start_url(self):
-        return UrlBuilder(path=DayStartPostRequester.PATH).url
+    def path(self) -> str:
+        return "/user/custom-day-start"
+
+    @property
+    def custom_day_start_url(self) -> str:
+        return UrlBuilder(path_extension=self.path).url
 
     def post_day_start(self) -> requests.Response:
         return requests.post(

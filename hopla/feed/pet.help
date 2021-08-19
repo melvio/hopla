@@ -6,3 +6,7 @@ usage:
     hopla feed pet {pet_name} {food_name}
 
 
+Example:
+```bash
+hopla feed pet Beetle-Skeleton Fish
+```
