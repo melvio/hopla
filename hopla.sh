@@ -6,7 +6,7 @@ set -o pipefail
 
 declare -r this_script=$(perl -e 'use Cwd "abs_path"; print abs_path(shift)' "$0")
 declare -xgr script_dirname=$(dirname "${this_script}")
-declare -xgr library_dir="$(realpath "${script_dirname}/../library/")"
+declare -xgr library_dir="$(realpath "${script_dirname}/library/")"
 
 source "${library_dir}/api_proxy.sh"
 source "${library_dir}/logging.sh"
@@ -29,8 +29,9 @@ parse_global_options() {
 
 show_help() {
   declare help_file="${1}.help"
-  # edge case: user called `hopla --help`
-  if [[ ! -f "${help_file}" ]]  ; then declare help_file="${1}/hopla.help" ; fi
+
+  # couldn't find help
+  if [[ ! -f "${help_file}" ]]  ; then declare help_file="${script_dirname}/hopla.help" ; fi
 
   debug "show_help: help_file=${help_file}"
   cat "${help_file}"
@@ -50,7 +51,7 @@ find_executable_subcmd(){
   fi
 }
 
-declare command_file="${script_dirname}"
+declare command_file="${script_dirname}/hopla"
 declare -a subcmd_arguments=()
 assign_subcmd_and_arguments() {
   debug "assign_subcmd_and_arguments"
@@ -91,7 +92,7 @@ main () {
   assign_subcmd_and_arguments
   handle_global_options
 
-  "${script_dirname}/../hopla.py" "${command_file}" "${subcmd_arguments[@]}"
+  "${script_dirname}/hopla.py" "${command_file}" "${subcmd_arguments[@]}"
 }
 main "$@"
 
