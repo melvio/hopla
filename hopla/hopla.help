@@ -1,4 +1,4 @@
-hopla - another habitica cli
+hopla - a command line interface (CLI) to interact with habitica.com
 
 syntax:
     hopla [GLOBAL_OPTIONS]... [SUB_COMMANDS|GROUPS]... [SUB_COMMAND_OPTIONS]... [PARAMETERS]...
