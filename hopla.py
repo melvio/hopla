@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-
 import sys
 import subprocess
 import logging
 
 
 def setup_logging() -> logging.Logger:
+    """Setup python logging for the entire hopla project"""
     logging.basicConfig(
         format='[%(levelname)s][%(filename)s] %(asctime)s - %(message)s',
         level=logging.DEBUG,
@@ -20,6 +20,7 @@ if __name__ == "__main__":
 
     cmd_file = sys.argv[1]
     arguments = sys.argv[2:]
-    log.debug(f"File to be executed {cmd_file}, arguments to be passed {arguments}")
+    log.debug(f"File to be executed {cmd_file}, arguments to be passed {arguments}")  # pylint: disable=logging-fstring-interpolation)
+    # log.debug(f"sys.path={sys.path}")
 
     subprocess.call(args=sys.argv[1:])
