@@ -1,4 +1,16 @@
-from hoplalib.Authorization import AuthorizationParser
+import os
+import sys
+sys.path.append(os.environ.get("script_dirname"))
+
+
+# TODO: temporary, while hopla is in beta
+try:
+    # cmdline
+    from hoplalib.Authorization import AuthorizationParser
+except:
+    # jetbrains
+    from hopla.hoplalib.Authorization import AuthorizationParser
+
 
 
 class RequestHeaders:
@@ -28,14 +40,14 @@ class UrlBuilder:
     def __init__(self, *,
                  domain: str = "https://habitica.com",
                  api_version: str = "v3",
-                 path: str = ""):
+                 path_extension: str = ""):
         self.domain = domain
         self.api_version = api_version
-        self.path = path
+        self.path_extension = path_extension
 
     def _get_base_url(self) -> str:
         return f"{self.domain}/api/{self.api_version}"
 
     @property
     def url(self) -> str:
-        return f"{self._get_base_url()}{self.path}"
+        return f"{self._get_base_url()}{self.path_extension}"

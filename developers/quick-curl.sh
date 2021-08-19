@@ -20,7 +20,7 @@ curl -XGET "https://habitica.com/api/v3/content" \
 
 # [docs](https://habitica.com/apidoc/#api-User-UserFeed)
 # [API PATH](https://habitica.com/api/v3/user/feed/:pet/:food)
-# feed Beetle-Skeleton 2 Fish
+# feed Beetle-Skeleton Fish x2
 #curl -XPOST "https://habitica.com/api/v3/user/feed/Beetle-Skeleton/Fish?amount=2" \
 #  --verbose \
 #  --header "Content-Type: application/json" \
