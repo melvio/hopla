@@ -1,0 +1,11 @@
+hopla set-hopla - group command for setting hopla related authorization and configuration
+
+For more help use `hopla --help set-hopla {SUB_COMMAND}`
+
+syntax:
+    hopla [global_options] set-hopla {SUB_COMMAND}...
+
+SUPPORTED SUB COMMANDS:
+    hopla set-hopla credentials   - attain rights to talk to the habitica API
+    hopla set-hopla config        - configure hopla settings
+
