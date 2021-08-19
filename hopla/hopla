@@ -53,9 +53,9 @@ find_executable_subcmd(){
   declare -r python_cmd="${supposed_cmd}.py"
   declare -r shell_cmd="${supposed_cmd}.sh"
 
-  if   [[ -n "${python_cmd}" && -x "${python_cmd}" ]]   ; then echo "${python_cmd}"
-  elif [[ -n "${shell_cmd}"  && -x "${shell_cmd}" ]]    ; then echo "${shell_cmd}"
-  elif [[ -n ${supposed_cmd} && -x "${supposed_cmd}" ]] ; then echo "${supposed_cmd}"
+  if   [[ -n "${python_cmd}"   && -x "${python_cmd}" ]]   ; then echo "${python_cmd}"
+  elif [[ -n "${shell_cmd}"    && -x "${shell_cmd}" ]]    ; then echo "${shell_cmd}"
+  elif [[ -n "${supposed_cmd}" && -x "${supposed_cmd}" ]] ; then echo "${supposed_cmd}"
   fi
 }
 
@@ -87,7 +87,6 @@ assign_subcmd_and_arguments() {
     echo "could find, but not execute the following command: ${command_file}"
   fi
 }
-
 
 handle_global_options() {
   if (( global_option_help )) ; then
