@@ -1,12 +1,13 @@
-# hopla
-[![hopla](https://img.shields.io/static/v1?label=melvio&message=hopla&color=blue&logo=github)](https://github.com/melvio/hopla)     
+# Hopla
+[![hopla](https://img.shields.io/static/v1?label=melvio&message=hopla&color=blue&logo=github)](https://github.com/melvio/hopla) 
 [![stars - hopla](https://img.shields.io/github/stars/melvio/hopla?style=social)](https://github.com/melvio/hopla)      
 
-hopla - a command line interface for [habitica.com](https://habitica.com)
+hopla - a command line interface (CLI) for [habitica.com](https://habitica.com)
 
 
-Hopla is a XDG-compliant command line interface (CLI) that uses `bash` and `python3` to interact with the [habitica.com](https://habitica.com) API.
-Hopla is under active development and in a beta phase.      
+Hopla is a XDG-compliant command CLI which uses `bash` and `python3` to interact with the [habitica.com](https://habitica.com) API.
+Hopla is currently under active development but available for beta usage. 
+
 
 
 
