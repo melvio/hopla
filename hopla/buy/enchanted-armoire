@@ -80,8 +80,6 @@ buy_from_armoire_until_poor() {
   buy_from_armoire_n_times "${buy_times}"
 }
 
-
-
 main() {
   handle_options "$@"
   debug "buy enchanted-armoire: poor_enabled=${option_until_poor_enabled}, times=${option_times_value}"
