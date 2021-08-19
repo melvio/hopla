@@ -8,11 +8,6 @@ from argparse import ArgumentParser, Namespace
 import os
 from pathlib import Path
 
-api_version = "v3"
-domain = "https://habitica.com"
-base_url = f"{domain}/api/{api_version}/user"
-custom_day_start_url = f"{base_url}/custom-day-start"
-
 
 class AuthorizationConstants:
     CONFIG_SECTION_CREDENTIALS = "credentials"
@@ -94,9 +89,6 @@ class RequestHeaders:
         }
 
 
-headers = RequestHeaders().get_default_request_headers()
-
-
 class DayStartArgumentParser:
     DAY_START_USER_ARGUMENT = "day_start"
 
@@ -141,7 +133,44 @@ class DayStartJsonCreator:
 
         return json.dumps(post_content)
 
-json_content = DayStartJsonCreator(day_start=day_start_arg_parser.day_start).json_content
+
+class UrlBuilder:
+    def __init__(self, *,
+                 domain: str = "https://habitica.com",
+                 api_version: str = "v3",
+                 path: str = ""):
+        self.domain = domain
+        self.api_version = api_version
+        self.path = path
+
+    def _get_base_url(self) -> str:
+        return f"{self.domain}/api/{self.api_version}"
+
+    @property
+    def url(self) -> str:
+        return f"{self._get_base_url()}{self.path}"
+
+
+class DayStartPostRequester:
+    PATH = "/user/custom-day-start"
+
+    def __init__(self, *,
+                 json_body: str,
+                 request_headers: dict):
+        self.json_body = json_body
+        self.request_headers = request_headers
+
+    @property
+    def custom_day_start_url(self):
+        return UrlBuilder(path=DayStartPostRequester.PATH).url
+
+    def post_day_start(self) -> requests.Response:
+        return requests.post(
+            url=self.custom_day_start_url,
+            headers=self.request_headers,
+            data=self.json_body
+        )
+
 
 # set to midnight:
 # python3 day-start.py
@@ -149,12 +178,13 @@ json_content = DayStartJsonCreator(day_start=day_start_arg_parser.day_start).jso
 # set to 1 AM
 # python3 day-start.py 1
 
-response: requests.Response = requests.post(
-    url=custom_day_start_url,
-    headers=headers,
-    data=json_content
-)
+
+headers = RequestHeaders().get_default_request_headers()
+json_content = DayStartJsonCreator(day_start=day_start_arg_parser.day_start).json_content
+day_start_request = DayStartPostRequester(request_headers=headers,
+                                          json_body=json_content)
+
+response = day_start_request.post_day_start()
+
 
 print(response.json())
-print(response.headers)
-print(str(response.content))
