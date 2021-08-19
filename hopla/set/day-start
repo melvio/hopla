@@ -30,7 +30,7 @@ class DayStartArgumentParser:
         )
 
     @property
-    def day_start(self):
+    def day_start(self) -> int:
         # parsing every time is cheap; it is just 1 value the user supplies
         args: Namespace = self.arg_parser.parse_args()
         return args.day_start

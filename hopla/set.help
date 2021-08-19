@@ -1,4 +1,9 @@
-hopla set help - TODO
+hopla set - group command
 
-usage:
-    TODO
+For more help use `hopla --help set {SUB_COMMAND}`
+
+syntax:
+    hopla [global_options] set {SUB_COMMAND}...
+
+SUPPORTED SUB COMMANDS:
+    hopla set day-start [N]   - Set the cron day start time
