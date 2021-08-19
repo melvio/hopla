@@ -10,16 +10,13 @@ try:
     # cmdline
     from hoplalib.Authorization import AuthorizationParser
     from hoplalib.Http import UrlBuilder, RequestHeaders
-except:
+except Exception:
     # jetbrains
     from hopla.hoplalib.Authorization import AuthorizationParser
     from hopla.hoplalib.Http import UrlBuilder, RequestHeaders
 
-import json
 import requests
 from argparse import ArgumentParser, Namespace
-
-
 
 
 class FeedPetParser:
@@ -108,4 +105,3 @@ if __name__ == "__main__":
 
     # TODO: (contact:melvio) handle terminal output
     print(response.json())
-

@@ -28,7 +28,7 @@ main () {
   if (( $# == 0 )) ; then
     get_all_items
   else
-    case $1 in
+    case "$1" in
       -j|--jq-filter)
         jq_filter=${2:?"missing a FILTER for '-j/--jq-filter [FILTER]'"}
         get_curl_user_with_filter ".data.items${jq_filter}" ;;

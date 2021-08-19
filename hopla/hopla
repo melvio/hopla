@@ -91,7 +91,7 @@ main () {
   assign_subcmd_and_arguments
   handle_global_options
 
-  "${script_dirname}/hopla.py" "${command_file}" "${subcmd_arguments[@]}"
+  "${script_dirname}/../hopla.py" "${command_file}" "${subcmd_arguments[@]}"
 }
 main "$@"
 

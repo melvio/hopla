@@ -5,11 +5,6 @@ import subprocess
 import logging
 
 
-# print("this script", sys.argv[0])
-# executable = sys.argv[1]
-# print("executable", executable)
-# arguments = sys.argv[2:]
-
 def setup_logging() -> logging.Logger:
     logging.basicConfig(
         format='[%(levelname)s][%(filename)s] %(asctime)s - %(message)s',
