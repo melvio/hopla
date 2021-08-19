@@ -2,7 +2,6 @@
 
 source "${library_dir}/logging.sh"
 source "${library_dir}/api_proxy.sh"
-source "${library_dir}/math.sh"
 
 
 set -o errexit
@@ -74,8 +73,8 @@ buy_from_armoire_n_times() {
 
 buy_from_armoire_until_poor() {
   debug "buy_from_armoire_until_poor"
-  gold=$(hopla get user-info gold)
-  declare -i gold=$(round_down_positive_float "${gold}")
+  gold=$(hopla get user-stats gold)
+  declare -i gold=$(python3 -c "print(round(float(${gold})))")
   debug "user gold rounded down=${gold}"
   declare -ri buy_times=gold/100
   buy_from_armoire_n_times "${buy_times}"
