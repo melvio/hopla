@@ -4,19 +4,16 @@ import os
 
 sys.path.append(os.environ.get("script_dirname"))
 
-import json
 import requests
 from argparse import ArgumentParser, Namespace
 
 # TODO: temporary, while hopla is in beta
 try:
     # cmdline
-    pass
     from hoplalib.Http import UrlBuilder, RequestHeaders
 except:
     # jetbrains
     from hopla.hoplalib.Http import UrlBuilder, RequestHeaders
-
 
 
 class DayStartArgumentParser:

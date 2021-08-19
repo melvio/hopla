@@ -30,11 +30,11 @@ read_credentials() {
 
     if [[ -z "${user_id:-}" || -z "${api_token}" ]]; then
       echo "no credentials found:"
-      "${script_dirname}/hopla/set-hopla/credentials"
+      "${script_dirname}/hopla/set-hopla/credentials.sh"
     fi
   else
     echo "no credential file found"
-    "${script_dirname}/hopla/set-hopla/credentials"
+    "${script_dirname}/hopla/set-hopla/credentials.sh"
   fi
 }
 read_credentials

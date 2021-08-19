@@ -28,7 +28,8 @@ parse_global_options() {
 }
 
 show_help() {
-  declare help_file="${1}.help"
+  # strip of .sh or .py with /.*
+  declare help_file="${1/.*}.help"
 
   # couldn't find help
   if [[ ! -f "${help_file}" ]]  ; then declare help_file="${script_dirname}/hopla.help" ; fi

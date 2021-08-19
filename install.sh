@@ -16,9 +16,8 @@ install_dependencies
 
 
 cd -- "$(dirname "$0")" || exit 1
-entry_command="$(realpath ./hopla.sh)"
-echo "${entry_command}"
-link_name="/usr/local/bin/hopla"
+declare -r entry_command="$(realpath ./hopla.sh)"
+declare -r link_name="/usr/local/bin/hopla"
 
 
 if [[ -f "${entry_command}" ]] ; then
