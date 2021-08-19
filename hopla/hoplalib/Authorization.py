@@ -1,0 +1,7 @@
+class AuthorizationConstants:
+    CONFIG_SECTION_CREDENTIALS = "credentials"
+    CONFIG_KEY_USER_ID = "user_id"
+    CONFIG_KEY_API_TOKEN = "api_token"
+
+    GLOBAL_ENV_VAR_XDG_CONFIG_HOME = "XDG_CONFIG_HOME"
+    GLOBAL_ENV_VAR_HOPLA_AUTH_FILE = "HOPLA_AUTH_FILE"

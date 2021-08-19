@@ -1,25 +1,22 @@
 #!/usr/bin/env python3
-import json
 
+
+import sys
+import os
+
+sys.path.append(os.environ.get("script_dirname"))
+
+import json
 import requests
 import configparser
 from configparser import ConfigParser
 from argparse import ArgumentParser, Namespace
-import os
 from pathlib import Path
 
-
-class AuthorizationConstants:
-    CONFIG_SECTION_CREDENTIALS = "credentials"
-    CONFIG_KEY_USER_ID = "user_id"
-    CONFIG_KEY_API_TOKEN = "api_token"
-
-    GLOBAL_ENV_VAR_XDG_CONFIG_HOME = "XDG_CONFIG_HOME"
-    GLOBAL_ENV_VAR_HOPLA_AUTH_FILE = "HOPLA_AUTH_FILE"
+from hoplalib.Authorization import AuthorizationConstants
 
 
 class AuthorizationParser:
-
     def __init__(self):
         self.config_parser = ConfigParser()
 
