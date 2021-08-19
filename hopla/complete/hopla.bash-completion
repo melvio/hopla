@@ -45,6 +45,14 @@ _autocomplete_hopla_set_hopla(){
   COMPREPLY=( $(compgen -W "${wordlist}" -- "${cur}" ) )
 }
 
+_autocomplete_hopla_set(){
+  local wordlist cur
+  wordlist="day-start --help"
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  COMPREPLY=( $(compgen -W "${wordlist}" -- "${cur}" ) )
+}
+
+
 _autocomplete_hopla_get(){
   local wordlist cur
   # TODO: we can autocomplete this even further
@@ -61,7 +69,7 @@ _autocomplete_hopla() {
   second_word="${COMP_WORDS[$((COMP_CWORD - 1))]}"
 
   if [[ ${COMP_CWORD} -eq 1 ]] ; then
-    wordlist="add api buy complete feed set-hopla get --help"
+    wordlist="add api buy complete feed set set-hopla get --help"
     COMPREPLY=( $(compgen -W "${wordlist}" -- "${cur}" ) )
   elif [[ $second_word == "add" ]] ; then
     _autocomplete_hopla_add
@@ -74,6 +82,8 @@ _autocomplete_hopla() {
   elif [[ $second_word == "feed" ]] ; then
     _autocomplete_hopla_feed
   elif [[ $second_word == "set-hopla" ]] ; then
+    _autocomplete_hopla_set_hopla
+  elif [[ $second_word == "set" ]] ; then
     _autocomplete_hopla_set
   elif [[ $second_word == "get" ]] ; then
     _autocomplete_hopla_get
