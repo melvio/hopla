@@ -80,9 +80,11 @@ assign_subcmd_and_arguments() {
 
   command_file="$(find_executable_subcmd "${command_file}")"
 
-  if [[ ! -x "${command_file}" ]] ; then
-    # User didn't finish with full command, they probably want help:
+  if [[ -z "${command_file}" ]] ; then
     echo "could not find the following command: ${command_file}"
+  elif [[ ! -x "${command_file}" ]] ; then
+    # User didn't finish with full command, they probably want help:
+    echo "could find, but not execute the following command: ${command_file}"
   fi
 }
 
