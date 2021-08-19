@@ -20,6 +20,7 @@ if __name__ == "__main__":
 
     cmd_file = sys.argv[1]
     arguments = sys.argv[2:]
+    # f strings are likely to be faster, rather than slower, so disable pylint warning
     log.debug(f"File to be executed {cmd_file}, arguments to be passed {arguments}")  # pylint: disable=logging-fstring-interpolation)
     # log.debug(f"sys.path={sys.path}")
 
