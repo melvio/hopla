@@ -4,15 +4,16 @@ import sys
 import os
 
 sys.path.append(os.environ.get("script_dirname"))
+import  logging
 
 # TODO: temporary, while hopla is in beta
 try:
     # cmdline
-    from hoplalib.Authorization import AuthorizationParser
+    from hoplalib.Authorization import AuthorizationHandler
     from hoplalib.Http import UrlBuilder, RequestHeaders
 except Exception:
     # jetbrains
-    from hopla.hoplalib.Authorization import AuthorizationParser
+    from hopla.hoplalib.Authorization import AuthorizationHandler
     from hopla.hoplalib.Http import UrlBuilder, RequestHeaders
 
 import requests

@@ -6,7 +6,13 @@ import os
 import logging
 from pathlib import Path
 
-from hopla.hoplalib.Authorization import AuthorizationParser
+# TODO: temporary, while hopla is in beta
+try:
+    # cmdline
+    from hoplalib.Authorization import AuthorizationHandler
+except:
+    # jetbrains
+    from hopla.hoplalib.Authorization import AuthorizationHandler
 
 
 def setup_logging() -> logging.Logger:
@@ -24,25 +30,17 @@ log = setup_logging()
 
 
 def add_auth_information_to_env(start_env: dict):
-    parser = AuthorizationParser()
-    auth_file_path = str(parser.auth_file)
+    auth_info = AuthorizationHandler()
+    auth_file_path = str(auth_info.auth_file)
     # TODO: instead of using strings directly, bring this under an object
     #       that does validation of UUIDs etc.
     start_env["auth_file_path"] = auth_file_path
-    start_env["user_id"] = parser.user_id
-    start_env["api_token"] = parser.api_token
+    start_env["user_id"] = auth_info.user_id
+    start_env["api_token"] = auth_info.api_token
 
     log.debug(f"auth_file={auth_file_path}")
 
     return start_env
-
-
-def execute_hopla_dot_shell():
-    script_dirname = os.path.dirname(Path(__file__).resolve())
-    cmd_entry = script_dirname + "/hopla.sh"
-    hopla_env = create_hopla_env(script_dirname)
-    subprocess.run(args=[cmd_entry] + sys.argv[1:],
-                   env=hopla_env)
 
 
 def create_hopla_env(script_dirname: str):
@@ -50,9 +48,19 @@ def create_hopla_env(script_dirname: str):
     hopla_env = os.environ
     hopla_env["script_dirname"] = script_dirname
     hopla_env["library_dir"] = library_dir
-    hopla_env = add_auth_information_to_env(hopla_env)
+    hopla_env = add_auth_information_to_env(dict(hopla_env))
 
     return hopla_env
+
+
+def execute_hopla_dot_shell():
+    script_dirname = os.path.dirname(Path(__file__).resolve())
+    cmd_entry = script_dirname + "/hopla.sh"
+    hopla_env = create_hopla_env(script_dirname)
+    cmdline_args = sys.argv[1:]
+    log.debug(f"About to run cmd={cmd_entry} with args: {cmdline_args}")
+    subprocess.run(args=[cmd_entry] + cmdline_args,
+                   env=hopla_env)
 
 
 if __name__ == "__main__":

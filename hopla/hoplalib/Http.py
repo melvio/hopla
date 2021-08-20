@@ -1,16 +1,15 @@
 import os
 import sys
-sys.path.append(os.environ.get("script_dirname"))
 
+sys.path.append(os.environ.get("script_dirname"))
 
 # TODO: temporary, while hopla is in beta
 try:
-    # cmdline
-    from hoplalib.Authorization import AuthorizationParser
-except:
     # jetbrains
-    from hopla.hoplalib.Authorization import AuthorizationParser
-
+    from hopla.hoplalib.Authorization import AuthorizationHandler
+except:
+    # cmdline
+    from hoplalib.Authorization import AuthorizationHandler
 
 
 class RequestHeaders:
@@ -21,11 +20,11 @@ class RequestHeaders:
     X_API_KEY = "x-api-key"
     X_CLIENT_VALUE = "79551d98-31e9-42b4-b7fa-9d89b0944319-hopla"
 
-    def __init__(self, auth_parser: AuthorizationParser = None):
+    def __init__(self, auth_parser: AuthorizationHandler = None):
         if auth_parser:
             self.hopla_auth_parser = auth_parser
         else:
-            self.hopla_auth_parser = AuthorizationParser()
+            self.hopla_auth_parser = AuthorizationHandler()
 
     def get_default_request_headers(self):
         return {

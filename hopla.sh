@@ -4,17 +4,8 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-source "${library_dir}/api_proxy.sh"
 source "${library_dir}/logging.sh"
 source "${library_dir}/load_config.sh"
-
-set_credentials_if_not_found() {
-  if [[ -z "${user_id:-}" || -z "${api_token}" ]]; then
-    echo "no credentials found:"
-    "${script_dirname}/hopla/set-hopla/credentials.sh"
-  fi
-}
-set_credentials_if_not_found
 
 
 declare -i global_option_help=0
@@ -45,7 +36,6 @@ show_help() {
 
 find_executable_subcmd(){
   supposed_cmd="$1"
-  debug "find_script supposed_cmd=$1"
 
   declare -r python_cmd="${supposed_cmd}.py"
   declare -r shell_cmd="${supposed_cmd}.sh"
@@ -97,6 +87,7 @@ main () {
   assign_subcmd_and_arguments
   handle_global_options
 
+  debug "in hopla.sh: about to run cmdfile=${command_file} with arguments=${subcmd_arguments[*]}"
   "${script_dirname}/hopla.py" "${command_file}" "${subcmd_arguments[@]}"
 }
 main "$@"
