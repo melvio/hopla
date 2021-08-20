@@ -16,7 +16,7 @@ install_dependencies
 
 
 cd -- "$(dirname "$0")" || exit 1
-declare -r entry_command="$(realpath ./hopla.sh)"
+declare -r entry_command="$(realpath ./hopla_python_migration.py)"
 declare -r link_name="/usr/local/bin/hopla"
 
 

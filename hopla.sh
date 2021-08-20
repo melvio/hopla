@@ -4,10 +4,6 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-declare -r this_script=$(perl -e 'use Cwd "abs_path"; print abs_path(shift)' "$0")
-declare -xgr script_dirname=$(dirname "${this_script}")
-declare -xgr library_dir="$(realpath "${script_dirname}/library/")"
-
 source "${library_dir}/api_proxy.sh"
 source "${library_dir}/logging.sh"
 source "${library_dir}/load_config.sh"
