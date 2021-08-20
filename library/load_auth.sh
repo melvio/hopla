@@ -1,17 +1,5 @@
 #!/usr/bin/env bash
 
-print_hopla_auth_file() {
-  local file_path=
-  if [[ -n "${HOPLA_AUTH_FILE:-}" && -f "${HOPLA_AUTH_FILE:-}" ]] ; then
-    file_path="${HOPLA_AUTH_FILE}"
-  elif [[ -n "${XDG_CONFIG_HOME:-}" && -d "${XDG_CONFIG_HOME:-}" ]] ; then
-    file_path="${XDG_CONFIG_HOME}/hopla/auth.conf"
-  else
-    file_path="${HOME}/.config/hopla/auth.conf"
-  fi
-  echo "${file_path}"
-}
-declare -xr auth_file_path=$(print_hopla_auth_file)
 debug "auth_file=${auth_file_path}"
 
 
