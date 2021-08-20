@@ -20,8 +20,8 @@ jobs:
     - name: Analysing the code with pylint
       # https://github.com/actions/starter-workflows/issues/636
       run: |
-         pylint $(ls -R | grep '.py$' | xargs)
-#         pylint $(find . -name "*.py" | xargs) --exit-zero
+#         pylint $(ls -R | grep '.py$' | xargs)
+         pylint $(find . -name "*.py" | xargs)
 #        pylint $(find . -name "*.py" | xargs) --exit-zero
 
 
