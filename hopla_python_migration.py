@@ -26,6 +26,8 @@ log = setup_logging()
 def add_auth_information_to_env(start_env: dict):
     parser = AuthorizationParser()
     auth_file_path = str(parser.auth_file)
+    # TODO: instead of using strings directly, bring this under an object
+    #       that does validation of UUIDs etc.
     start_env["auth_file_path"] = auth_file_path
     start_env["user_id"] = parser.user_id
     start_env["api_token"] = parser.api_token
