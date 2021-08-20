@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-debug "auth_file=${auth_file_path}"
-
-
 
 read_credentials() {
   debug "read_credentials auth_file=${auth_file_path:-}"
