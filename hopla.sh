@@ -28,7 +28,7 @@ parse_global_options() {
 }
 
 show_help() {
-  # strip of .sh or .py with /.*
+  # strip off .sh or .py with /.*
   declare help_file="${1/.*}.help"
 
   # couldn't find help
