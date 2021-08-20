@@ -7,7 +7,15 @@ set -o pipefail
 source "${library_dir}/api_proxy.sh"
 source "${library_dir}/logging.sh"
 source "${library_dir}/load_config.sh"
-source "${library_dir}/load_auth.sh"
+
+set_credentials_if_not_found() {
+  if [[ -z "${user_id:-}" || -z "${api_token}" ]]; then
+    echo "no credentials found:"
+    "${script_dirname}/hopla/set-hopla/credentials.sh"
+  fi
+}
+set_credentials_if_not_found
+
 
 declare -i global_option_help=0
 declare -a args_without_globals=()
