@@ -7,6 +7,7 @@ from hopla.hoplalib.Http import RequestHeaders, UrlBuilder
 log = logging.getLogger()
 
 
+# TODO: add some kind of json filtering
 @click.group()
 def api():
     pass
@@ -15,7 +16,18 @@ def api():
 @api.command()
 def content():
     log.debug("function: content")
-    raise NotImplementedError("api content")
+
+    url_builder = UrlBuilder(path_extension="/content")
+    response = requests.get(url=url_builder.url)
+
+    # TODO: add --json argument to enable json output
+    click.echo(response.json())
+
+
+@api.command()
+def model():
+    log.debug("function: model")
+    raise NotImplementedError("api model")
 
 
 @api.command()
@@ -29,7 +41,7 @@ def status():
     log.debug("function: api")
 
     url_builder = UrlBuilder(path_extension="/status")
-    headers = RequestHeaders().get_default_request_headers()
-    response = requests.get(url=url_builder.url, headers=headers)
+    response = requests.get(url=url_builder.url)
 
+    # TODO: add --json argument to enable json output
     click.echo(response.json())
