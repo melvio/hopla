@@ -67,13 +67,10 @@ class PetFeedPostRequester:
                  request_headers: dict,
                  pet_name: str,
                  food_name: str,
-                 food_amount: int = None):
+                 food_amount: int = 1):
         self.request_headers = request_headers
         self.pet_name = pet_name
         self.food_name = food_name
-
-        if food_amount is None:
-            food_amount = 1
         self.query_params = {"amount": food_amount}
 
     @property
