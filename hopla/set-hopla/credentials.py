@@ -15,5 +15,6 @@ except:
     # cmdline
     from ..hoplalib.Authorization import AuthorizationHandler
 
-if __name__ == "__main__":
+
+def main():
     AuthorizationHandler().set_hopla_credentials(overwrite=True)

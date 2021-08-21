@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
-import subprocess
+import click
 import os
 import logging
 from pathlib import Path
@@ -55,22 +55,20 @@ class HoplaEnvironment:
         return hopla_env
 
 
+from hopla.api.version import api
+
+
+@click.group()
+def hopla():
+    pass
+
+
 if __name__ == "__main__":
     log.debug(f"start application with arguments: {sys.argv}")
     script_dirname = os.path.dirname(Path(__file__).resolve())
-    # cmd_entry = script_dirname + "/hopla.sh"
-    # cmdline_args = sys.argv[1:]
     hopla_env = HoplaEnvironment().create_hopla_env(script_dirname=script_dirname)
-
-    arg_parser = ArgumentParser(
-        prog="hopla",
-        description="a CLI to interact with the habitica.com API")
-
-    arg_parser.parse_args()
-
-    # log.debug(f"About to run cmd={cmd_entry} with args: {cmdline_args}")
-    # subprocess.run(args=[cmd_entry] + cmdline_args,
-    #                env=hopla_env)
+    hopla.add_command(api)
+    hopla()
 
 #
 # class GlobalOptionCmdLineParser:

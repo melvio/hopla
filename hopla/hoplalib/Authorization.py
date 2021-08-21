@@ -132,7 +132,7 @@ class AuthorizationHandler:
             # TODO: look into https://docs.python.org/3/library/uuid.html
             uuid_user_id: str = self._request_for_user_id()
             uuid_api_token: str = self._request_for_api_token()
-        except EOFError as e:
+        except (EOFError, KeyboardInterrupt) as e:
             log.debug(f"user send a EOF: {e}")
             print("aborted the creation of a new authentication file")
             exit(0)
