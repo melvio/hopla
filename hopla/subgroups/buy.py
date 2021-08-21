@@ -34,6 +34,9 @@ def buy_from_enchanted_armoire_once():
 def enchanted_armoire(times: int, until_poor: bool):
     log.debug(f"hopla buy enchanted-armoire times={times}, until_poor={until_poor}")
 
+    # TODO (contact:melvio) when until_poor=True, calculate the user's gp
+    # * this can be done by hopla itself once user-inventory gp has been implemented
+
     for _ in range(times):
         buy_from_enchanted_armoire_once()
         if times > 28:
