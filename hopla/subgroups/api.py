@@ -25,9 +25,16 @@ def content():
 
 
 @api.command()
-def model():
+@click.argument("model_name")
+def model(model_name: str):
     log.debug("function: model")
-    raise NotImplementedError("api model")
+
+    url_builder = UrlBuilder(path_extension=f"/models/{model_name}/paths")
+    # headers = RequestHeaders().get_default_request_headers()
+
+    response = requests.get(url=url_builder.url)
+
+    click.echo(response.json())
 
 
 @api.command()
