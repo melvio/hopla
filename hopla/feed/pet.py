@@ -102,4 +102,4 @@ if __name__ == "__main__":
     response: requests.Response = feed_pet_food_request.post_feed_pet_food()
 
     # TODO: (contact:melvio) handle terminal output
-    print(response.json())
+    print(response.text)

@@ -21,7 +21,7 @@ def content():
     response = requests.get(url=url_builder.url)
 
     # TODO: add --json argument to enable json output
-    click.echo(response.json())
+    click.echo(response.text)
 
 
 # todo: maybe get this dynamically from the API?
@@ -38,7 +38,7 @@ def model(model_name: str):
 
     response = requests.get(url=url_builder.url)
 
-    click.echo(response.json())
+    click.echo(response.text)
 
 
 @api.command()
@@ -55,4 +55,4 @@ def status():
     response = requests.get(url=url_builder.url)
 
     # TODO: add --json argument to enable json output
-    click.echo(response.json())
+    click.echo(response.text)
