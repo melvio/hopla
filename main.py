@@ -57,6 +57,7 @@ class HoplaEnvironment:
 
 from hopla.subgroups.api import api
 from hopla.subcommands.version import version
+from hopla.subcommands.auth import auth
 
 
 @click.group()
@@ -70,5 +71,6 @@ if __name__ == "__main__":
     hopla_env = HoplaEnvironment().create_hopla_env(script_dirname=script_dirname)
     hopla.add_command(api)
     hopla.add_command(version)
+    hopla.add_command(auth)
     hopla()
 

@@ -1,0 +1,4 @@
+hopla auth - create/update the credentials file interactively
+
+usage:
+    hopla auth
