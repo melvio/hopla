@@ -56,6 +56,7 @@ class HoplaEnvironment:
 
 
 from hopla.subgroups.api import api
+from hopla.subcommands.version import version
 
 
 @click.group()
@@ -68,5 +69,6 @@ if __name__ == "__main__":
     script_dirname = os.path.dirname(Path(__file__).resolve())
     hopla_env = HoplaEnvironment().create_hopla_env(script_dirname=script_dirname)
     hopla.add_command(api)
+    hopla.add_command(version)
     hopla()
 
