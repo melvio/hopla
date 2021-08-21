@@ -55,7 +55,7 @@ class HoplaEnvironment:
         return hopla_env
 
 
-from hopla.api.version import api
+from hopla.subgroups.api import api
 
 
 @click.group()

@@ -38,7 +38,7 @@ class RequestHeaders:
 class UrlBuilder:
     def __init__(self, *,
                  domain: str = "https://habitica.com",
-                 api_version: str = "v3",
+                 api_version: str = "v3",    # probably not the location to be storing this
                  path_extension: str = ""):
         self.domain = domain
         self.api_version = api_version
