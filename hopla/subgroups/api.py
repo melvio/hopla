@@ -24,8 +24,12 @@ def content():
     click.echo(response.json())
 
 
+# todo: maybe get this dynamically from the API?
+valid_model_names = ["user", "group", "challenge", "tag", "habit", "daily", "todo", "reward"]
+
+
 @api.command()
-@click.argument("model_name")
+@click.argument("model_name", type=click.Choice(valid_model_names, case_sensitive=False))
 def model(model_name: str):
     log.debug("function: model")
 
