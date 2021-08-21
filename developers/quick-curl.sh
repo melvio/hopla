@@ -13,9 +13,14 @@ source "${this_script_parent_dir}/developer.env"
 #  --header "x-api-key: ${api_token}" \
 #  --header "x-client: Testing" | jq .
 
-curl -XGET "https://habitica.com/api/v3/content" \
+#curl -XGET "https://habitica.com/api/v3/content" \
+#  --verbose \
+#  --header "Content-Type: application/json" | jq .
+
+curl -XGET "https://habitica.com/api/v3/status" \
   --verbose \
   --header "Content-Type: application/json" | jq .
+
 
 
 # [docs](https://habitica.com/apidoc/#api-User-UserFeed)

@@ -25,6 +25,7 @@ SUPPORTED SUB_GROUPS
 
 Examples:
 ```bash
+hopla --help
 hopla version
 hopla set-hopla credentials
 hopla set-hopla config {config_key} {config_value}
