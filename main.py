@@ -7,13 +7,7 @@ import logging
 from pathlib import Path
 from argparse import ArgumentParser
 
-# TODO: temporary, while hopla is in beta
-try:
-    # cmdline
-    from hoplalib.Authorization import AuthorizationHandler
-except:
-    # jetbrains
-    from hopla.hoplalib.Authorization import AuthorizationHandler
+from hopla.hoplalib.Authorization import AuthorizationHandler
 
 
 def setup_logging() -> logging.Logger:
@@ -56,6 +50,7 @@ class HoplaEnvironment:
 
 
 from hopla.subgroups.api import api
+from hopla.subgroups.set import set
 from hopla.subcommands.version import version
 from hopla.subcommands.auth import auth
 
@@ -70,6 +65,7 @@ if __name__ == "__main__":
     script_dirname = os.path.dirname(Path(__file__).resolve())
     hopla_env = HoplaEnvironment().create_hopla_env(script_dirname=script_dirname)
     hopla.add_command(api)
+    hopla.add_command(set)
     hopla.add_command(version)
     hopla.add_command(auth)
     hopla()

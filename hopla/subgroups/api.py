@@ -2,7 +2,7 @@ import logging
 import click
 import requests
 
-from hopla.hoplalib.Http import RequestHeaders, UrlBuilder
+from hopla.hoplalib.Http import UrlBuilder
 
 log = logging.getLogger()
 
