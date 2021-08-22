@@ -19,9 +19,15 @@ def get():
 valid_item_groups = click.Choice(["pets", "mounts", "food", "gear", "quests", "hatchingPotions", "eggs", "all"])
 
 
-@get.command(help="Get items from the user's inventory")
+@get.command()
 @click.argument("item_group_name", type=valid_item_groups, default="all")
-def user_inventory(item_group_name):
+def user_inventory(item_group_name) -> dict:
+    """ Get items from the user's inventory
+
+    :param item_group_name: The type of items in the inventory (default: all)
+    :return: The specified inventory
+    """
+
     log.debug(f"hopla get user-inventory item_group={item_group_name}")
 
     response = HabiticaUserRequest().request_user()
@@ -31,8 +37,10 @@ def user_inventory(item_group_name):
         data_items = response_json["data"]["items"]
         if item_group_name == "all":
             click.echo(data_items)
+            return data_items
         else:
             click.echo(data_items[item_group_name])
+            return data_items
     else:
         click.echo(response_json["message"])
 
@@ -105,28 +113,25 @@ def user_auth(auth_info_name: str):
 
 
 @get.command()
-@click.option("--filter", "-f", "filter_string", type=str,
-              help=
-              """
-                      Filter this habitica user according to the filter_string.
-              
-                      [BNF](https://en.wikipedia.org/wiki/Backus-Naur-Form) 
-                      for the filter_string:
-              
-                          filter_keys ::= [filter_keys]?[,filter_keys]*
-                          filter_keys ::= filter_keys[.filter_keys]*
-              
-                      Examples:                                               
-                      *  get all items of a user:     "items"\n
-                      *  get all mounts of a user:    "items.mounts"\n
-                      *  get all mounts+pets:         "items.mounts,items.pets"\n
-              
-              
-                      :param filter_string: string to filter the user dict on (e.g. "achievements.streak,purchased.plan")
-              """)
+@click.option("--filter", "-f", "filter_string", type=str)
 def user_info(filter_string):
     """ If no filter_string is given, get all user info.
         Else returns the result of filtering the user's info on the specified filter_string
+
+    -f filters the user according to the filter_string.
+
+    :param filter_string: string to filter the user dict on (e.g. "achievements.streak,purchased.plan")
+
+    [BNF](https://en.wikipedia.org/wiki/Backus-Naur-Form)
+    for the filter_string:
+
+        filter_keys ::= [filter_keys]?[,filter_keys]*
+        filter_keys ::= filter_keys[.filter_keys]*
+
+    Examples:
+    *  get all items of a user:     "items"\n
+    *  get all mounts of a user:    "items.mounts"\n
+    *  get all mounts+pets:         "items.mounts,items.pets"\n
     """
 
     log.debug(f"hopla get user-info filter={filter_string}")
@@ -167,13 +172,6 @@ class HabiticaUser:
         return json.dumps(self.user_dict, indent=indent)
 
     def filter_user(self, filter_string: str):
-        """
-        Filter this habitica user dict according to the filter_string.
-        Specification of the filter_string is given above.
-
-        :param filter_string: string to filter the user dict on (e.g. "achievements.streak,purchased.plan")
-        :return: a HabiticaUser representing the user with the non-matched keys removed
-        """
         result = dict()
         filters: List[str] = filter_string.strip().split(",")
 
@@ -184,11 +182,15 @@ class HabiticaUser:
 
         return HabiticaUser(user_dict=result)
 
+
     def _filter_user(self, *, user_dict: dict, filter_keys: str) -> dict:
-        """Gets a dict D and a string of form "hi.ya.there"
+        """
+        Gets a starting dict D and uses filter_keys of form "hi.ya.there" to get
+        {filter_keys: D["hi"]["ya"]["there"]} or {filter_string: {}} if D["hi"]["ya"]["there"]
+        does not exist.
 
         >>> self._filter_user(user_dict={"items": {"currentPet": "Wolf-Base", "currentMount": "Aether-Invisible"}},
-        ...                   filter_keys="items.currentMount")
+        ...                   filter_keys = "items.currentMount")
         {"items.currentMount": "Aether-Invisible"}
 
         :param user_dict:
@@ -204,4 +206,3 @@ class HabiticaUser:
                 log.debug(f"Didn't match anything with the given filter={filter_keys}")
                 return {filter_keys: {}}
         return {filter_keys: start_dict}
-
