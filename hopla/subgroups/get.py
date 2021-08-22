@@ -38,7 +38,7 @@ valid_stat_names = click.Choice(["hp", "mp", "exp", "gp", "class", "all"])
 
 @get.command(help="Get a user's stats")
 @click.argument("stat_name", type=valid_stat_names, default="all")
-def user_stats(stat_name):
+def user_stats(stat_name: str):
     """
     Retrieve information from /user .data.user.stats
     """
@@ -53,6 +53,7 @@ def user_stats(stat_name):
             click.echo(data_items)
         else:
             click.echo(data_items[stat_name])
+            return data_items[stat_name]
     else:
         click.echo(json["message"])
 
