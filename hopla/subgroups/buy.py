@@ -4,7 +4,7 @@ import requests
 import time
 
 from hopla.hoplalib.Http import UrlBuilder, RequestHeaders
-from hopla.subgroups.get import user_stats
+from hopla.subgroups import get
 
 log = logging.getLogger()
 
@@ -49,13 +49,14 @@ def enchanted_armoire(ctx, times: int, until_poor: bool):
     # TODO: (contact:melvio) --until-poor and --times N should be mutually exclusive options:
     #  and I dont think this is the case right now.
     #  * if it is the case: this TODO is DONE
-    #  * else: ensure the options become mutually exclusive
+    #  * else: ensure the options become mutually exclusive (right now, the impl overwrites -t if -u is also given)
 
     if until_poor:
         # get gp and calculate how many times we should buy
-        gp = ctx.invoke(user_stats, stat_name="gp")  # TODO: this will echo 'gp': fix this
+        gp = ctx.invoke(get.user_stats, stat_name="gp")  # TODO: this will echo 'gp': fix this
         times = times_until_poor(gp)
 
+    # TODO: maybe also use gp to limit the --times option
     for _ in range(times):
         buy_from_enchanted_armoire_once()
         if times > 28:
