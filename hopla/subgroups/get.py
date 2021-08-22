@@ -115,23 +115,29 @@ def user_auth(auth_info_name: str):
 @get.command()
 @click.option("--filter", "-f", "filter_string", type=str)
 def user_info(filter_string):
-    """ If no filter_string is given, get all user info.
-        Else returns the result of filtering the user's info on the specified filter_string
+    """ Return user information
+
+    If no filter_string is given, get all user info.
+    Else returns the result of filtering the user's info on the specified filter_string
 
     -f filters the user according to the filter_string.
-
-    :param filter_string: string to filter the user dict on (e.g. "achievements.streak,purchased.plan")
 
     [BNF](https://en.wikipedia.org/wiki/Backus-Naur-Form)
     for the filter_string:
 
+    \b
         filter_keys ::= [filter_keys]?[,filter_keys]*
         filter_keys ::= filter_keys[.filter_keys]*
 
+    \b
     Examples:
-    *  get all items of a user:     "items"\n
-    *  get all mounts of a user:    "items.mounts"\n
-    *  get all mounts+pets:         "items.mounts,items.pets"\n
+    *  get all items of a user:     "items"
+    *  get all mounts of a user:    "items.mounts"
+    *  get all mounts+pets:         "items.mounts,items.pets"
+
+    \f
+    :param filter_string: string to filter the user dict on (e.g. "achievements.streak,purchased.plan")
+    :return
     """
 
     log.debug(f"hopla get user-info filter={filter_string}")

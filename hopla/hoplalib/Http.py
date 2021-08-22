@@ -26,7 +26,7 @@ class RequestHeaders:
         else:
             self.hopla_auth_parser = AuthorizationHandler()
 
-    def get_default_request_headers(self):
+    def get_default_request_headers(self) -> dict:
         return {
             RequestHeaders.CONTENT_TYPE: RequestHeaders.CONTENT_TYPE_JSON,
             RequestHeaders.X_CLIENT: RequestHeaders.X_CLIENT_VALUE,
