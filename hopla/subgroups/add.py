@@ -68,6 +68,38 @@ def todo(difficulty: str,
 
     TODO_NAME the name of the To-DO
 
+    \b
+    Examples:
+    # create a To-Do without any hoopla:
+    hopla add todo 'Text for my todo'
+
+    \b
+    # override the default 'easy' difficulty using either
+    # --difficulty hard|medium|trivial
+    hopla add --difficulty=hard todo 'This is a hard todo'
+
+    \b
+    # --due-date and --deadline work as synonyms.
+    hopla add todo --deadline 2042-01-21 "My Todo"
+    hopla add todo --due-date 2042-01-21 "My Todo"
+
+    \b
+    # using GNU's date "$(date '+Y-%m-%d')" as the due date
+    # you'll set the due-date to 'today':
+    hopla add todo --due-date $(date '+%Y-%m-%d') "Feed pet"
+
+    \b
+    # You can use cool shell tricks to provide checklists on the fly
+    # e.g. sort a list in a file:
+    hopla add todo --checklist <(sort ./tasks.txt) "Sorted Checklist"
+
+    \b
+    # create a hard To-Do with due date on the 22nd of october in 2077, and
+    # use every line in the `my_todo.md` FILE as an item of your checklist.
+    hopla add todo --difficulty hard --due-date=2077-10-21 \\
+                   --checklist-file ./my_todo.md 'Text for my todo'
+
+
     [apidocs](https://habitica.com/apidoc/#api-Task-CreateUserTasks)
 
     \f
