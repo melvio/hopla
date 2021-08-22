@@ -70,6 +70,7 @@ def todo(difficulty: str,
 
     \b
     Examples:
+    ---
     # create a To-Do without any hoopla:
     hopla add todo 'Text for my todo'
 

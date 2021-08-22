@@ -45,6 +45,14 @@ valid_model_names = click.Choice(["user", "group", "challenge", "tag", "habit", 
 def model(model_name: str):
     """returns the specified habitica API datamodel
 
+    \b
+    Example:
+    ---
+    # Get the 'group' datamodel
+    $ hopla api model group
+
+    [apidocs](https://habitica.com/apidoc/#api-Meta-GetUserModelPaths)
+
     \f
     :param model_name: The particular data model
     :return:
