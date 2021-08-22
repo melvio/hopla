@@ -36,6 +36,7 @@ def enchanted_armoire(times: int, until_poor: bool):
 
     # TODO (contact:melvio) when until_poor=True, calculate the user's gp
     # * this can be done by hopla itself once user-inventory gp has been implemented
+    # https://click.palletsprojects.com/en/8.0.x/options/#boolean-flags
 
     for _ in range(times):
         buy_from_enchanted_armoire_once()
