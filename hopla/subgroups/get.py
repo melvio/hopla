@@ -182,13 +182,12 @@ class HabiticaUser:
 
         return HabiticaUser(user_dict=result)
 
-
     def _filter_user(self, *, user_dict: dict, filter_keys: str) -> dict:
-        """
-        Gets a starting dict D and uses filter_keys of form "hi.ya.there" to get
-        {filter_keys: D["hi"]["ya"]["there"]} or {filter_string: {}} if D["hi"]["ya"]["there"]
-        does not exist.
+        """ Gets a starting dict D and uses filter_keys of form "hi.ya.there" to get
+            {filter_keys: D["hi"]["ya"]["there"]} or {filter_string: {}} if D["hi"]["ya"]["there"]
+            does not exist.
 
+        TODO: include doctests in the build process [docs](https://docs.python.org/3/library/doctest.html)
         >>> self._filter_user(user_dict={"items": {"currentPet": "Wolf-Base", "currentMount": "Aether-Invisible"}},
         ...                   filter_keys = "items.currentMount")
         {"items.currentMount": "Aether-Invisible"}

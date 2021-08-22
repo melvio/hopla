@@ -4,7 +4,6 @@ import sys
 import os
 
 sys.path.append(os.environ.get("script_dirname"))
-import logging
 
 # TODO: temporary, while hopla is in beta
 try:

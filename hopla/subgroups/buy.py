@@ -61,4 +61,5 @@ def enchanted_armoire(ctx, times: int, until_poor: bool):
         buy_from_enchanted_armoire_once()
         if times > 28:
             # throttle because we are going to call the API often
-            time.sleep(2)
+            seconds = 2
+            time.sleep(seconds)
