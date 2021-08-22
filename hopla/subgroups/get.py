@@ -41,31 +41,31 @@ def user_inventory(item_group_name):
 valid_stat_names = click.Choice(["hp", "mp", "exp", "gp", "class", "all"])
 
 
-@get.command(help="Get a user's stats")
+@get.command()
 @click.argument("stat_name", type=valid_stat_names, default="all")
 def user_stats(stat_name: str):
     """
-    Retrieve information from /user .data.user.stats
+    Get the stats of a user
     """
     log.debug(f"hopla get user-stats stat={stat_name}")
 
     response = HabiticaUserRequest().request_user()
 
-    user_dict = HabiticaUser(user_dict=response.json()["data"]).user_as_json_str()
-    print(user_dict)
-    print(user_dict["auth"])
+    response_json = response.json()
+    if response_json["success"]:
+        data_items = response_json["data"]["stats"]
+        if stat_name == "all":
+            click.echo(data_items)
+            return data_items
+        else:
+            click.echo(data_items[stat_name])
+            return data_items[stat_name]
+    else:
+        click.echo(response_json["message"])
 
-    # response_json = response.json()
-    # if response_json["success"]:
-    #     data_items = response_json["data"]["stats"]
-    #     if stat_name == "all":
-    #         click.echo(data_items)
-    #         return data_items
-    #     else:
-    #         click.echo(data_items[stat_name])
-    #         return data_items[stat_name]
-    # else:
-    #     click.echo(response_json["message"])
+
+# TODO: aliases
+valid_auth_info_names = click.Choice(["username", "email", "profilename", "all"])
 
 
 # username -> 'data.auth.local.username':
@@ -76,9 +76,6 @@ def user_stats(stat_name: str):
 # profilename -> 'data.profile.name'
 # *  is changeable at '<https://habitica.com/user/settings/site>' under 'Change Display Name'
 # profilename is not really in the .data.auth section of /user.. but fits well here
-
-# TODO: aliases
-valid_auth_info_names = click.Choice(["username", "email", "profilename", "all"])
 
 
 @get.command(help="Get user authentication and identification info")
@@ -107,9 +104,31 @@ def user_auth(auth_info_name: str):
             return auth_info
 
 
-@get.command(help="get all user info or query into the user JSON object")
-@click.option("--filter", "-f", "filter_string", type=str)
+@get.command()
+@click.option("--filter", "-f", "filter_string", type=str,
+              help=
+              """
+                      Filter this habitica user according to the filter_string.
+              
+                      [BNF](https://en.wikipedia.org/wiki/Backus-Naur-Form) 
+                      for the filter_string:
+              
+                          filter_keys ::= [filter_keys]?[,filter_keys]*
+                          filter_keys ::= filter_keys[.filter_keys]*
+              
+                      Examples:                                               
+                      *  get all items of a user:     "items"\n
+                      *  get all mounts of a user:    "items.mounts"\n
+                      *  get all mounts+pets:         "items.mounts,items.pets"\n
+              
+              
+                      :param filter_string: string to filter the user dict on (e.g. "achievements.streak,purchased.plan")
+              """)
 def user_info(filter_string):
+    """ If no filter_string is given, get all user info.
+        Else returns the result of filtering the user's info on the specified filter_string
+    """
+
     log.debug(f"hopla get user-info filter={filter_string}")
 
     response = HabiticaUserRequest().request_user()
@@ -149,18 +168,8 @@ class HabiticaUser:
 
     def filter_user(self, filter_string: str):
         """
-        Filter this habitica user dict according to the filter_keys.
-
-        [Backus-Naur-Form](https://en.wikipedia.org/wiki/Backus-Naur-Form) for the filter_keys:
-
-            filter_keys ::= [filter_keys]?[,filter_keys]*
-            filter_keys   ::= filter_keys[.filter_keys]*
-
-        Examples:
-           get all items of a user:                "items"
-           get all mounts of a user:               "items.mounts"
-           get all mounts and pets of a user:      "items.mounts,items.pets"
-
+        Filter this habitica user dict according to the filter_string.
+        Specification of the filter_string is given above.
 
         :param filter_string: string to filter the user dict on (e.g. "achievements.streak,purchased.plan")
         :return: a HabiticaUser representing the user with the non-matched keys removed
@@ -170,9 +179,7 @@ class HabiticaUser:
 
         for filter_keys in filters:
             filter_keys: str = filter_keys.strip()
-            print(filter_keys)
             if len(filter_keys) != 0:
-                print(result)
                 result.update(self._filter_user(user_dict=self.user_dict, filter_keys=filter_keys))
 
         return HabiticaUser(user_dict=result)
@@ -198,6 +205,3 @@ class HabiticaUser:
                 return {filter_keys: {}}
         return {filter_keys: start_dict}
 
-# @property
-# def user_json(self):
-#     return json.dumps()
