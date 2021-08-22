@@ -10,6 +10,10 @@ log = logging.getLogger()
 # TODO: --browser option
 @click.command()
 def auth():
+    """ authorize yourself to access the Habitica.com API
+
+    hopla auth allows you interactively providing access credentials.
+    """
     log.debug("function: hopla auth")
-    auth_hander = AuthorizationHandler()
-    auth_hander.set_hopla_credentials(overwrite=True)
+    auth_handler = AuthorizationHandler()
+    auth_handler.set_hopla_credentials(overwrite=True)
