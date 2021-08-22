@@ -8,6 +8,7 @@ syntax:
     hopla get user-stats manapoints|mana|mp
     hopla get user-stats experience|exp|xp
     hopla get user-stats gold|gp
+    hopla get user-stats level|lvl
     hopla get user-stats --jq-filter|-j {FILTER}
 
 
