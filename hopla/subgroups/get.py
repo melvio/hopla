@@ -15,7 +15,7 @@ def get():
 valid_item_groups = click.Choice(["pets", "mounts", "food", "gear", "quests", "hatchingPotions", "eggs", "all"])
 
 
-@get.command()
+@get.command(help="Get items from the user's inventory")
 @click.argument("item_group_name", type=valid_item_groups, default="all")
 def user_inventory(item_group_name):
     log.debug("hopla get user-inventory")
