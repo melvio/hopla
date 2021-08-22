@@ -1,4 +1,7 @@
+import datetime
 import logging
+from typing import Dict, List
+
 import click
 import requests
 
@@ -53,9 +56,14 @@ due_date_formats = click.DateTime(formats=["%Y-%m-%d",  # 2022-10-29
 
 @add.command()
 @click.option("--difficulty", type=valid_difficulties, default="easy", show_default=True)
-@click.option("--due-date", "--deadline", type=due_date_formats, metavar="<date_format>", help="YYYY-MM-DD or DD-MM-YYYY")
+@click.option("--due-date", "--deadline", type=due_date_formats, metavar="<date_format>",
+              help="due date of the todo in either YYYY-MM-DD or DD-MM-YYYY")
+@click.option("--checklist-file", type=click.File(), help="every line in FILENAME will be an item of the checklist")
 @click.argument("todo_name")
-def todo(difficulty, due_date, todo_name):
+def todo(difficulty: str,
+         due_date: datetime.datetime,
+         checklist_file,
+         todo_name: str):
     """Add a To-Do.
 
     TODO_NAME the name of the To-DO
@@ -63,9 +71,10 @@ def todo(difficulty, due_date, todo_name):
     [apidocs](https://habitica.com/apidoc/#api-Task-CreateUserTasks)
 
     \f
-    :param todo_name:
     :param difficulty:
     :param due_date:
+    :param checklist_file:
+    :param todo_name:
     :return:
 
     """
@@ -77,8 +86,13 @@ def todo(difficulty, due_date, todo_name):
     todo_item["priority"] = difficulty_to_score(difficulty)
     todo_item["type"] = "todo"  # task type key
     if due_date is not None:
-        habitica_date_format = "%Y-%m-%d"
-        todo_item["date"] = due_date.strftime(habitica_date_format)  # ISO 8601 date format
+        habitica_date_format = "%Y-%m-%d"  # ISO 8601 date format
+        todo_item["date"] = due_date.strftime(habitica_date_format)
+
+    if checklist_file is not None:
+        # TODO: Make an object for this, not dicts of list of dicts
+        checklist_list: List[Dict[str, str]] = [{"text": line} for line in checklist_file.readlines()]
+        todo_item["checklist"] = checklist_list
 
     url: str = UrlBuilder(path_extension="/tasks/user").url
     headers: dict = RequestHeaders().get_default_request_headers()
