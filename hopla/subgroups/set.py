@@ -12,11 +12,11 @@ def set():
     pass
 
 
-valid_day_start_hours = [str(i) for i in range(0, 24)]
+valid_day_start_hours = click.Choice([str(i) for i in range(0, 24)])
 
 
 @set.command()
-@click.argument("day_start_hour", type=click.Choice(valid_day_start_hours), required=False, default="0")
+@click.argument("day_start_hour", type=valid_day_start_hours, default="0")
 def day_start(day_start_hour):
     log.debug(f"hopla set day-start {day_start_hour}")
 
@@ -28,4 +28,4 @@ def day_start(day_start_hour):
 
     # TODO: (contact:melvio) --json vs. user friendly output
     json = response.json()
-    click.echo(json["success"])
+    click.echo(json["data"]["message"])

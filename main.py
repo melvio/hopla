@@ -54,6 +54,7 @@ from hopla.subgroups.set import set
 from hopla.subcommands.version import version
 from hopla.subcommands.auth import auth
 from hopla.subgroups.buy import buy
+from hopla.subgroups.get import get
 
 
 @click.group()
@@ -70,4 +71,5 @@ if __name__ == "__main__":
     hopla.add_command(version)
     hopla.add_command(auth)
     hopla.add_command(buy)
+    hopla.add_command(get)
     hopla()
