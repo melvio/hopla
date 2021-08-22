@@ -46,10 +46,16 @@ def difficulty_to_score(difficulty: str) -> str:
 #     return difficulties_scores[self.difficulty]
 
 
+due_date_formats = click.DateTime(formats=["%Y-%m-%d",  # 2022-10-29
+                                           "%d-%m-%Y",  # 29-10-2022
+                                           ])
+
+
 @add.command()
-@click.option("--difficulty", type=valid_difficulties, default="medium", show_default=True)
+@click.option("--difficulty", type=valid_difficulties, default="easy", show_default=True)
+@click.option("--due-date", "--deadline", type=due_date_formats, metavar="<date_format>", help="YYYY-MM-DD or DD-MM-YYYY")
 @click.argument("todo_name")
-def todo(difficulty, todo_name):
+def todo(difficulty, due_date, todo_name):
     """Add a To-Do.
 
     TODO_NAME the name of the To-DO
@@ -59,15 +65,20 @@ def todo(difficulty, todo_name):
     \f
     :param todo_name:
     :param difficulty:
+    :param due_date:
     :return:
 
     """
-    log.debug(f"habitica add todo difficulty={difficulty} name={todo_name}")
+    log.debug(f"habitica add todo name={todo_name}"
+              f"   difficulty={difficulty} , due_date={due_date}")
 
     todo_item = dict()
     todo_item["text"] = todo_name
     todo_item["priority"] = difficulty_to_score(difficulty)
     todo_item["type"] = "todo"  # task type key
+    if due_date is not None:
+        habitica_date_format = "%Y-%m-%d"
+        todo_item["date"] = due_date.strftime(habitica_date_format)  # ISO 8601 date format
 
     url: str = UrlBuilder(path_extension="/tasks/user").url
     headers: dict = RequestHeaders().get_default_request_headers()
