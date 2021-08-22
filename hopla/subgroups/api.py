@@ -10,19 +10,17 @@ log = logging.getLogger()
 # TODO: add some kind of json filtering
 @click.group()
 def api():
-    """ hopla api - command group for requesting the habitica API metadata
-
-    :return:
-    """
+    """GROUP for requesting Habitica API metadata"""
     pass
 
 
 @api.command()
 def content() -> str:
-    """- Returns the content of habitica
+    """print habitica content
 
     "content" as in content distribution network
 
+    \f
     :return:
     """
 
@@ -38,14 +36,16 @@ def content() -> str:
 
 
 # todo: maybe get this dynamically from the API?
-valid_model_names = ["user", "group", "challenge", "tag", "habit", "daily", "todo", "reward"]
+valid_model_names = click.Choice(["user", "group", "challenge", "tag", "habit", "daily", "todo", "reward"],
+                                 case_sensitive=False)
 
 
 @api.command()
-@click.argument("model_name", type=click.Choice(valid_model_names, case_sensitive=False))
+@click.argument("model_name", type=valid_model_names)
 def model(model_name: str):
-    """hopla api model - returns the specified habitica API datamodel
+    """returns the specified habitica API datamodel
 
+    \f
     :param model_name: The particular data model
     :return:
     """
@@ -63,9 +63,9 @@ def model(model_name: str):
 
 @api.command()
 def version() -> str:
-    """
-    hopla api version - returns the version string of the habitica.com API
+    """print the version string of the Habitica API (e.g. v3)
 
+    \f
     :return The habitica API version string. (e.g. v3, v4)
     """
     log.debug("function: version")
@@ -76,10 +76,10 @@ def version() -> str:
 
 @api.command()
 def status() -> str:
-    """ hopla api status
+    """get the hopla API availability status
 
-    Returns the hopla API status
 
+    \f
     :return: The api status (expected: "status": "up")
     """
     log.debug("function: api")

@@ -1,6 +1,0 @@
-hopla buy enchanted-armoire - buy from enchanted-armoire
-
-usage:
-    hopla buy enchanted-armoire
-    hopla buy enchanted-armoire --times N
-    hopla buy enchanted-armoire --until-poor

@@ -13,7 +13,7 @@ log = logging.getLogger()
 # TODO: add some kind of json filtering
 @click.group()
 def add():
-    """Command group for adding things to habitica (e.g. To-Dos) """
+    """GROUP for adding things to habitica"""
     pass
 
 

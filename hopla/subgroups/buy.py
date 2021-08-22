@@ -12,7 +12,7 @@ log = logging.getLogger()
 # TODO: add some kind of json filtering
 @click.group()
 def buy():
-    """group command to buy things"""
+    """GROUP to buy things"""
     pass
 
 
@@ -37,13 +37,17 @@ def times_until_poor(gp: float) -> int:
 @click.option("--times", "-t",
               default=1,
               type=click.IntRange(min=0),
+              metavar="[TIMES]",
               help="number of times to buy from the enchanted-armoire")
 @click.option("--until-poor", "-u", is_flag=True, help="buy from enchanted-armoire until gp runs out")
 @click.pass_context
 def enchanted_armoire(ctx, times: int, until_poor: bool):
     """ Buy from the enchanted armoire
 
-    By default you only buy once. Use the options to buy more often.
+    TIMES - the number of times to buy from the enchanted armoire. Must be at least 0.
+    When TIMES is omitted, 1 is the default.
+
+    If no options are specified, you buy once. Use the options to buy more often.
     """
     log.debug(f"hopla buy enchanted-armoire times={times}, until_poor={until_poor}")
 

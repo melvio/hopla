@@ -12,6 +12,7 @@ log = logging.getLogger()
 
 @click.group()
 def get():
+    """GROUP for getting information from habitica"""
     pass
 
 
@@ -22,8 +23,11 @@ valid_item_groups = click.Choice(["pets", "mounts", "food", "gear", "quests", "h
 @get.command()
 @click.argument("item_group_name", type=valid_item_groups, default="all")
 def user_inventory(item_group_name) -> dict:
-    """ Get items from the user's inventory
+    """Get items from the user's inventory
 
+    If no specific item group is specified,
+
+    \f
     :param item_group_name: The type of items in the inventory (default: all)
     :return: The specified inventory
     """
