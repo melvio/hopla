@@ -54,6 +54,7 @@ from hopla.subgroups.api import api
 from hopla.subgroups.set import set
 from hopla.subcommands.version import version
 from hopla.subcommands.auth import auth
+from hopla.subcommands.config import config
 from hopla.subgroups.buy import buy
 from hopla.subgroups.get import get
 
@@ -69,6 +70,7 @@ if __name__ == "__main__":
     hopla_env = HoplaEnvironment().create_hopla_env(script_dirname=script_dirname)
     hopla.add_command(add)
     hopla.add_command(api)
+    hopla.add_command(config)
     hopla.add_command(set)
     hopla.add_command(version)
     hopla.add_command(auth)
