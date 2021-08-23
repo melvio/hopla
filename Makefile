@@ -12,24 +12,21 @@ configure:
 	hopla set-hopla credentials
 
 
-## hopla CLI examples ##
-hopla_add_todo_checklist:
-	hopla add todo --hard --due-date 2021-07-31 --checklist ~/.local/share/hopla/fake_tasks.txt "my todo thingy here"
-
-tomorrow="$$(date --date tomorrow '+%Y-%m-%d')"
+# iso-date for tomorrow: YYYY-MM-DD
+tomorrow="$$(date --iso-8601 --date=tomorrow)"
 hopla_add_todo_checklist_tomorrow:
-	hopla add todo --medium --due-date $(tomorrow) --checklist ~/todo/todo_list/checklist.md "$(tomorrow) checklist"
+	hopla add todo --difficulty medium --due-date $(tomorrow) --checklist-file ~/todo/todo_list/checklist.md "$(tomorrow) checklist"
 
 hopla_add_todo_checklist_studroll:
-	hopla add todo --medium --due-date $(tomorrow) --checklist ~/todo/todo_list/roll.md "$(tomorrow) stud"
+	hopla add todo --difficulty medium --due-date $(tomorrow) --checklist-file ~/todo/todo_list/roll.md "$(tomorrow) stud"
 
 
-today="$$(date '+%Y-%m-%d')"
+today="$$(date --iso-8601)"
 hopla_add_todo_checklist_today:
-	hopla add todo --medium --due-date $(today) --checklist ~/todo/todo_list/today.md "$(today) checklist"
+	hopla add todo --difficulty medium --due-date $(today) --checklist-file ~/todo/todo_list/today.md "$(today) checklist"
 
 hopla_add_todo_no_checklist:
-	hopla add todo --hard --due-date $$(date '+%Y-%m-%d')  "my todo thingy here"
+	hopla add todo --difficulty hard --due-date $$(date --iso-8601)  "my todo thingy here"
 
 
 hopla_enable_debug:
