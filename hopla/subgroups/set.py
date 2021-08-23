@@ -19,7 +19,7 @@ valid_day_start_hours = click.Choice([str(i) for i in range(0, 24)])
 @set.command()
 @click.argument("day_start_hour", type=valid_day_start_hours, default="0", metavar="[HOUR]")
 def day_start(day_start_hour):
-    """Set your day-start (CRON) to the specified HOUR
+    """Set your day-start (CRON) to the specified HOUR.
 
     HOUR - sets the day start to the N-th hour of the day. HOUR may range
     from 0 to 23 (inclusive). 0 AM (midnight) will be used as the
@@ -36,10 +36,8 @@ def day_start(day_start_hour):
     # set the day start to 00:00 AM
     $ hopla set day-start
 
-
-
-
-
+    \f
+    :param day_start_hour:
     """
     log.debug(f"hopla set day-start {day_start_hour}")
 

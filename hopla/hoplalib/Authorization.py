@@ -35,6 +35,7 @@ class AuthorizationHandler:
         else:
             auth_file = Path.home() / ".config" / "hopla" / "auth.conf"
 
+        # TODO: check if resolve could fail if these dirs dont exist
         return auth_file.resolve()
 
     @property
@@ -59,8 +60,7 @@ class AuthorizationHandler:
             .get(AuthorizationConstants.CONFIG_KEY_API_TOKEN)
 
     def auth_file_exists(self):
-        return self.auth_file.exists \
-               and self.auth_file.is_file()
+        return self.auth_file.exists and self.auth_file.is_file()
 
     def set_hopla_credentials(self, *, overwrite: bool = False):
         log.debug(f"set_hopla_credentials overwrite={overwrite}")
@@ -68,11 +68,11 @@ class AuthorizationHandler:
             log.info(f"Auth file {self.auth_file} not recreated because it already exists")
             return
 
+        # TODO: with mode=w here, we are essentially creating this empty auth file twice
         self._create_empty_auth_file()
 
         user_id, api_token = self.request_user_credentials()
-
-        with open(self.auth_file, "w") as new_auth_file:
+        with open(self.auth_file, mode="w") as new_auth_file:
             self.config_parser.add_section(AuthorizationConstants.CONFIG_SECTION_CREDENTIALS)
             self.config_parser.set(
                 section=AuthorizationConstants.CONFIG_SECTION_CREDENTIALS,
@@ -151,5 +151,5 @@ class AuthorizationHandler:
         if self._auth_file_has_api_token() is False or self._auth_file_has_user_id() is False:
             print("no credentials found")
             print("Please run:")
-            print(" hopla set-hopla credentials")
+            print("    hopla auth")
             exit(1)
