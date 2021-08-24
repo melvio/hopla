@@ -41,7 +41,7 @@ _autocomplete_hopla_complete(){
 
 _autocomplete_hopla_feed(){
   local wordlist cur
-  wordlist="pet --help"
+  wordlist="--amount --help"
   cur="${COMP_WORDS[COMP_CWORD]}"
   COMPREPLY=( $(compgen -W "${wordlist}" -- "${cur}" ) )
 }

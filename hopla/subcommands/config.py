@@ -8,7 +8,6 @@ import click
 import os
 
 import logging
-from hopla.hoplalib.Authorization import AuthorizationHandler
 
 log = logging.getLogger()
 
@@ -170,6 +169,12 @@ def config(config_name: str, value,
     hopla config CONFIG_NAME        # get value of CONFIG_NAME
     hopla config CONFIG_NAME VALUE  # give CONFIG_NAME the specified VALUE
     hopla config --list             # show all config values
+
+    \b
+    Examples
+    ---
+    # turn debug_enabled to 1 (TODO: currently not yet supported)
+    hopla config debug_enabled 1
 
 
     \f
