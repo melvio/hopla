@@ -14,7 +14,7 @@ def setup_logging() -> logging.Logger:
     """Setup python logging for the entire hopla project"""
     # https://docs.python.org/3.8/howto/logging.html#logging-basic-tutorial
     logging.basicConfig(
-        format='[%(levelname)s][%(filename)s - %(asctime)s] %(message)s',
+        format='[%(levelname)s][%(filename)s|%(asctime)s] %(message)s',
         level=logging.DEBUG,
         datefmt="%Y-%m-%dT%H:%M:%S"
     )
@@ -55,6 +55,7 @@ from hopla.subgroups.set import set
 from hopla.subcommands.version import version
 from hopla.subcommands.auth import auth
 from hopla.subcommands.config import config
+from hopla.subcommands.feed import feed
 from hopla.subgroups.buy import buy
 from hopla.subgroups.get import get
 
@@ -65,15 +66,23 @@ def hopla():
 
 
 if __name__ == "__main__":
+    log.info("Thank you for trying out hopla in its early release")
+    log.info("Bug reports, pull requests, and feature requests are welcomed over at:  ")
+    log.info("  <https://github.com/melvio/hopla>")
     log.debug(f"start application with arguments: {sys.argv}")
     script_dirname = os.path.dirname(Path(__file__).resolve())
     hopla_env = HoplaEnvironment().create_hopla_env(script_dirname=script_dirname)
+    # subgroups
     hopla.add_command(add)
     hopla.add_command(api)
-    hopla.add_command(config)
     hopla.add_command(set)
-    hopla.add_command(version)
-    hopla.add_command(auth)
     hopla.add_command(buy)
     hopla.add_command(get)
+
+    # subcommands
+    hopla.add_command(config)
+    hopla.add_command(version)
+    hopla.add_command(auth)
+    hopla.add_command(feed)
+
     hopla()

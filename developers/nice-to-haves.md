@@ -8,9 +8,6 @@ Nice to haves:
 * apply: <http://redsymbol.net/articles/unofficial-bash-strict-mode/>
 * hopla add todo --checklist {relative_file.md}
 * support with gems functionality
-* get automatic completion improvements (
-  + options
-  + config options
 * get error checking for wrong commands
 * get quest info
 * check uuid input format (or even ask the api for confirmation using .data.auth.nogiets)
@@ -30,13 +27,14 @@ Nice to haves:
   + Config data class 
   + Authorization data class
 * add project structure with proper imports
+* click autocomplete
 
 
 ### general
 
 * --json flag for json and CLI-user friendly output by default
 * Make this project installable with a respectable package manager (e.g. apt, pip, snap, flatpak)
-* deeper nesting of the `hopla` folder, only have the main `hopla` command itself in the root directory
-  * [DONE] hopla.sh and hopla.py in main folder
-  * cleanup migratory files in main folder
-
+* [DONE] deeper nesting of the `hopla` folder, only have the main `hopla` command itself in the root directory
+  * [DONE] only have `main.py` in base dir of project  
+  * [DONE] cleanup migratory files in base dir folder
+* implement goal_bnf.md CLI 

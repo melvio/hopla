@@ -20,6 +20,7 @@ def content() -> str:
 
     "content" as in content distribution network
 
+    [API-docs](https://habitica.com/apidoc/#api-Content-ContentGet)
     \f
     :return:
     """
