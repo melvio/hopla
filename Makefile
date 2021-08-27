@@ -1,8 +1,9 @@
 
 
 
-build_source_distribution:
-	python3 setup.py sdist
+build:
+	# https://setuptools.readthedocs.io/en/latest/userguide/quickstart.html
+	python -m build
 
 
 ## first time hopla usage ##

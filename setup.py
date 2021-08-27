@@ -11,7 +11,7 @@ def hopla_version() -> str:
     # TODO: get this value injected into `hopla version`
 
     version_core = f"{MAJOR_VERSION}.{MINOR_VERSION}.{PATCH_VERSION}"
-    if PRE_RELEASE is not None and PRE_RELEASE is not "":
+    if PRE_RELEASE is not None and PRE_RELEASE != "":
         pre_release = f"-{PRE_RELEASE}"
     else:
         pre_release = ""
