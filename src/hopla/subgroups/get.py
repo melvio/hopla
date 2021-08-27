@@ -18,7 +18,20 @@ def get():
     pass
 
 
-# TODO: aliases
+def handle_response(api_response: requests.Response):
+    """Returns the data of a response if successful, else print error message
+
+    :param api_response:
+    :return:
+    """
+    response_json = api_response.json()
+    if response_json["success"]:
+        return response_json["data"]
+    else:
+        log.debug(f"received: {response_json}")
+        click.echo([response_json["message"]])
+
+
 valid_item_groups = click.Choice(["pets", "mounts", "food", "gear", "quests", "hatchingPotions", "eggs", "all"])
 
 
@@ -33,22 +46,17 @@ def user_inventory(item_group_name) -> dict:
     :param item_group_name: The type of items in the inventory (default: all)
     :return: The specified inventory
     """
-
     log.debug(f"hopla get user-inventory item_group={item_group_name}")
-
     response = HabiticaUserRequest().request_user()
+    response_data: dict = handle_response(response)
 
-    response_json = response.json()
-    if response_json["success"]:
-        data_items = response_json["data"]["items"]
-        if item_group_name == "all":
-            click.echo(data_items)
-            return data_items
-        else:
-            click.echo(data_items[item_group_name])
-            return data_items
+    data_items = response_data["items"]
+    if item_group_name == "all":
+        click.echo(data_items)
+        return data_items
     else:
-        click.echo(response_json["message"])
+        click.echo(data_items[item_group_name])
+        return data_items
 
 
 # TODO: aliases
@@ -73,24 +81,18 @@ def from_alias_to_canonical_name(stat_name: str):
 @get.command(context_settings=dict(token_normalize_func=from_alias_to_canonical_name))
 @click.argument("stat_name", type=valid_stat_names, default="all")
 def user_stats(stat_name: str):
-    """
-    Get the stats of a user
-    """
+    """Get the stats of a user"""
     log.debug(f"hopla get user-stats stat={stat_name}")
-
     response = HabiticaUserRequest().request_user()
+    response_data: dict = handle_response(response)
 
-    response_json = response.json()
-    if response_json["success"]:
-        data_items = response_json["data"]["stats"]
-        if stat_name == "all":
-            click.echo(data_items)
-            return data_items
-        else:
-            click.echo(data_items[stat_name])
-            return data_items[stat_name]
+    data_stats = response_data["stats"]
+    if stat_name == "all":
+        click.echo(data_stats)
+        return data_stats
     else:
-        click.echo(response_json["message"])
+        click.echo(data_stats[stat_name])
+        return data_stats[stat_name]
 
 
 # TODO: aliases
@@ -107,30 +109,27 @@ valid_auth_info_names = click.Choice(["username", "email", "profilename", "all"]
 # profilename is not really in the .data.auth section of /user.. but fits well here
 
 
-@get.command(help="Get user authentication and identification info")
+@get.command()
 @click.argument("auth_info_name", type=valid_auth_info_names, default="all")
 def user_auth(auth_info_name: str):
+    """Get user authentication and identification info"""
     log.debug(f"hopla get user-auth auth={auth_info_name}")
-
     response = HabiticaUserRequest().request_user()
-    response_json = response.json()
+    response_data: dict = handle_response(response)
 
-    if response_json["success"]:
-        json_data = response_json["data"]
-        json_data_auth = json_data["auth"]
-        if auth_info_name == "all":
-            click.echo(json_data_auth)
-            return json_data_auth
-        if auth_info_name == "profilename":
-            profile_name = json_data["profile"]["name"]
-            click.echo(profile_name)
-            return profile_name
-        else:
-            # TODO no support for non-local data yet (e.g. google SSO)
-            # use 'all' instead and filter
-            auth_info = json_data_auth["local"][auth_info_name]
-            click.echo(auth_info)
-            return auth_info
+    json_data_auth = response_data["auth"]
+    if auth_info_name == "all":
+        click.echo(json_data_auth)
+        return json_data_auth
+    if auth_info_name == "profilename":
+        profile_name = response_data["profile"]["name"]
+        click.echo(profile_name)
+        return profile_name
+    else:
+        # TODO no support for non-local data yet (e.g. google SSO)
+        auth_info = json_data_auth["local"][auth_info_name]
+        click.echo(auth_info)
+        return auth_info
 
 
 @get.command()
