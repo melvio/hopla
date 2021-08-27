@@ -1,15 +1,6 @@
-import os
-import sys
 
-sys.path.append(os.environ.get("script_dirname"))
 
-# TODO: temporary, while hopla is in beta
-try:
-    # jetbrains
-    from hopla.hoplalib.Authorization import AuthorizationHandler
-except:
-    # cmdline
-    from hoplalib.Authorization import AuthorizationHandler
+from hopla.hoplalib.Authorization import AuthorizationHandler
 
 
 class RequestHeaders:
