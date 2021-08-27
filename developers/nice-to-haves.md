@@ -1,18 +1,6 @@
 
 Nice to haves:
 
-### BASH
-* do error handling after curls
-* add preserve whitespace option for checklist
-* provide error checking on typos in options
-* apply: <http://redsymbol.net/articles/unofficial-bash-strict-mode/>
-* hopla add todo --checklist {relative_file.md}
-* support with gems functionality
-* get error checking for wrong commands
-* get quest info
-* check uuid input format (or even ask the api for confirmation using .data.auth.nogiets)
-* --background flag 
-
 
 
 ### Python
@@ -28,13 +16,11 @@ Nice to haves:
   + Authorization data class
 * add project structure with proper imports
 * click autocomplete
-
-
-### general
-
+* support with gems functionality
+* get error checking for wrong commands
+* get quest info
+* check uuid input format (or even ask the api for confirmation using .data.auth.nogiets)
+* --background flag 
 * --json flag for json and CLI-user friendly output by default
 * Make this project installable with a respectable package manager (e.g. apt, pip, snap, flatpak)
-* [DONE] deeper nesting of the `hopla` folder, only have the main `hopla` command itself in the root directory
-  * [DONE] only have `main.py` in base dir of project  
-  * [DONE] cleanup migratory files in base dir folder
 * implement goal_bnf.md CLI 

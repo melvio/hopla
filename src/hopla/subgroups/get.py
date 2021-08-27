@@ -136,7 +136,7 @@ def user_auth(auth_info_name: str):
 @get.command()
 @click.option("--filter", "-f", "filter_string", type=str)
 def user_info(filter_string: str):
-    """ Return user information
+    """Return user information
 
     If no filter_string is given, get all user info.
     Else returns the result of filtering the user's info on the specified filter_string
@@ -152,9 +152,26 @@ def user_info(filter_string: str):
 
     \b
     Examples:
-    *  get all items of a user:     "items"
-    *  get all mounts of a user:    "items.mounts"
-    *  get all mounts+pets:         "items.mounts,items.pets"
+    ---
+    # get all items of a user:
+    hopla get user-info ---filter "items"
+
+    \b
+    # get all mounts
+    hopla get user-info ---filter "items.mounts"
+
+    \b
+    # get all mounts+pets
+    hopla get user-info ---filter "items.mounts,items.pets"
+
+    \b
+    # get streaks+completed quests
+    hopla get user-info -f "achievements.streak,achievements.quests"
+
+    \b
+    # get contributor status, croncount, profile description, and user id
+    hopla get user-info -f "contributor,flags.cronCount,profile.blurb,id"
+
 
     \f
     :param filter_string: string to filter the user dict on (e.g. "achievements.streak,purchased.plan")
