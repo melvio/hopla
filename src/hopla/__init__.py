@@ -10,6 +10,7 @@ from hopla.subcommands.version import version
 from hopla.subcommands.auth import auth
 from hopla.subcommands.config import config
 from hopla.subcommands.feed import feed
+from hopla.subcommands.complete import complete
 from hopla.subgroups.buy import buy
 from hopla.subgroups.get import get
 
@@ -51,6 +52,7 @@ def entry_cmd():
     hopla.add_command(get)
     # subcommands
     hopla.add_command(config)
+    hopla.add_command(complete)
     hopla.add_command(version)
     hopla.add_command(auth)
     hopla.add_command(feed)

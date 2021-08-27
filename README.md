@@ -36,7 +36,7 @@ You can find these over at `https://habitica.com/user/settings/api`.
 Run the following command to configure this automatically:
 
 ```bash
-$ hopla set-hopla credentials
+$ hopla auth 
 Please enter your habitica 'User ID': ****-****-****-***-*********
 Please enter your habitica 'API Token': ****-****-****-***-*********
 ```

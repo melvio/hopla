@@ -3,7 +3,10 @@
 
 build:
 	# https://setuptools.readthedocs.io/en/latest/userguide/quickstart.html
-	python -m build
+	python -m build && pip install .
+
+develop:
+	pip install -U -e .
 
 
 ## first time hopla usage ##
