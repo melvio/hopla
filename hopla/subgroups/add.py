@@ -66,7 +66,7 @@ def todo(difficulty: str,
          todo_name: str):
     """Add a To-Do.
 
-    TODO_NAME the name of the To-DO
+    TODO_NAME the name of the To-Do
 
     \b
     Examples:
