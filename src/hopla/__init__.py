@@ -14,6 +14,8 @@ from hopla.subcommands.complete import complete
 from hopla.subgroups.buy import buy
 from hopla.subgroups.get import get
 
+from hopla.hoplalib.Configuration import ConfigInitializer
+
 
 def setup_logging() -> logging.Logger:
     """Setup python logging for the entire hopla project"""
@@ -31,18 +33,16 @@ log = setup_logging()
 
 @click.group(context_settings=dict(help_option_names=['-h', '--help']))
 def hopla():
-    """hopla - a command line interface (CLI) to interact with habitica.com
-
-    \f
-    :return:
-    """
+    """hopla - a command line interface (CLI) to interact with habitica.com"""
     pass
 
 
 def entry_cmd():
-    log.info("Thank you for trying out hopla in its early release")
-    log.info("Bug reports, pull requests, and feature requests are welcomed over at:  ")
-    log.info("  <https://github.com/melvio/hopla>")
+    had_to_create_new_config_file = ConfigInitializer().initialize_before_running_cmds()
+    if had_to_create_new_config_file:
+        click.echo("Thank you for trying out hopla in its early release")
+        click.echo("Bug reports, pull requests, and feature requests are welcomed over at:  ")
+        click.echo("  <https://github.com/melvio/hopla>")
     log.debug(f"start application with arguments: {sys.argv}")
     # subgroups
     hopla.add_command(add)

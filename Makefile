@@ -6,7 +6,7 @@ build:
 	python -m build && pip install .
 
 develop:
-	pip install -U -e .
+	pip install --upgrade -e .
 
 
 ## first time hopla usage ##

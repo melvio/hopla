@@ -25,10 +25,10 @@ def hopla_version() -> str:
 
 @click.command()
 def version():
-    """print hopla's version string
+    """print the hopla version string
 
     \f
     :return:
     """
-    log.debug("function: hopla version")
+    log.debug("hopla version")
     click.echo(hopla_version())
