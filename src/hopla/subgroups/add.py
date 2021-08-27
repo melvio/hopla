@@ -17,8 +17,9 @@ def add():
     pass
 
 
+# @see https://habitica.com/apidoc/#api-Task-CreateUserTasks
 difficulties_scores = {"hard": "2", "medium": "1.5", "easy": "1",
-                       "trivial": "0.1"}  # @see https://habitica.com/apidoc/#api-Task-CreateUserTasks
+                       "trivial": "0.1"}
 valid_difficulties = click.Choice(list(difficulties_scores.keys()))
 
 

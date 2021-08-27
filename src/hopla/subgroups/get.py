@@ -1,9 +1,11 @@
 import copy
 import logging
-from typing import List
-
+import json
 import click
 import requests
+
+from typing import List
+from dataclasses import dataclass
 
 from hopla.hoplalib.Http import UrlBuilder, RequestHeaders
 
@@ -50,10 +52,25 @@ def user_inventory(item_group_name) -> dict:
 
 
 # TODO: aliases
-valid_stat_names = click.Choice(["hp", "mp", "exp", "gp", "class", "all"])
+valid_stat_names = click.Choice(["hp", "mp", "exp", "gp", "lvl", "class", "all"])
 
 
-@get.command()
+def from_alias_to_canonical_name(stat_name: str):
+    if stat_name in ["mana", "mana-points", "manapoints"]:
+        return "mp"
+    elif stat_name in ["health"]:
+        return "hp"
+    elif stat_name in ["xp", "experience"]:
+        return "exp"
+    elif stat_name in ["gold"]:
+        return "gp"
+    elif stat_name in ["level"]:
+        return "lvl"
+    else:
+        return stat_name
+
+
+@get.command(context_settings=dict(token_normalize_func=from_alias_to_canonical_name))
 @click.argument("stat_name", type=valid_stat_names, default="all")
 def user_stats(stat_name: str):
     """
@@ -118,7 +135,7 @@ def user_auth(auth_info_name: str):
 
 @get.command()
 @click.option("--filter", "-f", "filter_string", type=str)
-def user_info(filter_string):
+def user_info(filter_string: str):
     """ Return user information
 
     If no filter_string is given, get all user info.
@@ -152,12 +169,12 @@ def user_info(filter_string):
     if response_json["success"]:
         user_data = response_json["data"]
         if filter_string:
-            filtered_user = HabiticaUser(user_dict=user_data).filter_user(filter_string).user_dict
+            filtered_user = HabiticaUser(user_dict=user_data).filter_user(filter_string).user_as_json_str()
             click.echo(filtered_user)
             return filtered_user
 
         else:
-            click.echo(user_data)
+            click.echo(json.dumps(user_data, indent=2))
             return user_data
 
 
@@ -168,10 +185,6 @@ class HabiticaUserRequest:
 
     def request_user(self) -> requests.Response:
         return requests.get(url=self.url, headers=self.headers)
-
-
-from dataclasses import dataclass
-import json
 
 
 @dataclass(frozen=True)
