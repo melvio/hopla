@@ -62,6 +62,11 @@ from hopla.subgroups.get import get
 
 @click.group(context_settings=dict(help_option_names=['-h', '--help']))
 def hopla():
+    """hopla - a command line interface (CLI) to interact with habitica.com
+
+    \f
+    :return:
+    """
     pass
 
 
