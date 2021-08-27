@@ -24,6 +24,7 @@ gh repo clone melvio/hopla
 
 Now `cd` into the repository and run the installation script.
 ```bash
+# TODO: install.sh is deprecated: provide pip install instead
 cd ./hopla && ./install.sh
 ```
 `install.sh` will create a symbolic link to make the `hopla` command available on your `$PATH`.
