@@ -38,6 +38,12 @@ def print_config_file_content():
 # TODO: actually use the value of debug_enabled in the logging framework
 # TODO: get this value from the HoplaConfiguration class instead of duplicating it here
 supported_config_names = click.Choice(["cmd_all.loglevel"])
+# levels supported:
+# hopla config cmd_all.loglevel debug
+# hopla config cmd_all.loglevel info
+# hopla config cmd_all.loglevel warning
+# hopla config cmd_all.loglevel error
+
 
 
 @click.command()
@@ -86,7 +92,6 @@ def config(config_name: str,
     log.debug(f"hopla config name={config_name} value={value}")
     log.debug(f" options:  list={list_flag}, config_file_name={config_file_name_flag}")
 
-    # TODO: cleanup if else stuff
     if list_flag:
         print_config_file_content()
     elif config_file_name_flag:

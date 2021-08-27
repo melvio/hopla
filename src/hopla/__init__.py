@@ -15,14 +15,24 @@ from hopla.subgroups.buy import buy
 from hopla.subgroups.get import get
 
 from hopla.hoplalib.Configuration import ConfigInitializer
+from hopla.hoplalib.Configuration import ConfigurationFileParser
 
 
 def setup_logging() -> logging.Logger:
     """Setup python logging for the entire hopla project"""
+    parsed_loglevel = ConfigurationFileParser().get_full_config_name("cmd_all.loglevel")
+    # TODO: move mapping to config itself.. logging should not be responsible for this
+    loglevel_mapping = {
+        "debug": logging.DEBUG,
+        "info": logging.INFO,
+        "warning": logging.WARNING,
+        "error": logging.ERROR
+    }
+
     # https://docs.python.org/3.8/howto/logging.html#logging-basic-tutorial
     logging.basicConfig(
         format='[%(levelname)s][%(filename)s|%(asctime)s] %(message)s',
-        level=logging.DEBUG,
+        level=loglevel_mapping[parsed_loglevel],
         datefmt="%Y-%m-%dT%H:%M:%S"
     )
     return logging.getLogger(__name__)

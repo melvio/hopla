@@ -32,8 +32,6 @@ class HoplaConfigurationFile:
 
 
 class ConfigurationFileParser:
-    # TODO: really gotta handle this better.. have to much error checking going on.. functions
-    #       are doing stuff they are not supposed to be doing
     def __init__(self):
         self._conf_file: Path = HoplaConfigurationFile().file_path
 
