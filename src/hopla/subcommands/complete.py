@@ -2,6 +2,7 @@ import click
 import subprocess
 import os
 from pathlib import Path
+import abc
 
 import logging
 
@@ -23,6 +24,59 @@ log = logging.getLogger()
 #         return Path(xdg_data_home) / "bash-completion"
 #     else:
 #         return Path.home() / ".local" / "share" / "bash-completion"
+
+class RecognizedShell(abc.ABC):
+    def __init__(self, shell_name: str):
+        self.shell_name = shell_name
+
+    def __str__(self):
+        return self.__class__.__name__ + "(" + f"shell_name={self.shell_name}" + ")"
+
+    @abc.abstractmethod
+    def get_generated_autocomplete_cmd(self) -> str:
+        """Returns the command needed to generate autocomplete code"""
+        pass
+
+    @abc.abstractmethod
+    def get_enable_autocomplete_config_code(self) -> str:
+        """
+        Returns the code to be added to the shell config file to enable autocompletion automatically
+        """
+        pass
+
+
+class Bash(RecognizedShell):
+    def __init__(self):
+        super().__init__("bash")
+
+    def get_generated_autocomplete_cmd(self) -> str:
+        return f"_HOPLA_COMPLETE={self.shell_name}_source hopla"
+
+    def get_enable_autocomplete_config_code(self) -> str:
+        cmd = self.get_generated_autocomplete_cmd()
+        return f'eval "$({cmd})"'
+
+
+class Zsh(RecognizedShell):
+    def __init__(self):
+        super().__init__("zsh")
+
+    def get_generated_autocomplete_cmd(self) -> str:
+        return f"_HOPLA_COMPLETE={self.shell_name}_source hopla"
+
+    def get_enable_autocomplete_config_code(self) -> str:
+        raise NotImplementedError(f"not available for {self.shell_name}")
+
+
+class Fish(RecognizedShell):
+    def __init__(self):
+        super().__init__("fish")
+
+    def get_generated_autocomplete_cmd(self) -> str:
+        return f"env _HOPLA_COMPLETE={self.shell_name}_source hopla"
+
+    def get_enable_autocomplete_config_code(self) -> str:
+        raise NotImplementedError(f"not available for {self.shell_name}")
 
 
 def get_generated_autocomplete_cmd(shell_name: str):
