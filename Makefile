@@ -1,15 +1,15 @@
 
 
-## installing hopla ##
-install:
-	sudo ./install.sh
+
+build_source_distribution:
+	python3 setup.py sdist
 
 
 ## first time hopla usage ##
-## note: On some machines, this command might require a restart of your terminal
-##       to load the commands on your $PATH
+## note: On some machines, this command might require a restart of your
+##       terminal to load the commands on your $PATH
 configure:
-	hopla set-hopla credentials
+	hopla set auth
 
 
 # iso-date for tomorrow: YYYY-MM-DD
