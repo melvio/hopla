@@ -16,21 +16,25 @@ configure:
 	hopla set auth
 
 
-# iso-date for tomorrow: YYYY-MM-DD
-tomorrow="$$(date --iso-8601 --date=tomorrow)"
-hopla_add_todo_checklist_tomorrow:
-	hopla add todo --difficulty medium --due-date $(tomorrow) --checklist ~/todo/todo_list/checklist.md "$(tomorrow) checklist"
+hopla_add_simple_todo:
+	hopla add todo "Donate"
 
-hopla_add_todo_checklist_with_editor:
-	hopla add todo --difficulty medium --due-date $(tomorrow) --checklist-file ~/todo/todo_list/roll.md "$(tomorrow) studies"
+hopla_add_todo_hard_now_without_checklist:
+	hopla add todo --difficulty hard --due-date $$(date --iso-8601)  "my todo thingy here"
+
+# GNU date: iso-date for tomorrow: YYYY-MM-DD
+tomorrow="$$(date --iso-8601 --date=tomorrow)"
+hopla_add_todo_use_editor_for_checklist_tomorrow:
+	hopla add todo --difficulty medium --due-date $(tomorrow) --editor "$(tomorrow) checklist"
+
+hopla_add_todo_use_file_as_checklist:
+	hopla add todo --difficulty medium --due-date $(tomorrow) --checklist ~/todo/todo_list/roll.md "$(tomorrow) studies"
 
 
 today="$$(date --iso-8601)"
 hopla_add_todo_checklist_today:
-	hopla add todo --difficulty medium --due-date $(today) --checklist-file ~/todo/todo_list/today.md "$(today) checklist"
+	hopla add todo --difficulty medium --due-date $(today) --checklist ~/todo/todo_list/today.md "$(today) checklist"
 
-hopla_add_todo_no_checklist:
-	hopla add todo --difficulty hard --due-date $$(date --iso-8601)  "my todo thingy here"
 
 
 hopla_config_get_loglevel:
@@ -66,10 +70,9 @@ hopla_api_version:
 hopla_get_user_auth:
 	hopla get user-auth \
 	&& hopla get user-auth all \
-	&& hopla get-user-auth email \
+	&& hopla get user-auth email \
 	&& hopla get user-auth username \
-	&& hopla get user-auth profile \
-	&& hopla get user-auth --jq-filter '.timestamps.created'
+	&& hopla get user-auth profilename
 
 # hopla get-user stats
 hopla_get_user_stats:
@@ -80,14 +83,14 @@ hopla_get_user_stats:
     && hopla get user-stats manapoints \
     && hopla get user-stats experience \
     && hopla get user-stats gold \
-    && hopla get user-stats -j '.class'
+    && hopla get user-stats class
 
 
-hopla_get_user_items:
-	hopla get user-items \
-	&& hopla get user-items --help \
-	&& hopla get user-items all \
-	&& hopla get user-items pets \
-	&& hopla get user-items mounts \
-	&& hopla get user-items food \
-	&& hopla get user-items -j '.lastDrop'
+hopla_get_user_inventory:
+	hopla get user-inventory \
+	&& hopla get user-inventory --help \
+	&& hopla get user-inventory all \
+	&& hopla get user-inventory pets \
+	&& hopla get user-inventory mounts \
+	&& hopla get user-inventory food \
+	&& hopla get user-inventory lastDrop
