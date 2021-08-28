@@ -4,12 +4,14 @@ import requests
 import time
 
 from hopla.hoplalib.Http import UrlBuilder, RequestHeaders
+from hopla.hoplalib.ClickUtils import data_on_success_else_exit
+from hopla.hoplalib.OutputFormatter import JsonFormatter
+
 from hopla.subgroups import get
 
 log = logging.getLogger()
 
 
-# TODO: add some kind of json filtering
 @click.group()
 def buy():
     """GROUP to buy things"""
@@ -17,14 +19,15 @@ def buy():
 
 
 def buy_from_enchanted_armoire_once():
-    # TODO: (contact:melvio) after the options are added, we need to loop
     url = UrlBuilder(path_extension="/user/buy-armoire").url
     headers = RequestHeaders().get_default_request_headers()
 
     response = requests.post(url=url, headers=headers)
+    buy_data = data_on_success_else_exit(response)
 
-    json = response.json()
-    click.echo(json["data"]["armoire"])
+    # by default we get way too much info in the json so filter on "armoire"
+    enchanted_armoire_award = JsonFormatter(buy_data["armoire"]).format_with_double_quotes()
+    click.echo(enchanted_armoire_award)
 
 
 def times_until_poor(gp: float) -> int:
@@ -51,10 +54,6 @@ def enchanted_armoire(ctx, times: int, until_poor: bool):
     """
     log.debug(f"hopla buy enchanted-armoire times={times}, until_poor={until_poor}")
 
-    # TODO (contact:melvio) when until_poor=True, calculate the user's gp
-    # * this can be done by hopla itself once user-inventory gp has been implemented
-    # https://click.palletsprojects.com/en/8.0.x/options/#boolean-flags
-
     # TODO: (contact:melvio) --until-poor and --times N should be mutually exclusive options:
     #  and I dont think this is the case right now.
     #  * if it is the case: this TODO is DONE
@@ -62,7 +61,9 @@ def enchanted_armoire(ctx, times: int, until_poor: bool):
 
     if until_poor:
         # get gp and calculate how many times we should buy
-        gp = ctx.invoke(get.user_stats, stat_name="gp")  # TODO: this will echo 'gp': fix this
+        click.echo("starting gp: ", nl=False)
+        gp = ctx.invoke(get.user_stats,
+                        stat_name="gp")  # TODO: this will echo 'gp': fix this, now its hacked with "starting gp: "
         times = times_until_poor(gp)
 
     # TODO: maybe also use gp to limit the --times option
