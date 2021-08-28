@@ -2,3 +2,4 @@ requests
 pylint
 click
 build
+jq

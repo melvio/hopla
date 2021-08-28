@@ -1,6 +1,7 @@
 import logging
 import click
 import requests
+import jq
 
 from hopla.hoplalib.Http import UrlBuilder
 from hopla.hoplalib.ClickUtils import data_on_success_else_exit
@@ -17,10 +18,17 @@ def api():
 
 
 @api.command()
-def content() -> dict:
-    """print habitica content
+@click.option("--jq-filter", "-j", metavar="JQ_FILTER", help="JQ_FILTER is a `jq` filter that can be used to restructure output")
+def content(jq_filter: str) -> dict:
+    """get habitica content
 
-    "content" as in content distribution network
+
+    \b
+    Example
+    ----
+    # get information on the 'Ruby Rapport' quest
+    hopla api content --jq-filter ".quests.ruby"
+
 
     [API-docs](https://habitica.com/apidoc/#api-Content-ContentGet)
     \f
@@ -31,9 +39,13 @@ def content() -> dict:
 
     url_builder = UrlBuilder(path_extension="/content")
     response = requests.get(url=url_builder.url)
-    content_data = data_on_success_else_exit(response)
+    content_data: dict = data_on_success_else_exit(response)
 
-    click.echo(JsonFormatter(content_data).format_with_double_quotes())
+    if jq_filter:
+        user_requested_content_data = jq.compile(jq_filter).input(content_data).first()
+    else:
+        user_requested_content_data = content_data
+    click.echo(JsonFormatter(user_requested_content_data).format_with_double_quotes())
     return content_data
 
 
@@ -78,10 +90,10 @@ def version() -> str:
     \f
     :return The habitica API version string. (e.g. v3, v4)
     """
-    log.debug("hopla: version")
+    log.debug("hopla version")
     api_version = UrlBuilder().api_version
     click.echo(api_version)
-    return api_version          # .appVersion maybe also interesting?
+    return api_version  # .appVersion maybe also interesting?
 
 
 @api.command()
