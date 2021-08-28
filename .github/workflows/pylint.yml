@@ -22,6 +22,7 @@ jobs:
     - name: Run doctest
       # TODO: apply to all relevant *.py files
       run: |
+        pip install --upgrade --editable .
         python -m doctest -v src/hopla/cli/groupcmds/get.py
     - name: Run unittest with pytest
       run: |
