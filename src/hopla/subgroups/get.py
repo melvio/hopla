@@ -8,6 +8,7 @@ from typing import List
 from dataclasses import dataclass
 
 from hopla.hoplalib.Http import UrlBuilder, RequestHeaders
+from hopla.hoplalib.OutputFormatter import JsonFormatter
 
 log = logging.getLogger()
 
@@ -135,7 +136,7 @@ def user_auth(auth_info_name: str):
 
 @get.command()
 @click.option("--filter", "-f", "filter_string", type=str)
-def user_info(filter_string: str):
+def user_info(filter_string: str) -> dict:
     """Return user information
 
     If no filter_string is given, get all user info.
@@ -181,18 +182,17 @@ def user_info(filter_string: str):
     log.debug(f"hopla get user-info filter={filter_string}")
 
     response = HabiticaUserRequest().request_user()
-    response_json = response.json()
+    response_data: dict = handle_response(response)
+    habitica_user = HabiticaUser(user_dict=response_data)
 
-    if response_json["success"]:
-        user_data = response_json["data"]
-        if filter_string:
-            filtered_user = HabiticaUser(user_dict=user_data).filter_user(filter_string).user_as_json_str()
-            click.echo(filtered_user)
-            return filtered_user
+    if filter_string:
+        user: dict = habitica_user.filter_user(filter_string)
+    else:
+        user: dict = habitica_user.user_dict
 
-        else:
-            click.echo(json.dumps(user_data, indent=2))
-            return user_data
+    user_str = JsonFormatter(user).format_with_double_quotes()
+    click.echo(user_str)
+    return user
 
 
 class HabiticaUserRequest:
@@ -208,17 +208,13 @@ class HabiticaUserRequest:
 class HabiticaUser:
     user_dict: dict  # This should be a 200 ok response as json (using Response.json()) when calling the /user endpoint and getting .data
 
-    def user_as_json_str(self, indent=2) -> str:
-        # TODO: this should not be here
-        return json.dumps(self.user_dict, indent=indent)
-
     def get_stats(self) -> dict:
         return self.user_dict["stats"]
 
     def get_inventory(self) -> dict:
         return self.user_dict["items"]
 
-    def filter_user(self, filter_string: str):
+    def filter_user(self, filter_string: str) -> dict:
         result = dict()
         filters: List[str] = filter_string.strip().split(",")
 
@@ -227,7 +223,7 @@ class HabiticaUser:
             if len(filter_keys) != 0:
                 result.update(self._filter_user(user_dict=self.user_dict, filter_keys=filter_keys))
 
-        return HabiticaUser(user_dict=result)
+        return result
 
     def _filter_user(self, *, user_dict: dict, filter_keys: str) -> dict:
         """ Gets a starting dict D and uses filter_keys of form "hi.ya.there" to get
