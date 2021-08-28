@@ -81,7 +81,7 @@ valid_stat_names = click.Choice(["hp", "mp", "exp", "gp", "lvl", "class",
                                  "maxMP", "all"])
 
 
-def stat_alias_to_official_habitica_name(stat_name: str):
+def stat_alias_to_official_habitica_name(stat_name: str) -> str:
     # pylint: disable=too-many-return-statements
     if stat_name in ["mana", "mana-points", "manapoints"]:
         return "mp"
@@ -99,8 +99,7 @@ def stat_alias_to_official_habitica_name(stat_name: str):
     return stat_name
 
 
-@get.command(context_settings=dict(
-    token_normalize_func=stat_alias_to_official_habitica_name))
+@get.command(context_settings=dict(token_normalize_func=stat_alias_to_official_habitica_name))
 @click.argument("stat_name", type=valid_stat_names, default="all")
 def user_stats(stat_name: str):
     """Get the stats of a user"""
@@ -143,8 +142,7 @@ def auth_alias_to_official_habitica_name(auth_info_name: str):
 # TODO: probably better to remove profilename here regardless
 
 
-@get.command(context_settings=dict(
-    token_normalize_func=auth_alias_to_official_habitica_name))
+@get.command(context_settings=dict(token_normalize_func=auth_alias_to_official_habitica_name))
 @click.argument("auth_info_name", type=valid_auth_info_names, default="all")
 def user_auth(auth_info_name: str):
     """Get user authentication and identification info
@@ -294,10 +292,10 @@ class HabiticaUser:
 
         TODO: include doctests in the build process
         [see(](https://docs.python.org/3/library/doctest.html)
-        >>> self._filter_user(user_dict={"items": {"currentPet": "Wolf-Base",
-                                                   "currentMount": "Aether-Invisible"}},
-        ...                   filter_keys = "items.currentMount")
-        {"items.currentMount": "Aether-Invisible"}
+        >>> HabiticaUser({})._filter_user(
+        ...     user_dict={"items": {"currentPet": "Wolf-Base", "currentMount": "Aether-Invisible"}},
+        ...     filter_keys = "items.currentMount")
+        {'items.currentMount': 'Aether-Invisible'}
 
         :param user_dict:
         :param filter_keys:
@@ -314,3 +312,9 @@ class HabiticaUser:
                     f"Didn't match anything with the given filter={filter_keys}")
                 return {filter_keys: {}}
         return {filter_keys: start_dict}
+
+
+if __name__ == "__main__":
+    import doctest
+
+    doctest.testmod()
