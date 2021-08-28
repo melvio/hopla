@@ -130,7 +130,6 @@ def todo(difficulty: str,
 
     url: str = UrlBuilder(path_extension="/tasks/user").url
     headers: dict = RequestHeaders().get_default_request_headers()
-
     response = requests.post(url=url, headers=headers, json=todo_item)
 
     click.echo(response.text)

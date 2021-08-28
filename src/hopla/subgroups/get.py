@@ -8,6 +8,7 @@ from dataclasses import dataclass
 
 from hopla.hoplalib.Http import UrlBuilder, RequestHeaders
 from hopla.hoplalib.OutputFormatter import JsonFormatter
+from hopla.hoplalib.ClickUtils import data_on_success_else_exit
 
 log = logging.getLogger()
 
@@ -20,20 +21,6 @@ def get():
 
 # TODO: add jq back again https://pypi.org/project/jq/
 #       or https://pypi.org/project/pyjq/
-
-
-def handle_response(api_response: requests.Response):
-    """Returns the data of a response if successful, else print error message
-
-    :param api_response:
-    :return:
-    """
-    response_json = api_response.json()
-    if response_json["success"]:
-        return response_json["data"]
-    else:
-        log.debug(f"received: {response_json}")
-        click.echo(JsonFormatter(response_json).format_with_double_quotes(response_json))
 
 
 valid_item_groups = click.Choice(["pets", "mounts", "food", "gear", "quests", "hatchingPotions", "eggs",
@@ -70,7 +57,7 @@ def user_inventory(item_group_name) -> dict:
     """
     log.debug(f"hopla get user-inventory item_group={item_group_name}")
     response = HabiticaUserRequest().request_user()
-    response_data: dict = handle_response(response)
+    response_data: dict = data_on_success_else_exit(response)
     habitica_user = HabiticaUser(user_dict=response_data)
     data_items = habitica_user.get_inventory()
 
@@ -109,7 +96,7 @@ def user_stats(stat_name: str):
     """Get the stats of a user"""
     log.debug(f"hopla get user-stats stat={stat_name}")
     response = HabiticaUserRequest().request_user()
-    response_data: dict = handle_response(response)
+    response_data: dict = data_on_success_else_exit(response)
     habitica_user = HabiticaUser(user_dict=response_data)
 
     data_stats = habitica_user.get_stats()
@@ -158,7 +145,7 @@ def user_auth(auth_info_name: str):
     """
     log.debug(f"hopla get user-auth auth={auth_info_name}")
     response = HabiticaUserRequest().request_user()
-    response_data: dict = handle_response(response)
+    response_data: dict = data_on_success_else_exit(response)
     user = HabiticaUser(user_dict=response_data)
 
     json_data_auth: dict = user.get_auth()
@@ -233,7 +220,7 @@ def user_info(filter_string: str) -> dict:
     """
     log.debug(f"hopla get user-info filter={filter_string}")
     response = HabiticaUserRequest().request_user()
-    response_data: dict = handle_response(response)
+    response_data: dict = data_on_success_else_exit(response)
     habitica_user = HabiticaUser(user_dict=response_data)
 
     if filter_string:
