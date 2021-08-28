@@ -18,6 +18,10 @@ def get():
     pass
 
 
+# TODO: add jq back again https://pypi.org/project/jq/
+#       or https://pypi.org/project/pyjq/
+
+
 def handle_response(api_response: requests.Response):
     """Returns the data of a response if successful, else print error message
 
@@ -29,7 +33,7 @@ def handle_response(api_response: requests.Response):
         return response_json["data"]
     else:
         log.debug(f"received: {response_json}")
-        click.echo([response_json["message"]])
+        click.echo(JsonFormatter(response_json).format_with_double_quotes(response_json))
 
 
 valid_item_groups = click.Choice(["pets", "mounts", "food", "gear", "quests", "hatchingPotions", "eggs",
