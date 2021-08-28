@@ -1,9 +1,0 @@
-hopla buy - group command
-
-For more help use `hopla --help buy {SUB_COMMAND}`
-
-syntax:
-    hopla [global_options] buy {SUB_COMMAND}...
-
-SUPPORTED SUB COMMANDS:
-    hopla buy enchanted-armoire     -- buy from the enchanted armoire

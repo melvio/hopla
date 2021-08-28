@@ -5,8 +5,10 @@
 hopla - a command line interface (CLI) for [habitica.com](https://habitica.com)
 
 
-Hopla is a XDG-compliant command CLI which uses `bash` and `python3` to interact with the [habitica.com](https://habitica.com) API.
-Hopla is currently under active development but available for beta usage. 
+Hopla is a XDG-compliant command CLI which uses `python3` to interact with 
+the [Habitica API](https://habitica.com/apidoc/).
+
+Hopla is currently under active development so buyer beware. 
 
 
 
@@ -22,11 +24,10 @@ git clone "https://github.com/melvio/hopla.git"
 gh repo clone melvio/hopla
 ```
 
-Now `cd` into the repository and run the installation script.
+Now `cd` into the repository and install hopla:
 ```bash
-cd ./hopla && ./install.sh
+cd ./hopla && pip install --upgrade -e .
 ```
-`install.sh` will create a symbolic link to make the `hopla` command available on your `$PATH`.
 
 
 ### First Time Usage
@@ -35,9 +36,12 @@ You can find these over at `https://habitica.com/user/settings/api`.
 Run the following command to configure this automatically:
 
 ```bash
-$ hopla set-hopla credentials
-Please enter your habitica 'User ID': ****-****-****-***-*********
-Please enter your habitica 'API Token': ****-****-****-***-*********
+$ hopla auth 
+Please enter your credentials
+You can find them over at <https://habitica.com/user/settings/api> 
+The user id can be found under 'User ID' and you need to click 'Show API Token'
+Please paste your user id here: 7c551d98-31e9-42b4-b7fa-9d89b0944320
+Please paste your api token id here: *******-*******-*******-*******
 ```
 
 This will create a credentials file at `~/.config/hopla/auth.conf` that
@@ -45,40 +49,50 @@ Hopla uses. If you want to use a different file, you can set the `${HOPLA_AUTH_F
 environment variable to choose your own path.
 
 ##### Autocompletion
-If you want bash autocompletion you add this to your `~/.bashrc`
+If you want bash autocompletion you can run the following command:
 ```bash
-source <(hopla complete bash)
+$ hopla complete bash --enable
+enabled autocompletion
+restart bash to make use of it
+```
+
+To print the autocomplete code for bash|zsh|fish so that you can install it yourself optionally run:
+```bash
+# optionally, install the autocomplete code yourself:
+hopla complete bash
+hopla complete zsh
+hopla complete fish
 ```
 
 
 
+
+
+
+
 ### Everyday Usage
-After installation , you can use `hopla`. 
+After installation, you can use `hopla`. 
 The supported commands can be found by running:
 ```bash
-$ hopla --help
+$ hopla -h
+Usage: hopla [OPTIONS] COMMAND [ARGS]...
 
-syntax:
-    hopla [GLOBAL_OPTIONS]... [SUB_COMMANDS|GROUPS]... [SUB_COMMAND_OPTIONS]... [PARAMETERS]...
+  hopla - a command line interface (CLI) to interact with habitica.com
 
-For more help on SUB_COMMANDs use: `hopla --help {SUB_COMMAND}`
-For more help on SUB_GROUPS use:   `hopla --help {SUB_GROUP}`
+Options:
+  -h, --help  Show this message and exit.
 
-
-GLOBAL_OPTIONS:
-    hopla [SUB_GROUPS|SUB_COMMANDS] --help
-
-SUPPORTED SUB_COMMANDS:
-    hopla version
-
-SUPPORTED SUB_GROUPS
-    hopla add [subcmd]
-    hopla api [subcmd]
-    hopla buy [subcmd]
-    hopla complete [subcmd]
-    hopla feed [subcmd]
-    hopla set [subcmd]
-    hopla set-hopla [subcmd]
+Commands:
+  add       GROUP for adding things to habitica
+  api       GROUP for requesting Habitica API metadata
+  auth      Authorize yourself to access the Habitica.com API
+  buy       GROUP to buy things
+  complete  print or enable shell autocompletion
+  config    get, set, or list config values
+  feed      feed a pet
+  get       GROUP for getting information from habitica
+  set       GROUP to set things in Habitica
+  version   print the hopla version string
 ```
 
 More functionality is currently being implemented.
@@ -96,13 +110,14 @@ It was created because no other CLI supported the creation of To-Dos with both a
 Hopla provides the following command to create these with the following command:
 
 ```bash
-hopla add todo --hard \
+# add a hard todo with every line in the specified file being added as
+#  an item of this To-Do's checklist.
+hopla add todo --difficulty hard \
                --due-date 2027-12-07 \
-               --checklist <( ./my_checklist.txt ) \
+               --checklist ./my_todo.txt \
                "my todo name here"
 ```
 
-Every line in the specified file will be added as a task to a To-Do's checklist.
 
 
 
