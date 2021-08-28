@@ -23,8 +23,11 @@ def get():
 #       or https://pypi.org/project/pyjq/
 
 
-valid_item_groups = click.Choice(["pets", "mounts", "food", "gear", "quests", "hatchingPotions", "eggs",
-                                  "currentPet", "currentMount", "lastDrop", "all"])
+valid_item_groups = click.Choice([
+    "pets", "mounts", "eggs", "food", "hatchingPotions",
+    "gear", "quests", "currentPet", "currentMount",
+    "lastDrop", "all"
+])
 
 
 def inventory_alias_to_official_habitica_name(inventory_name: str):
@@ -44,7 +47,8 @@ def inventory_alias_to_official_habitica_name(inventory_name: str):
         return inventory_name
 
 
-@get.command(context_settings=dict(token_normalize_func=inventory_alias_to_official_habitica_name))
+@get.command(context_settings=dict(
+    token_normalize_func=inventory_alias_to_official_habitica_name))
 @click.argument("item_group_name", type=valid_item_groups, default="all")
 def user_inventory(item_group_name) -> dict:
     """Get items from the user's inventory
@@ -65,7 +69,8 @@ def user_inventory(item_group_name) -> dict:
         data_requested_by_user = data_items
     else:
         data_requested_by_user = data_items[item_group_name]
-    click.echo(JsonFormatter(data_requested_by_user).format_with_double_quotes())
+    click.echo(
+        JsonFormatter(data_requested_by_user).format_with_double_quotes())
     return data_requested_by_user
 
 
@@ -90,7 +95,8 @@ def stat_alias_to_official_habitica_name(stat_name: str):
         return stat_name
 
 
-@get.command(context_settings=dict(token_normalize_func=stat_alias_to_official_habitica_name))
+@get.command(context_settings=dict(
+    token_normalize_func=stat_alias_to_official_habitica_name))
 @click.argument("stat_name", type=valid_stat_names, default="all")
 def user_stats(stat_name: str):
     """Get the stats of a user"""
@@ -104,11 +110,13 @@ def user_stats(stat_name: str):
         data_requested_by_user = data_stats
     else:
         data_requested_by_user = data_stats[stat_name]
-    click.echo(JsonFormatter(data_requested_by_user).format_with_double_quotes())
+    click.echo(
+        JsonFormatter(data_requested_by_user).format_with_double_quotes())
     return data_requested_by_user
 
 
-valid_auth_info_names = click.Choice(["username", "email", "profilename", "all"])
+valid_auth_info_names = click.Choice(
+    ["username", "email", "profilename", "all"])
 
 
 def auth_alias_to_official_habitica_name(auth_info_name: str):
@@ -120,7 +128,10 @@ def auth_alias_to_official_habitica_name(auth_info_name: str):
 
 # username -> 'data.auth.local.username':
 # * Your username is used for invitations, @mentions in chat, and messaging.
-# * It must be 1 to 20 characters, containing only letters a to z, numbers 0 to 9, hyphens, or underscores, and cannot include any inappropriate terms.
+#   * It:
+#     + must be 1 to 20 characters,
+#     + must contain only letters a to z, numbers 0 to 9, hyphens, or underscores, and
+#     + cannot include any inappropriate terms.
 # * is changeable at '<https://habitica.com/user/settings/site>' 'Change Display Name'
 
 # profilename -> 'data.profile.name'
@@ -129,7 +140,8 @@ def auth_alias_to_official_habitica_name(auth_info_name: str):
 # TODO: probably better to remove profilename here regardless
 
 
-@get.command(context_settings=dict(token_normalize_func=auth_alias_to_official_habitica_name))
+@get.command(context_settings=dict(
+    token_normalize_func=auth_alias_to_official_habitica_name))
 @click.argument("auth_info_name", type=valid_auth_info_names, default="all")
 def user_auth(auth_info_name: str):
     """Get user authentication and identification info
@@ -207,8 +219,9 @@ def user_info(filter_string: str) -> dict:
     hopla get user-info -f "contributor, flags.cronCount, profile.blurb, id"
 
     \b
-    # get last free rebirth, day start (in hours), timezone offset (in minutes), and account creation time
-    hopla get user-info -f 'flags.lastFreeRebirth, preferences.dayStart, preferences.timezoneOffset, auth.timestamps.created'
+    # get last free rebirth, day start (in hours), timezone offset (in minutes), and
+    # account creation time
+    hopla get user-info -f 'flags.lastFreeRebirth, preferences.dayStart, preferences.timezoneOffset, auth.timestamps.created'   # pylint: disable=line-too-long
 
     \f
     [APIdocs](https://habitica.com/apidoc/#api-User-UserGet)
@@ -262,7 +275,8 @@ class HabiticaUser:
         for filter_keys in filters:
             filter_keys: str = filter_keys.strip()
             if len(filter_keys) != 0:
-                result.update(self._filter_user(user_dict=self.user_dict, filter_keys=filter_keys))
+                result.update(self._filter_user(user_dict=self.user_dict,
+                                                filter_keys=filter_keys))
 
         return result
 
@@ -286,6 +300,7 @@ class HabiticaUser:
             if start_dict is not None:
                 start_dict = start_dict.get(dict_key)
             else:
-                log.debug(f"Didn't match anything with the given filter={filter_keys}")
+                log.debug(
+                    f"Didn't match anything with the given filter={filter_keys}")
                 return {filter_keys: {}}
         return {filter_keys: start_dict}

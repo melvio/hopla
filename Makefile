@@ -9,5 +9,5 @@ develop:
 	pip install --upgrade -e .
 
 lint:
-	pylint $$(find src/ -name "*.py") --rcfile=./.github/workflows/pylint.rc --exit-zero
+	pylint $$(find src/ -name "*.py") --rcfile=./.github/workflows/pylintrc.conf
 

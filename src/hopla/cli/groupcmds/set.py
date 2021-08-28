@@ -10,7 +10,7 @@ log = logging.getLogger()
 
 
 @click.group()
-def set():  # pylint: disable redefined-builtin
+def set():  # pylint: disable=redefined-builtin
     """GROUP to set things in Habitica"""
 
 

@@ -1,3 +1,6 @@
+"""
+Library code to handle Hopla's configuration.
+"""
 import logging
 import os
 from configparser import ConfigParser

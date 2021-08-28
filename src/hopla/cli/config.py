@@ -1,4 +1,6 @@
-#!/usr/bin/env python3
+"""
+The module with CLI code that handles the `hopla config` command.
+"""
 
 import logging
 

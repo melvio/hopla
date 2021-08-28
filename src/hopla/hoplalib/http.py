@@ -1,3 +1,6 @@
+"""
+Library code to help with Habitica API HTTPS-requests
+"""
 
 
 from hopla.hoplalib.authorization import AuthorizationHandler
@@ -27,6 +30,10 @@ class RequestHeaders:
 
 
 class UrlBuilder:
+    """
+    Helper class for building habitica API URLs.
+
+    """
     def __init__(self, *,
                  domain: str = "https://habitica.com",
                  api_version: str = "v3",    # TODO: probably not the location to be storing this

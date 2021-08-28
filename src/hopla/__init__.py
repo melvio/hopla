@@ -14,7 +14,7 @@ from hopla.cli.groupcmds.add import add
 from hopla.cli.groupcmds.api import api
 from hopla.cli.groupcmds.buy import buy
 from hopla.cli.groupcmds.get import get
-from hopla.cli.groupcmds.set import set  # pylint: disable redefined-builtin
+from hopla.cli.groupcmds.set import set  # pylint: disable=redefined-builtin
 
 
 def setup_logging() -> logging.Logger:

@@ -1,6 +1,7 @@
 """
-The module with the hopla complete CLI
+The module with CLI code that handles the `hopla complete` command.
 """
+
 import abc
 import logging
 import os
@@ -44,7 +45,6 @@ class RecognizedShellWithAutomaticAutocompleteDisabled(RecognizedShell,
     @abc.abstractmethod
     def get_manual_autocomplete_instructions(self) -> [str]:
         """Returns instructions on how the enable hopla autocompletion for this shell"""
-        pass
 
     def handle_enable_complete_request(self) -> [str]:
         return self.get_manual_autocomplete_instructions()
@@ -65,7 +65,6 @@ class RecognizedShellWithAutomaticAutocompleteEnabled(RecognizedShell,
     @abc.abstractmethod
     def enable_autocomplete(self) -> None:
         """Enables hopla autocompletion"""
-        pass
 
     def handle_enable_complete_request(self) -> None:
         self.enable_autocomplete()
@@ -182,6 +181,12 @@ def complete(shell: str, enable: bool):
 
 
 def show_manual_autocomplete_code(shell_obj: RecognizedShell):
+    """Print instructions on how to enable autocomplete for the specified shell if
+    --enable is not supported by hopla.
+
+    :param shell_obj:
+    :return:
+    """
     click.echo(
         f"Sorry, automatic installation is not supported for {shell_obj.shell_name}.")
     click.echo("You can enable autocompletion manually by running:")
@@ -190,12 +195,26 @@ def show_manual_autocomplete_code(shell_obj: RecognizedShell):
         click.echo(instruction)
 
 
-def enable_autocomplete(shell_obj):
+def enable_autocomplete(shell_obj: RecognizedShell):
+    """
+    Adds a command to the relevant configuration files s.t. autocompletion
+    code is automatically loaded. This is used with the `--enable` flag for
+    hopla complete [shell] --enable commands.
+
+    :param shell_obj:
+    :return:
+    """
     shell_obj.handle_enable_complete_request()
     click.echo("enabled autocompletion")
     click.echo(f"restart {shell_obj.shell_name} to make use of it")
 
 
-def show_autocomplete_code(shell_obj):
+def show_autocomplete_code(shell_obj: RecognizedShell):
+    """
+    Prints autocompletion code for the passed shell.
+
+    :param shell_obj:
+    :return:
+    """
     cmd_str = shell_obj.get_generated_autocomplete_cmd()
     os.system(cmd_str)

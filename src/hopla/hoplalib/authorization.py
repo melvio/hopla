@@ -5,6 +5,7 @@ identification.
 
 import logging
 import os
+import sys
 from configparser import ConfigParser
 from pathlib import Path
 
@@ -177,4 +178,4 @@ class AuthorizationHandler:
             print("no credentials found")
             print("Please run:")
             print("    hopla auth")
-            exit(1)
+            sys.exit(1) # TODO: handle this better
