@@ -1,3 +1,6 @@
+"""
+The module with CLI code that handles the `hopla get` group command.
+"""
 import copy
 import logging
 from dataclasses import dataclass
@@ -6,9 +9,9 @@ from typing import List
 import click
 import requests
 
-from hopla.hoplalib.ClickUtils import data_on_success_else_exit
-from hopla.hoplalib.Http import RequestHeaders, UrlBuilder
-from hopla.hoplalib.OutputFormatter import JsonFormatter
+from hopla.hoplalib.clickutils import data_on_success_else_exit
+from hopla.hoplalib.http import RequestHeaders, UrlBuilder
+from hopla.hoplalib.outputformatter import JsonFormatter
 
 log = logging.getLogger()
 
@@ -16,35 +19,39 @@ log = logging.getLogger()
 @click.group()
 def get():
     """GROUP for getting information from habitica"""
-    pass
 
 
 # TODO: add jq back again https://pypi.org/project/jq/
 #       or https://pypi.org/project/pyjq/
 
 
-valid_item_groups = click.Choice(["pets", "mounts", "food", "gear", "quests", "hatchingPotions", "eggs",
-                                  "currentPet", "currentMount", "lastDrop", "all"])
+valid_item_groups = click.Choice([
+    "pets", "mounts", "eggs", "food", "hatchingPotions",
+    "gear", "quests", "currentPet", "currentMount",
+    "lastDrop", "all"
+])
 
 
 def inventory_alias_to_official_habitica_name(inventory_name: str):
+    # pylint: disable=too-many-return-statements
     if inventory_name in ["hatchingpotions", "hatchingPotion"]:
         return "hatchingPotions"
-    elif inventory_name in ["pet"]:
+    if inventory_name in ["pet"]:
         return "pets"
-    elif inventory_name in ["mount"]:
+    if inventory_name in ["mount"]:
         return "mounts"
-    elif inventory_name in ["currentpet"]:
+    if inventory_name in ["currentpet"]:
         return "currentPet"
-    elif inventory_name in ["currentmount"]:
+    if inventory_name in ["currentmount"]:
         return "currentMount"
-    elif inventory_name in ["lastdrop"]:
+    if inventory_name in ["lastdrop"]:
         return "lastDrop"
-    else:
-        return inventory_name
+
+    return inventory_name
 
 
-@get.command(context_settings=dict(token_normalize_func=inventory_alias_to_official_habitica_name))
+@get.command(context_settings=dict(
+    token_normalize_func=inventory_alias_to_official_habitica_name))
 @click.argument("item_group_name", type=valid_item_groups, default="all")
 def user_inventory(item_group_name) -> dict:
     """Get items from the user's inventory
@@ -65,7 +72,8 @@ def user_inventory(item_group_name) -> dict:
         data_requested_by_user = data_items
     else:
         data_requested_by_user = data_items[item_group_name]
-    click.echo(JsonFormatter(data_requested_by_user).format_with_double_quotes())
+    click.echo(
+        JsonFormatter(data_requested_by_user).format_with_double_quotes())
     return data_requested_by_user
 
 
@@ -74,23 +82,25 @@ valid_stat_names = click.Choice(["hp", "mp", "exp", "gp", "lvl", "class",
 
 
 def stat_alias_to_official_habitica_name(stat_name: str):
+    # pylint: disable=too-many-return-statements
     if stat_name in ["mana", "mana-points", "manapoints"]:
         return "mp"
-    elif stat_name in ["maxMp", "maxmp"]:
+    if stat_name in ["maxMp", "maxmp"]:
         return "maxMP"
-    elif stat_name in ["health", "healthpoints"]:
+    if stat_name in ["health", "healthpoints"]:
         return "hp"
-    elif stat_name in ["xp", "experience"]:
+    if stat_name in ["xp", "experience"]:
         return "exp"
-    elif stat_name in ["gold"]:
+    if stat_name in ["gold"]:
         return "gp"
-    elif stat_name in ["level"]:
+    if stat_name in ["level"]:
         return "lvl"
-    else:
-        return stat_name
+
+    return stat_name
 
 
-@get.command(context_settings=dict(token_normalize_func=stat_alias_to_official_habitica_name))
+@get.command(context_settings=dict(
+    token_normalize_func=stat_alias_to_official_habitica_name))
 @click.argument("stat_name", type=valid_stat_names, default="all")
 def user_stats(stat_name: str):
     """Get the stats of a user"""
@@ -104,23 +114,27 @@ def user_stats(stat_name: str):
         data_requested_by_user = data_stats
     else:
         data_requested_by_user = data_stats[stat_name]
-    click.echo(JsonFormatter(data_requested_by_user).format_with_double_quotes())
+    click.echo(
+        JsonFormatter(data_requested_by_user).format_with_double_quotes())
     return data_requested_by_user
 
 
-valid_auth_info_names = click.Choice(["username", "email", "profilename", "all"])
+valid_auth_info_names = click.Choice(
+    ["username", "email", "profilename", "all"])
 
 
 def auth_alias_to_official_habitica_name(auth_info_name: str):
     if auth_info_name in ["e-mail", "mail"]:
         return "email"
-    else:
-        return auth_info_name
+    return auth_info_name
 
 
 # username -> 'data.auth.local.username':
 # * Your username is used for invitations, @mentions in chat, and messaging.
-# * It must be 1 to 20 characters, containing only letters a to z, numbers 0 to 9, hyphens, or underscores, and cannot include any inappropriate terms.
+#   * It:
+#     + must be 1 to 20 characters,
+#     + must contain only letters a to z, numbers 0 to 9, hyphens, or underscores, and
+#     + cannot include any inappropriate terms.
 # * is changeable at '<https://habitica.com/user/settings/site>' 'Change Display Name'
 
 # profilename -> 'data.profile.name'
@@ -129,7 +143,8 @@ def auth_alias_to_official_habitica_name(auth_info_name: str):
 # TODO: probably better to remove profilename here regardless
 
 
-@get.command(context_settings=dict(token_normalize_func=auth_alias_to_official_habitica_name))
+@get.command(context_settings=dict(
+    token_normalize_func=auth_alias_to_official_habitica_name))
 @click.argument("auth_info_name", type=valid_auth_info_names, default="all")
 def user_auth(auth_info_name: str):
     """Get user authentication and identification info
@@ -149,19 +164,21 @@ def user_auth(auth_info_name: str):
     user = HabiticaUser(user_dict=response_data)
 
     json_data_auth: dict = user.get_auth()
+
     if auth_info_name == "all":
         click.echo(JsonFormatter(json_data_auth).format_with_double_quotes())
         return json_data_auth
-    elif auth_info_name == "profilename":
+
+    if auth_info_name == "profilename":
         profile_name = response_data["profile"]["name"]
         click.echo(JsonFormatter(profile_name).format_with_double_quotes())
         return profile_name
-    else:
-        # TODO no support for non-local data yet (e.g. google SSO)
-        #      e.g. use hopla get user-info -f "auth.google" as workaround
-        auth_info = json_data_auth["local"][auth_info_name]
-        click.echo(JsonFormatter(auth_info).format_with_double_quotes())
-        return auth_info
+
+    # TODO no support for non-local data yet (e.g. google SSO)
+    #      e.g. use hopla get user-info -f "auth.google" as workaround
+    auth_info = json_data_auth["local"][auth_info_name]
+    click.echo(JsonFormatter(auth_info).format_with_double_quotes())
+    return auth_info
 
 
 @get.command()
@@ -207,8 +224,9 @@ def user_info(filter_string: str) -> dict:
     hopla get user-info -f "contributor, flags.cronCount, profile.blurb, id"
 
     \b
-    # get last free rebirth, day start (in hours), timezone offset (in minutes), and account creation time
-    hopla get user-info -f 'flags.lastFreeRebirth, preferences.dayStart, preferences.timezoneOffset, auth.timestamps.created'
+    # get last free rebirth, day start (in hours), timezone offset (in minutes), and
+    # account creation time
+    hopla get user-info -f 'flags.lastFreeRebirth, preferences.dayStart, preferences.timezoneOffset, auth.timestamps.created'   # pylint: disable=line-too-long
 
     \f
     [APIdocs](https://habitica.com/apidoc/#api-User-UserGet)
@@ -242,7 +260,9 @@ class HabiticaUserRequest:
 
 @dataclass(frozen=True)
 class HabiticaUser:
-    user_dict: dict  # This should be a 200 ok response as json (using Response.json()) when calling the /user endpoint and getting .data
+    # This user_dict is assumed to be returned from a 200 ok Response as (using
+    # Response.json()) when calling the /user endpoint and getting .data
+    user_dict: dict
 
     def get_stats(self) -> dict:
         return self.user_dict["stats"]
@@ -256,13 +276,14 @@ class HabiticaUser:
     def filter_user(self, filter_string: str) -> dict:
         # TODO: this code is generic, it can be used to filter any dict
         #       move it out of this class and reuse
-        result = dict()
+        result = {}
         filters: List[str] = filter_string.strip().split(",")
 
         for filter_keys in filters:
             filter_keys: str = filter_keys.strip()
             if len(filter_keys) != 0:
-                result.update(self._filter_user(user_dict=self.user_dict, filter_keys=filter_keys))
+                result.update(self._filter_user(user_dict=self.user_dict,
+                                                filter_keys=filter_keys))
 
         return result
 
@@ -271,14 +292,17 @@ class HabiticaUser:
             {filter_keys: D["hi"]["ya"]["there"]} or {filter_string: {}} if D["hi"]["ya"]["there"]
             does not exist.
 
-        TODO: include doctests in the build process [docs](https://docs.python.org/3/library/doctest.html)
-        >>> self._filter_user(user_dict={"items": {"currentPet": "Wolf-Base", "currentMount": "Aether-Invisible"}},
+        TODO: include doctests in the build process
+        [see(](https://docs.python.org/3/library/doctest.html)
+        >>> self._filter_user(user_dict={"items": {"currentPet": "Wolf-Base",
+                                                   "currentMount": "Aether-Invisible"}},
         ...                   filter_keys = "items.currentMount")
         {"items.currentMount": "Aether-Invisible"}
 
         :param user_dict:
         :param filter_keys:
-        :return: we return {filter_string: D["hi"]["ya"]["there"]} or {filter_string: {}} if there is no such item
+        :return: we return {filter_string: D["hi"]["ya"]["there"]} or
+                 {filter_string: {}} if there is no such item
         """
         start_dict = copy.deepcopy(user_dict)
         dict_keys: List[str] = filter_keys.split(".")
@@ -286,6 +310,7 @@ class HabiticaUser:
             if start_dict is not None:
                 start_dict = start_dict.get(dict_key)
             else:
-                log.debug(f"Didn't match anything with the given filter={filter_keys}")
+                log.debug(
+                    f"Didn't match anything with the given filter={filter_keys}")
                 return {filter_keys: {}}
         return {filter_keys: start_dict}

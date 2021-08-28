@@ -1,9 +1,18 @@
+"""
+Library code to help with Habitica API HTTPS-requests
+"""
 
 
-from hopla.hoplalib.Authorization import AuthorizationHandler
+from hopla.hoplalib.authorization import AuthorizationHandler
 
 
 class RequestHeaders:
+    """
+    Helper class that takes care of HTTP request headers when interacting with
+    the habitica API.
+
+    For more information see <https://habitica.fandom.com/wiki/Guidance_for_Comrades>
+    """
     CONTENT_TYPE = "Content-Type"
     CONTENT_TYPE_JSON = "application/json"
     X_CLIENT = "x-client"
@@ -27,6 +36,9 @@ class RequestHeaders:
 
 
 class UrlBuilder:
+    """
+    Helper class for building habitica API URLs.
+    """
     def __init__(self, *,
                  domain: str = "https://habitica.com",
                  api_version: str = "v3",    # TODO: probably not the location to be storing this
@@ -43,4 +55,5 @@ class UrlBuilder:
 
     @property
     def url(self) -> str:
+        """Get the build URL"""
         return f"{self._get_base_url()}{self.path_extension}"

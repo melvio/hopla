@@ -4,9 +4,9 @@ import click
 import jq
 import requests
 
-from hopla.hoplalib.ClickUtils import data_on_success_else_exit
-from hopla.hoplalib.Http import UrlBuilder
-from hopla.hoplalib.OutputFormatter import JsonFormatter
+from hopla.hoplalib.clickutils import data_on_success_else_exit
+from hopla.hoplalib.http import UrlBuilder
+from hopla.hoplalib.outputformatter import JsonFormatter
 
 log = logging.getLogger()
 
@@ -14,7 +14,6 @@ log = logging.getLogger()
 @click.group()
 def api():
     """GROUP for requesting Habitica API metadata"""
-    pass
 
 
 @api.command()
@@ -50,13 +49,18 @@ def content(jq_filter: str) -> dict:
         user_requested_content_data = jq.compile(jq_filter).input(content_data).first()
     else:
         user_requested_content_data = content_data
-    click.echo(JsonFormatter(user_requested_content_data).format_with_double_quotes())
+
+    content_as_json: str = JsonFormatter(user_requested_content_data).format_with_double_quotes()
+    click.echo(content_as_json)
+
     return content_data
 
 
 # todo: maybe get this dynamically from the API?
-valid_model_names = click.Choice(["user", "group", "challenge", "tag", "habit", "daily", "todo", "reward"],
-                                 case_sensitive=False)
+valid_model_names = click.Choice(
+    choices=["user", "group", "challenge", "tag", "habit", "daily", "todo", "reward"],
+    case_sensitive=False
+)
 
 
 @api.command()
@@ -115,6 +119,5 @@ def status() -> dict:
     response = requests.get(url=url_builder.url)
     status_data = data_on_success_else_exit(response)
 
-    # TODO: add --json argument to enable json output
     click.echo(JsonFormatter(status_data).format_with_double_quotes())
     return status_data

@@ -1,25 +1,28 @@
+"""
+The module with CLI code that handles the `hopla set` group command.
+"""
 import logging
 
 import click
 import requests
 
-from hopla.hoplalib.Http import RequestHeaders, UrlBuilder
-from hopla.hoplalib.OutputFormatter import JsonFormatter
+from hopla.hoplalib.http import RequestHeaders, UrlBuilder
+from hopla.hoplalib.outputformatter import JsonFormatter
 
 log = logging.getLogger()
 
 
 @click.group()
-def set():
+def set():  # pylint: disable=redefined-builtin
     """GROUP to set things in Habitica"""
-    pass
 
 
 valid_day_start_hours = click.Choice([str(i) for i in range(0, 24)])
 
 
 @set.command()
-@click.argument("day_start_hour", type=valid_day_start_hours, default="0", metavar="[HOUR]")
+@click.argument("day_start_hour", type=valid_day_start_hours, default="0",
+                metavar="[HOUR]")
 @click.option("--json/--no-json", "json_flag", default=False, )
 def day_start(day_start_hour, json_flag: bool):
     """Set your day-start (CRON) to the specified HOUR.

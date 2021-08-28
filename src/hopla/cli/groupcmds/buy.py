@@ -1,13 +1,16 @@
+"""
+The module with CLI code that handles the `hopla buy` group command.
+"""
 import logging
 import time
 
 import click
 import requests
 
-from hopla.hoplalib.ClickUtils import data_on_success_else_exit
-from hopla.hoplalib.Http import RequestHeaders, UrlBuilder
-from hopla.hoplalib.OutputFormatter import JsonFormatter
-from hopla.subgroups import get
+from hopla.hoplalib.clickutils import data_on_success_else_exit
+from hopla.hoplalib.http import RequestHeaders, UrlBuilder
+from hopla.hoplalib.outputformatter import JsonFormatter
+from hopla.cli.groupcmds import get
 
 log = logging.getLogger()
 
@@ -15,10 +18,10 @@ log = logging.getLogger()
 @click.group()
 def buy():
     """GROUP to buy things"""
-    pass
 
 
 def buy_from_enchanted_armoire_once():
+    """buy once from the enchanted armoire"""
     url = UrlBuilder(path_extension="/user/buy-armoire").url
     headers = RequestHeaders().get_default_request_headers()
 
@@ -30,9 +33,14 @@ def buy_from_enchanted_armoire_once():
     click.echo(enchanted_armoire_award)
 
 
-def times_until_poor(gp: float) -> int:
+def times_until_poor(gp_budget: float) -> int:
+    """Returns how many times you can buy from enchanted_armoire given some budget.
+
+    :param gp_budget:
+    :return:
+    """
     enchanted_armoire_price = 100
-    times: float = gp / enchanted_armoire_price
+    times: float = gp_budget / enchanted_armoire_price
     return int(times)  # int will round down positive floats for us
 
 
@@ -59,7 +67,9 @@ def enchanted_armoire(ctx, requested_times: int, until_poor_flag: bool):
     # TODO: (contact:melvio) --until-poor and --times N should be mutually exclusive options:
     #  and I dont think this is the case right now.
     #  * if it is the case: this TODO is DONE
-    times = get_buy_times_within_budget(ctx, until_poor_flag=until_poor_flag, requested_times=requested_times)
+    times = get_buy_times_within_budget(ctx,
+                                        until_poor_flag=until_poor_flag,
+                                        requested_times=requested_times)
 
     exceeds_throttle_threshold = exceeds_throttle_limit(times)
     throttle_seconds = 2.5
@@ -74,12 +84,16 @@ def enchanted_armoire(ctx, requested_times: int, until_poor_flag: bool):
             time.sleep(throttle_seconds)
 
 
-def exceeds_throttle_limit(times: int):
+def exceeds_throttle_limit(times: int) -> bool:
+    """Return True if we need Hopla to go easy on the Habitica API."""
+    # TODO: when we need to throttle in multiple places, handle this globally, not
+    #  here in `buy`.
     requests_throttle_limit = 25
     return times > requests_throttle_limit
 
 
-def get_buy_times_within_budget(ctx, *, until_poor_flag, requested_times):
+def get_buy_times_within_budget(ctx, *, until_poor_flag: bool, requested_times: int):
+    """Return how often we can buy, given the requested amount and our budget."""
     click.echo("starting gp: ", nl=False)
     budget = ctx.invoke(get.user_stats, stat_name="gp")
 

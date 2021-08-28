@@ -31,7 +31,7 @@ cd ./hopla && pip install --upgrade -e .
 
 
 ### First Time Usage
-Hopla needs your `User Id` and `API Token` to connect to Habitica on your behalve.
+Hopla needs your `User Id` and `API Token` to connect to Habitica on your behalf.
 You can find these over at `https://habitica.com/user/settings/api`.
 Run the following command to configure this automatically:
 
@@ -56,7 +56,8 @@ enabled autocompletion
 restart bash to make use of it
 ```
 
-To print the autocomplete code for bash|zsh|fish so that you can install it yourself optionally run:
+To print the autocomplete code for bash|zsh|fish, so that you can install 
+it yourself, optionally run:
 ```bash
 # optionally, install the autocomplete code yourself:
 hopla complete bash

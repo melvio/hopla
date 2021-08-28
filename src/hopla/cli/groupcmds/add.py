@@ -1,3 +1,6 @@
+"""
+The module with CLI code that handles the `hopla add` group command.
+"""
 import datetime
 import logging
 from typing import Dict, List
@@ -5,9 +8,9 @@ from typing import Dict, List
 import click
 import requests
 
-from hopla.hoplalib.ClickUtils import data_on_success_else_exit
-from hopla.hoplalib.Http import RequestHeaders, UrlBuilder
-from hopla.hoplalib.OutputFormatter import JsonFormatter
+from hopla.hoplalib.clickutils import data_on_success_else_exit
+from hopla.hoplalib.http import RequestHeaders, UrlBuilder
+from hopla.hoplalib.outputformatter import JsonFormatter
 
 log = logging.getLogger()
 
@@ -15,7 +18,6 @@ log = logging.getLogger()
 @click.group()
 def add():
     """GROUP for adding things to habitica"""
-    pass
 
 
 # @see https://habitica.com/apidoc/#api-Task-CreateUserTasks
@@ -109,7 +111,7 @@ def todo(difficulty: str,
               f"   difficulty={difficulty} , due_date={due_date}"
               f"   checklist ={checklist_file}, editor={checklist_editor}")
 
-    todo_item = dict()
+    todo_item = {}
     todo_item["text"] = todo_name
     todo_item["priority"] = difficulty_to_score(difficulty)
     todo_item["type"] = "todo"  # task type key

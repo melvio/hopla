@@ -1,9 +1,11 @@
-#!/usr/bin/env python3
+"""
+The module with CLI code that handles the `hopla auth` command.
+"""
 import logging
 
 import click
 
-from hopla.hoplalib.Authorization import AuthorizationHandler
+from hopla.hoplalib.authorization import AuthorizationHandler
 
 log = logging.getLogger()
 
@@ -15,6 +17,6 @@ def auth():
 
     hopla auth allows you interactively providing access credentials.
     """
-    log.debug("function: hopla auth")
+    log.debug("hopla auth")
     auth_handler = AuthorizationHandler()
     auth_handler.set_hopla_credentials(overwrite=True)

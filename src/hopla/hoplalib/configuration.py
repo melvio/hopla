@@ -1,3 +1,6 @@
+"""
+Library code to handle Hopla's configuration.
+"""
 import logging
 import os
 from configparser import ConfigParser
@@ -28,6 +31,7 @@ class HoplaConfigurationFile:
 
     @property
     def exists(self) -> bool:
+        """Return true if the hopla configuration file exists"""
         return self.file_path.exists() and self.file_path.is_file()
 
 
@@ -72,7 +76,7 @@ class ConfigurationFileParser:
             option=config_name,
             value=new_value
         )
-        with open(self._conf_file, mode="w") as updated_conf_file:
+        with open(self._conf_file, mode="w", encoding="utf-8") as updated_conf_file:
             self.config_parser.write(updated_conf_file)
 
         return new_value
@@ -111,7 +115,13 @@ class FullConfigurationName:
 
 class HoplaConfiguration:
     @property
-    def default_config(self):
+    def default_config(self) -> ConfigParser:
+        """
+        Returns a ConfigParser with the default configuration assuming that nobody
+        ever configured anything.
+
+        :return:
+        """
         default_config = ConfigParser()
         # [cmd_all] # config for all command
         # [cmd_XXX] # config for command XXX
@@ -126,10 +136,13 @@ class HoplaConfiguration:
         return default_config
 
     def supported_sections(self):
+        """Return the sections that are supported in the Hopla Configuration file."""
         return self.default_config.sections()
 
 
 class ConfigInitializer:
+    """Helper class for initializing Hopla's configuration files."""
+
     def __init__(self):
         self.config_file = HoplaConfigurationFile()
 
@@ -142,12 +155,13 @@ class ConfigInitializer:
         if self.config_file.exists is False:
             self._create_empty_config_file()
             default_config = HoplaConfiguration().default_config
-            with open(self.config_file.file_path, mode="w") as new_conf_file:
+            with open(self.config_file.file_path, mode="w", encoding="utf-8") as new_conf_file:
                 default_config.write(new_conf_file)
             return True
+
         return False
 
     def _create_empty_config_file(self):
         Path.mkdir(self.config_file.file_path.parent, parents=True, exist_ok=True)
-        with open(self.config_file.file_path, mode="w"):
+        with open(self.config_file.file_path, mode="w", encoding="utf-8"):
             pass  # no need to write to it, just create it

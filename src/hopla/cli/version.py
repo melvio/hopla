@@ -1,4 +1,7 @@
-#!/usr/bin/env python3
+"""
+The module with CLI code that handles the `hopla version` command.
+"""
+
 import logging
 
 import click
@@ -12,7 +15,12 @@ PRE_RELEASE = "alpha"
 
 
 def hopla_version() -> str:
-    # <https://semver.org/>
+    """
+    Prints the hopla version (Not to be confused with the habitica API version)
+
+    The output should satisfy [semantic versioning](https://semver.org/)
+    TODO: verify if this is the case
+    """
 
     version_core = f"{MAJOR_VERSION}.{MINOR_VERSION}.{PATCH_VERSION}"
     if PRE_RELEASE is not None and PRE_RELEASE != "":

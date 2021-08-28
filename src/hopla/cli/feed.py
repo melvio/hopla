@@ -1,11 +1,14 @@
+"""
+The module with CLI code that handles the `hopla feed` command.
+"""
 import logging
 
 import click
 import requests
 
-from hopla.hoplalib.ClickUtils import data_on_success_else_exit
-from hopla.hoplalib.Http import RequestHeaders, UrlBuilder
-from hopla.hoplalib.OutputFormatter import JsonFormatter
+from hopla.hoplalib.clickutils import data_on_success_else_exit
+from hopla.hoplalib.http import RequestHeaders, UrlBuilder
+from hopla.hoplalib.outputformatter import JsonFormatter
 
 log = logging.getLogger()
 
@@ -32,6 +35,7 @@ class PetFeedPostRequester:
 
     @property
     def path(self) -> str:
+        """Return the URL used to feed a pet"""
         return f"/user/feed/{self.pet_name}/{self.food_name}"
 
     @property

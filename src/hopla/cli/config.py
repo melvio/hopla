@@ -1,15 +1,20 @@
-#!/usr/bin/env python3
+"""
+The module with CLI code that handles the `hopla config` command.
+"""
 
 import logging
+from pathlib import Path
 
 import click
 
-from hopla.hoplalib.Configuration import ConfigurationFileParser, HoplaConfigurationFile
+from hopla.hoplalib.configuration import ConfigurationFileParser, \
+    HoplaConfigurationFile
 
 log = logging.getLogger()
 
 
-def config_get(config_name):
+def config_get(config_name: str):
+    """Get the value of the specified full configuration name"""
     if config_name is None:
         click.echo(config.help)
     else:
@@ -19,6 +24,7 @@ def config_get(config_name):
 
 
 def config_set(config_name: str, value):
+    """Set the value of the specified full configuration name"""
     config_file_parser = ConfigurationFileParser()
     value = config_file_parser.set_full_config_name(full_config_name=config_name,
                                                     new_value=value)
@@ -30,13 +36,10 @@ def print_config_file_name():
 
 
 def print_config_file_content():
-    with open(HoplaConfigurationFile().file_path, mode="r") as conf_file:
+    config_file_path: Path = HoplaConfigurationFile().file_path
+    with open(config_file_path, mode="r", encoding="utf-8") as conf_file:
         for line in conf_file.readlines():
             click.echo(line.strip())
-
-
-# TODO: get this value from the HoplaConfiguration class instead of duplicating it here
-supported_config_names = click.Choice(["cmd_all.loglevel"])
 
 
 # levels supported:
@@ -44,6 +47,8 @@ supported_config_names = click.Choice(["cmd_all.loglevel"])
 # hopla config cmd_all.loglevel info
 # hopla config cmd_all.loglevel warning
 # hopla config cmd_all.loglevel error
+# TODO: get this value from the HoplaConfiguration class instead of duplicating it here
+supported_config_names = click.Choice(["cmd_all.loglevel"])
 
 
 @click.command()
