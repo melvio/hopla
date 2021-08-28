@@ -59,7 +59,6 @@ def user_inventory(item_group_name) -> dict:
         return data_items
 
 
-# TODO: aliases
 valid_stat_names = click.Choice(["hp", "mp", "exp", "gp", "lvl", "class", "all"])
 
 

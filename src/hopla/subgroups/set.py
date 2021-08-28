@@ -3,6 +3,7 @@ import click
 import requests
 
 from hopla.hoplalib.Http import UrlBuilder, RequestHeaders
+from hopla.hoplalib.OutputFormatter import JsonFormatter
 
 log = logging.getLogger()
 
@@ -18,7 +19,8 @@ valid_day_start_hours = click.Choice([str(i) for i in range(0, 24)])
 
 @set.command()
 @click.argument("day_start_hour", type=valid_day_start_hours, default="0", metavar="[HOUR]")
-def day_start(day_start_hour):
+@click.option("--json/--no-json", "json_flag", default=False, )
+def day_start(day_start_hour, json_flag: bool):
     """Set your day-start (CRON) to the specified HOUR.
 
     HOUR - sets the day start to the N-th hour of the day. HOUR may range
@@ -31,13 +33,17 @@ def day_start(day_start_hour):
     ---
     # set the day start to 01:00 AM
     $ hopla set day-start 1
+    Your custom day start has changed.
 
     \b
-    # set the day start to 00:00 AM
-    $ hopla set day-start
+    # set the day start to 00:00 AM and get json output (e.g. for pipelines)
+    $ hopla set day-start --json
+    { "message": "Your custom day start has changed." }
+
 
     \f
     :param day_start_hour:
+    :param json_flag
     """
     log.debug(f"hopla set day-start {day_start_hour}")
 
@@ -47,6 +53,9 @@ def day_start(day_start_hour):
 
     response = requests.post(url=url, headers=headers, json=body)
 
-    # TODO: (contact:melvio) --json vs. user friendly output
     json = response.json()
-    click.echo(json["data"]["message"])
+    json_data = json["data"]
+    if json_flag:
+        click.echo(JsonFormatter(json_data).format_with_double_quotes())
+    else:
+        click.echo(json_data["message"])

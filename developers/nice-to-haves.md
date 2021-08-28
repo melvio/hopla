@@ -22,5 +22,6 @@ Nice to haves:
 * check uuid input format (or even ask the api for confirmation using .data.auth.nogiets)
 * --background flag 
 * --json flag for json and CLI-user friendly output by default
+   * get consistent output (e.g. double quoted & consistent 2-space indentation)
 * Make this project installable with a respectable package manager (e.g. apt, pip, snap, flatpak)
 * implement goal_bnf.md CLI 
