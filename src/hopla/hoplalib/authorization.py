@@ -55,7 +55,8 @@ class AuthorizationHandler:
 
     @property
     def user_id(self):
-        # violating that @property should be cheap; However, the auth file should be short. So we should be fine to parse
+        # violating that @property should be cheap;
+        # However, the auth file should be short. So we should be fine to parse
         self._parse()
         return self.config_parser[
             AuthorizationConstants.CONFIG_SECTION_CREDENTIALS] \
@@ -63,7 +64,8 @@ class AuthorizationHandler:
 
     @property
     def api_token(self):
-        # violating that @property should be cheap; However, the auth file should be short. So we should be fine to parse
+        # violating that @property should be cheap;
+        # However, the auth file should be short. So we should be fine to parse
         self._parse()
         return self.config_parser[
             AuthorizationConstants.CONFIG_SECTION_CREDENTIALS] \

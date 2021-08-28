@@ -3,7 +3,7 @@ import logging
 
 import click
 
-from hopla.hoplalib.Authorization import AuthorizationHandler
+from hopla.hoplalib.authorization import AuthorizationHandler
 
 log = logging.getLogger()
 

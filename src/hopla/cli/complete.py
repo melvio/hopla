@@ -18,20 +18,18 @@ class RecognizedShell(abc.ABC):
     @abc.abstractmethod
     def get_generated_autocomplete_cmd(self) -> str:
         """Returns the command needed to generate autocomplete code"""
-        pass
 
     @abc.abstractmethod
     def supports_automatic_complete_enablement(self) -> bool:
         """Returns whether this shell supports automatic enablement of autocomplete """
-        pass
 
     @abc.abstractmethod
     def handle_enable_complete_request(self):
-        """"Handle request for enabling autocomplete regardless if there is support for it"""
-        pass
+        """Handle request for enabling autocomplete regardless if there is support for it"""
 
 
-class RecognizedShellWithAutomaticAutocompleteDisabled(RecognizedShell, abc.ABC):
+class RecognizedShellWithAutomaticAutocompleteDisabled(RecognizedShell,
+                                                       abc.ABC):
     def __init__(self, shell_name: str):
         super().__init__(shell_name)
 
@@ -47,7 +45,8 @@ class RecognizedShellWithAutomaticAutocompleteDisabled(RecognizedShell, abc.ABC)
         return False
 
 
-class RecognizedShellWithAutomaticAutocompleteEnabled(RecognizedShell, abc.ABC):
+class RecognizedShellWithAutomaticAutocompleteEnabled(RecognizedShell,
+                                                      abc.ABC):
     def __init__(self, shell_name: str):
         super().__init__(shell_name)
 
@@ -75,8 +74,8 @@ class Bash(RecognizedShellWithAutomaticAutocompleteEnabled):
     def enable_autocomplete(self):
         cmd = self.get_generated_autocomplete_cmd()
         enablement_code_for_bashrc = f'eval "$({cmd})"'
-        with open(self.config_file, "a") as f:
-            f.write(enablement_code_for_bashrc)
+        with open(self.config_file, mode="a") as bashrc:
+            bashrc.write(enablement_code_for_bashrc)
 
 
 class Zsh(RecognizedShellWithAutomaticAutocompleteDisabled):
@@ -89,9 +88,10 @@ class Zsh(RecognizedShellWithAutomaticAutocompleteDisabled):
         return f"_HOPLA_COMPLETE={self.shell_name}_source hopla"
 
     def get_manual_autocomplete_instructions(self) -> [str]:
-        return [f"   hopla autocomplete {self.shell_name} > {self.example_zsh_complete_file}",
-                f"Then source the file in your {self.config_file}",
-                f"   . {self.example_zsh_complete_file}"]
+        return [
+            f"   hopla autocomplete {self.shell_name} > {self.example_zsh_complete_file}",
+            f"Then source the file in your {self.config_file}",
+            f"   . {self.example_zsh_complete_file}"]
 
 
 class Fish(RecognizedShellWithAutomaticAutocompleteDisabled):
@@ -103,7 +103,8 @@ class Fish(RecognizedShellWithAutomaticAutocompleteDisabled):
         return f"env _HOPLA_COMPLETE={self.shell_name}_source hopla"
 
     def get_manual_autocomplete_instructions(self) -> [str]:
-        return [f"   hopla autocomplete {self.shell_name} > {self.hopla_complete_file}"]
+        return [
+            f"   hopla autocomplete {self.shell_name} > {self.hopla_complete_file}"]
 
 
 supported_shell_mapping = {"bash": Bash, "zsh": Zsh, "fish": Fish}
@@ -119,7 +120,8 @@ def get_shell_by_name(shell_name: str) -> RecognizedShell:
         raise ValueError(f"Unexpected shell {shell_name}")
 
 
-autocomplete_supported_shells = click.Choice(list(supported_shell_mapping.keys()))
+autocomplete_supported_shells = click.Choice(
+    list(supported_shell_mapping.keys()))
 
 
 @click.command()
@@ -160,8 +162,9 @@ def complete(shell: str, enable: bool):
 
 
 def show_manual_autocomplete_code(shell_obj: RecognizedShell):
-    click.echo(f"Sorry, automatic installation is not supported for {shell_obj.shell_name}.")
-    click.echo(f"You can enable autocompletion manually by running:")
+    click.echo(
+        f"Sorry, automatic installation is not supported for {shell_obj.shell_name}.")
+    click.echo("You can enable autocompletion manually by running:")
     instructions: [str] = shell_obj.handle_enable_complete_request()
     for instruction in instructions:
         click.echo(instruction)

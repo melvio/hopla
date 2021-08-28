@@ -3,7 +3,7 @@ import logging
 import click
 import requests
 
-from hopla.hoplalib.OutputFormatter import JsonFormatter
+from hopla.hoplalib.outputformatter import JsonFormatter
 
 log = logging.getLogger()
 

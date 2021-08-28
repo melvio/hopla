@@ -4,7 +4,7 @@ import logging
 
 import click
 
-from hopla.hoplalib.Configuration import ConfigurationFileParser, \
+from hopla.hoplalib.configuration import ConfigurationFileParser, \
     HoplaConfigurationFile
 
 log = logging.getLogger()

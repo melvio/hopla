@@ -76,6 +76,7 @@ confidence=
 # --disable=W".
 disable=print-statement,
         too-few-public-methods,
+        logging-fstring-interpolation,
         parameter-unpacking,
         unpacking-in-except,
         old-raise-syntax,

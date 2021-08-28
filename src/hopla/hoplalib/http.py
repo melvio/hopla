@@ -1,6 +1,6 @@
 
 
-from hopla.hoplalib.Authorization import AuthorizationHandler
+from hopla.hoplalib.authorization import AuthorizationHandler
 
 
 class RequestHeaders:
