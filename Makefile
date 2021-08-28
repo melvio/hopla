@@ -3,14 +3,14 @@ build:
 	python -m build && pip install .
 
 develop:
-	pip install --upgrade -e .
+	pip install --upgrade --editable .
 
 lint:
 	pylint $$(find src/ -name "*.py") --rcfile=./.github/workflows/pylintrc.conf
 
 
 doctest:
-	python -m doctest -v src/hopla/cli/groupcmds/get.py
+	python -m doctest --verbose src/hopla/cli/groupcmds/get.py
 
 unittest:
 	pytest src/hopla/tests/

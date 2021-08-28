@@ -41,7 +41,7 @@ class ConfigurationFileParser:
 
         self.config_parser = ConfigParser()
 
-    def get_full_config_name(self, full_config_name: str):
+    def get_full_config_name(self, full_config_name: str, *, fallback=None):
         """takes a full_config_name and returns the corresponding value in the config file
 
         For example: `get_full_config_name("cmd_all.loglevel")` returns 'warning' if
@@ -52,6 +52,7 @@ class ConfigurationFileParser:
 
 
         \f
+        :param fallback:
         :param full_config_name:
         :return:
         """
@@ -62,7 +63,8 @@ class ConfigurationFileParser:
 
         return self.config_parser.get(
             section=section_name,
-            option=config_name
+            option=config_name,
+            fallback=fallback
         )
 
     def set_full_config_name(self, full_config_name: str, new_value):

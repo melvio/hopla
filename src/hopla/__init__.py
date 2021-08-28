@@ -22,8 +22,8 @@ from hopla.cli.groupcmds.set import set  # pylint: disable=redefined-builtin
 
 def setup_logging() -> logging.Logger:
     """Setup python logging for the entire hopla project"""
-    parsed_loglevel = ConfigurationFileParser().get_full_config_name(
-        "cmd_all.loglevel")
+    parsed_loglevel = ConfigurationFileParser().get_full_config_name("cmd_all.loglevel",
+                                                                     fallback="info")
     # TODO: move mapping to config itself.. logging should not be responsible for this
     loglevel_mapping = {
         "debug": logging.DEBUG,
