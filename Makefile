@@ -94,3 +94,11 @@ hopla_get_user_inventory:
 	&& hopla get user-inventory mounts \
 	&& hopla get user-inventory food \
 	&& hopla get user-inventory lastDrop
+
+
+hopla_get_user_info:
+	hopla get user-info \
+	&& hopla get user-info --filter 'profile' \
+	&& hopla get user-info -f "achievements.streak,achievements.quests" \
+	&& hopla get user-info -f 'flags.lastFreeRebirth, preferences.dayStart, preferences.timezoneOffset, auth.timestamps.created'
+
