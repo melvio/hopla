@@ -49,8 +49,9 @@ def user_inventory(item_group_name) -> dict:
     log.debug(f"hopla get user-inventory item_group={item_group_name}")
     response = HabiticaUserRequest().request_user()
     response_data: dict = handle_response(response)
+    habitica_user = HabiticaUser(user_dict=response_data)
 
-    data_items = response_data["items"]
+    data_items = habitica_user.get_inventory()
     if item_group_name == "all":
         click.echo(data_items)
         return data_items
@@ -62,7 +63,7 @@ def user_inventory(item_group_name) -> dict:
 valid_stat_names = click.Choice(["hp", "mp", "exp", "gp", "lvl", "class", "all"])
 
 
-def from_alias_to_canonical_name(stat_name: str):
+def stat_alias_to_official_habitica_name(stat_name: str):
     if stat_name in ["mana", "mana-points", "manapoints"]:
         return "mp"
     elif stat_name in ["health"]:
@@ -77,15 +78,16 @@ def from_alias_to_canonical_name(stat_name: str):
         return stat_name
 
 
-@get.command(context_settings=dict(token_normalize_func=from_alias_to_canonical_name))
+@get.command(context_settings=dict(token_normalize_func=stat_alias_to_official_habitica_name))
 @click.argument("stat_name", type=valid_stat_names, default="all")
 def user_stats(stat_name: str):
     """Get the stats of a user"""
     log.debug(f"hopla get user-stats stat={stat_name}")
     response = HabiticaUserRequest().request_user()
     response_data: dict = handle_response(response)
+    habitica_user = HabiticaUser(user_dict=response_data)
 
-    data_stats = response_data["stats"]
+    data_stats = habitica_user.get_stats()
     if stat_name == "all":
         click.echo(data_stats)
         return data_stats
@@ -207,7 +209,14 @@ class HabiticaUser:
     user_dict: dict  # This should be a 200 ok response as json (using Response.json()) when calling the /user endpoint and getting .data
 
     def user_as_json_str(self, indent=2) -> str:
+        # TODO: this should not be here
         return json.dumps(self.user_dict, indent=indent)
+
+    def get_stats(self) -> dict:
+        return self.user_dict["stats"]
+
+    def get_inventory(self) -> dict:
+        return self.user_dict["items"]
 
     def filter_user(self, filter_string: str):
         result = dict()
