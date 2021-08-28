@@ -5,8 +5,10 @@
 hopla - a command line interface (CLI) for [habitica.com](https://habitica.com)
 
 
-Hopla is a XDG-compliant command CLI which uses `bash` and `python3` to interact with the [habitica.com](https://habitica.com) API.
-Hopla is currently under active development but available for beta usage. 
+Hopla is a XDG-compliant command CLI which uses `python3` to interact with 
+the [Habitica API](https://habitica.com/apidoc/).
+
+Hopla is currently under active development so buyer beware. 
 
 
 

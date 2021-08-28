@@ -55,7 +55,6 @@ supported_config_names = click.Choice(["cmd_all.loglevel"])
 @click.option("--config-file-name", "config_file_name_flag",
               is_flag=True,
               help="get the absolute path of the config file")
-# @click.argument("arguments", metavar="[config_name] [value]", nargs=-1)
 def config(config_name: str,
            value,
            list_flag: bool,

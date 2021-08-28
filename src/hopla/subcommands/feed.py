@@ -10,15 +10,6 @@ from hopla.hoplalib.OutputFormatter import JsonFormatter
 log = logging.getLogger()
 
 
-# INTENDED CLI API before release
-# hopla feed {pet_name} {food_name}                  -- feed pet once with food
-# hopla feed {pet_name} {food_name} --amount=N       -- feed pet N times with food
-#
-# nice to have features:
-# 1. see 'developers/goal_bnf.md'
-# 2. fast fail on --amount when the food is not available the first time
-
-
 class PetFeedPostRequester:
     """
     The PetFeedPostRequester sends a post request to feed a pet.
@@ -57,7 +48,8 @@ class PetFeedPostRequester:
 
 # pets can eat up to 50 units of non-preferred foods
 # TODO: Not sure if, want to clamp=True (which results
-#  in 100 automatically becomes max, -10 becomes min, instead of failing with an click validation error message)
+#  in 100 automatically becomes max, -10 becomes min, instead of failing
+#   with an click validation error message)
 # * Look into other options first, such as; --until-mount
 valid_feeding_amount = click.IntRange(min=0, max=50, clamp=False)
 
@@ -111,5 +103,3 @@ def feed(pet_name: str, food_name: str, amount: int):
     feed_data = data_on_success_else_exit(response)
 
     click.echo(JsonFormatter(feed_data).format_with_double_quotes())
-
-

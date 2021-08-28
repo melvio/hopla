@@ -152,6 +152,7 @@ def complete(shell: str, enable: bool):
     if enable is False:
         show_autocomplete_code(shell_obj)
     else:
+        # TODO: check if it is already enabled, if it is then abort in friendly manner
         if shell_obj.supports_automatic_complete_enablement():
             enable_autocomplete(shell_obj)
         else:

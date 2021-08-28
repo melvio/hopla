@@ -165,9 +165,7 @@ def user_auth(auth_info_name: str):
 
 
 @get.command()
-# TODO: consider upgrading to full-blown JsonPath and dont handle this yourself
-# * https://jsonpath.com/
-# * https://goessner.net/articles/JsonPath/
+# TODO: consider upgrading to full-blown jq and dont handle this yourself
 @click.option("--filter", "-f", "filter_string", metavar="FILTER_STRING",
               help="a comma seperated list of keys")
 def user_info(filter_string: str) -> dict:

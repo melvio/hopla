@@ -13,7 +13,7 @@ develop:
 ## note: On some machines, this command might require a restart of your
 ##       terminal to load the commands on your $PATH
 configure:
-	hopla set auth
+	hopla auth
 
 enable_autocomplete:
 	hopla complete bash --enable

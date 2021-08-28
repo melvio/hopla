@@ -12,7 +12,6 @@ from hopla.hoplalib.OutputFormatter import JsonFormatter
 log = logging.getLogger()
 
 
-# TODO: add some kind of json filtering
 @click.group()
 def add():
     """GROUP for adding things to habitica"""
