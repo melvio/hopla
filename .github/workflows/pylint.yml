@@ -18,6 +18,6 @@ jobs:
     - name: Analysing the code with pylint
       # https://github.com/actions/starter-workflows/issues/636
       run: |
-        pylint $(find . -name "*.py" | xargs) --rcfile ./.github/workflows/pylintrc.conf
+        pylint $(find src -name "*.py" | xargs) --rcfile ./.github/workflows/pylintrc.conf
 
 
