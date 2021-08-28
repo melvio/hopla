@@ -1,4 +1,4 @@
-name: Pylint
+name: CI-lint-and-test
 
 on: [push]
 
@@ -19,5 +19,14 @@ jobs:
       # https://github.com/actions/starter-workflows/issues/636
       run: |
         pylint $(find src -name "*.py" | xargs) --rcfile ./.github/workflows/pylintrc.conf
+    - name: Run doctest
+      # TODO: apply to all relevant *.py files
+      run: |
+        python -m doctest -v src/hopla/cli/groupcmds/get.py
+    - name: Run unittest with pytest
+      run: |
+        pytest src/hopla/tests/
+
+
 
 
