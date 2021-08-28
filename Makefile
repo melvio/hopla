@@ -15,6 +15,13 @@ develop:
 configure:
 	hopla set auth
 
+enable_autocomplete:
+	hopla complete bash --enable
+
+print_autocomplete:
+	hopla complete bash  \
+	&& hopla complete zsh  \
+	&& hopla complete fish
 
 hopla_add_simple_todo:
 	hopla add todo "Donate"
