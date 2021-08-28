@@ -1,6 +1,5 @@
 import copy
 import logging
-import json
 import click
 import requests
 
@@ -52,14 +51,14 @@ def user_inventory(item_group_name) -> dict:
     response = HabiticaUserRequest().request_user()
     response_data: dict = handle_response(response)
     habitica_user = HabiticaUser(user_dict=response_data)
-
     data_items = habitica_user.get_inventory()
+
     if item_group_name == "all":
-        click.echo(data_items)
-        return data_items
+        data_requested_by_user = data_items
     else:
-        click.echo(data_items[item_group_name])
-        return data_items
+        data_requested_by_user = data_items[item_group_name]
+    click.echo(JsonFormatter(data_requested_by_user).format_with_double_quotes())
+    return data_requested_by_user
 
 
 valid_stat_names = click.Choice(["hp", "mp", "exp", "gp", "lvl", "class", "all"])
@@ -84,7 +83,6 @@ def stat_alias_to_official_habitica_name(stat_name: str):
 @click.argument("stat_name", type=valid_stat_names, default="all")
 def user_stats(stat_name: str):
     """Get the stats of a user"""
-    # TODO: parsable output
     log.debug(f"hopla get user-stats stat={stat_name}")
     response = HabiticaUserRequest().request_user()
     response_data: dict = handle_response(response)
@@ -223,6 +221,8 @@ class HabiticaUser:
         return self.user_dict["auth"]
 
     def filter_user(self, filter_string: str) -> dict:
+        # TODO: this code is generic, it can be used to filter any dict
+        #       move it out of this class and reuse
         result = dict()
         filters: List[str] = filter_string.strip().split(",")
 

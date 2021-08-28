@@ -35,7 +35,6 @@ def print_config_file_content():
             click.echo(line.strip())
 
 
-# TODO: actually use the value of debug_enabled in the logging framework
 # TODO: get this value from the HoplaConfiguration class instead of duplicating it here
 supported_config_names = click.Choice(["cmd_all.loglevel"])
 # levels supported:
