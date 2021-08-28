@@ -3,3 +3,4 @@ pylint
 click
 build
 jq
+pytest
