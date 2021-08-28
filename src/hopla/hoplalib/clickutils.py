@@ -2,6 +2,7 @@
 Module with commonly used python-click functionality.
 """
 import logging
+import sys
 
 import click
 import requests
@@ -23,4 +24,4 @@ def data_on_success_else_exit(api_response: requests.Response):
 
     log.debug(f"received: {response_json}")
     click.echo(JsonFormatter(response_json).format_with_double_quotes())
-    exit()  # TODO: not sure if needed
+    sys.exit()  # TODO: not sure if needed

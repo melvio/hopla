@@ -1,3 +1,6 @@
+"""
+Module responsible for setting up initialization of the hopla entry command.
+"""
 import logging
 import sys
 
@@ -31,7 +34,7 @@ def setup_logging() -> logging.Logger:
 
     # https://docs.python.org/3.8/howto/logging.html#logging-basic-tutorial
     logging.basicConfig(
-        format='[%(levelname)s][%(filename)s|%(asctime)s] %(message)s',
+        format="[%(levelname)s][%(filename)s|%(asctime)s] %(message)s",
         level=loglevel_mapping[parsed_loglevel],
         datefmt="%Y-%m-%dT%H:%M:%S"
     )
@@ -41,7 +44,7 @@ def setup_logging() -> logging.Logger:
 log = setup_logging()
 
 
-@click.group(context_settings=dict(help_option_names=['-h', '--help']))
+@click.group(context_settings=dict(help_option_names=["-h", "--help"]))
 def hopla():
     """hopla - a command line interface (CLI) to interact with habitica.com"""
 

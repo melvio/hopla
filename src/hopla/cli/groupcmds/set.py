@@ -1,3 +1,6 @@
+"""
+The module with CLI code that handles the `hopla set` group command.
+"""
 import logging
 
 import click

@@ -35,6 +35,7 @@ class PetFeedPostRequester:
 
     @property
     def path(self) -> str:
+        """Return the URL used to feed a pet"""
         return f"/user/feed/{self.pet_name}/{self.food_name}"
 
     @property

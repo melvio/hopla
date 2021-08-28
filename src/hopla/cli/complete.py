@@ -39,9 +39,6 @@ class RecognizedShellWithAutomaticAutocompleteDisabled(RecognizedShell,
     support for.
     """
 
-    def __init__(self, shell_name: str):
-        super().__init__(shell_name)
-
     @abc.abstractmethod
     def get_manual_autocomplete_instructions(self) -> [str]:
         """Returns instructions on how the enable hopla autocompletion for this shell"""
@@ -58,9 +55,6 @@ class RecognizedShellWithAutomaticAutocompleteEnabled(RecognizedShell,
     """
     Shells that Hopla currently has hopla complete [shell] --enable support for
     """
-
-    def __init__(self, shell_name: str):
-        super().__init__(shell_name)
 
     @abc.abstractmethod
     def enable_autocomplete(self) -> None:
@@ -89,7 +83,7 @@ class Bash(RecognizedShellWithAutomaticAutocompleteEnabled):
     def enable_autocomplete(self):
         cmd = self.get_generated_autocomplete_cmd()
         enablement_code_for_bashrc = f'eval "$({cmd})"'
-        with open(self.config_file, mode="a") as bashrc:
+        with open(self.config_file, mode="a", encoding="utf-8") as bashrc:
             bashrc.write(enablement_code_for_bashrc)
 
 
@@ -110,10 +104,15 @@ class Zsh(RecognizedShellWithAutomaticAutocompleteDisabled):
         return [
             f"   hopla autocomplete {self.shell_name} > {self.example_zsh_complete_file}",
             f"Then source the file in your {self.config_file}",
-            f"   . {self.example_zsh_complete_file}"]
+            f"   . {self.example_zsh_complete_file}"
+        ]
 
 
 class Fish(RecognizedShellWithAutomaticAutocompleteDisabled):
+    """
+    Class representing the [Fish shell](https://en.wikipedia.org/wiki/Fish_(Unix_shell))
+    """
+
     def __init__(self):
         super().__init__("fish")
         self.hopla_complete_file = "~/.config/fish/completions/hopla.fish"
@@ -122,25 +121,24 @@ class Fish(RecognizedShellWithAutomaticAutocompleteDisabled):
         return f"env _HOPLA_COMPLETE={self.shell_name}_source hopla"
 
     def get_manual_autocomplete_instructions(self) -> [str]:
-        return [
-            f"   hopla autocomplete {self.shell_name} > {self.hopla_complete_file}"]
+        return [f"   hopla autocomplete {self.shell_name} > {self.hopla_complete_file}"]
 
 
 supported_shell_mapping = {"bash": Bash, "zsh": Zsh, "fish": Fish}
+supported_shell_id_strings = list(supported_shell_mapping.keys())
 
 
 def get_shell_by_name(shell_name: str) -> RecognizedShell:
     """Get a shell by its name"""
     shell_class = supported_shell_mapping.get(shell_name)
-    if shell_class is not None:
-        return shell_class()
-    else:
+    if shell_class is None:
         # defensive programming: should be handled by click.Choice already
         raise ValueError(f"Unexpected shell {shell_name}")
 
+    return shell_class()
 
-autocomplete_supported_shells = click.Choice(
-    list(supported_shell_mapping.keys()))
+
+autocomplete_supported_shells = click.Choice(supported_shell_id_strings)
 
 
 @click.command()

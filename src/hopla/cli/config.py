@@ -3,6 +3,7 @@ The module with CLI code that handles the `hopla config` command.
 """
 
 import logging
+from pathlib import Path
 
 import click
 
@@ -12,21 +13,21 @@ from hopla.hoplalib.configuration import ConfigurationFileParser, \
 log = logging.getLogger()
 
 
-def config_get(config_name):
+def config_get(config_name: str):
+    """Get the value of the specified full configuration name"""
     if config_name is None:
         click.echo(config.help)
     else:
         config_file_parser = ConfigurationFileParser()
-        value = config_file_parser.get_full_config_name(
-            full_config_name=config_name)
+        value = config_file_parser.get_full_config_name(full_config_name=config_name)
         click.echo(f"{value}")
 
 
 def config_set(config_name: str, value):
+    """Set the value of the specified full configuration name"""
     config_file_parser = ConfigurationFileParser()
-    value = config_file_parser.set_full_config_name(
-        full_config_name=config_name,
-        new_value=value)
+    value = config_file_parser.set_full_config_name(full_config_name=config_name,
+                                                    new_value=value)
     click.echo(f"{config_name}={value}")
 
 
@@ -35,7 +36,8 @@ def print_config_file_name():
 
 
 def print_config_file_content():
-    with open(HoplaConfigurationFile().file_path, mode="r") as conf_file:
+    config_file_path: Path = HoplaConfigurationFile().file_path
+    with open(config_file_path, mode="r", encoding="utf-8") as conf_file:
         for line in conf_file.readlines():
             click.echo(line.strip())
 
@@ -92,8 +94,7 @@ def config(config_name: str,
     :return:
     """
     log.debug(f"hopla config name={config_name} value={value}")
-    log.debug(
-        f" options:  list={list_flag}, config_file_name={config_file_name_flag}")
+    log.debug(f" options:  list={list_flag}, config_file_name={config_file_name_flag}")
 
     if list_flag:
         print_config_file_content()

@@ -60,6 +60,7 @@ class AuthorizationHandler:
 
     @property
     def user_id(self):
+        """Return the user id to be used in habitica API requests"""
         # violating that @property should be cheap;
         # However, the auth file should be short. So we should be fine to parse
         self._parse()
@@ -69,6 +70,7 @@ class AuthorizationHandler:
 
     @property
     def api_token(self):
+        """Return the api token to be used in habitica API requests"""
         # violating that @property should be cheap;
         # However, the auth file should be short. So we should be fine to parse
         self._parse()
@@ -76,7 +78,8 @@ class AuthorizationHandler:
             AuthorizationConstants.CONFIG_SECTION_CREDENTIALS] \
             .get(AuthorizationConstants.CONFIG_KEY_API_TOKEN)
 
-    def auth_file_exists(self):
+    def auth_file_exists(self) -> bool:
+        """Return True if the authentication file exists"""
         return self.auth_file.exists and self.auth_file.is_file()
 
     def set_hopla_credentials(self, *, overwrite: bool = False):
@@ -90,7 +93,7 @@ class AuthorizationHandler:
         self._create_empty_auth_file()
 
         user_id, api_token = self.request_user_credentials()
-        with open(self.auth_file, mode="w") as new_auth_file:
+        with open(self.auth_file, mode="w", encoding="utf-8") as new_auth_file:
             self.config_parser.add_section(
                 AuthorizationConstants.CONFIG_SECTION_CREDENTIALS)
             self.config_parser.set(
@@ -140,28 +143,29 @@ class AuthorizationHandler:
 
     def _create_empty_auth_file(self):
         self._create_auth_dir()
-        with open(self.auth_file, mode="w"):
+        with open(self.auth_file, mode="w", encoding="utf-8"):
             pass  # no need to write to it, just create it
 
     def _create_auth_dir(self):
         Path.mkdir(self.auth_dir, parents=True, exist_ok=True)
 
     def request_user_credentials(self) -> (str, str):
+        # TODO: printing should be click's responsibility
+        # and click should not be in this file, so we need to refactor responsibilities here.
         print("Please enter your credentials")
-        print(
-            "You can find them over at <https://habitica.com/user/settings/api> ")
-        print(
-            "The user id can be found under 'User ID' and you need to click 'Show API Token'")
+        print("You can find them over at <https://habitica.com/user/settings/api> ")
+        print("The user id can be found under 'User ID'.")
+        print("You need to click 'Show API Token' to get the api token")
 
         try:
             # validate input:
             # TODO: look into https://docs.python.org/3/library/uuid.html
             uuid_user_id: str = self._request_for_user_id()
             uuid_api_token: str = self._request_for_api_token()
-        except (EOFError, KeyboardInterrupt) as e:
-            log.debug(f"user send a EOF: {e}")
+        except (EOFError, KeyboardInterrupt) as ex:
+            log.debug(f"user send a EOF: {ex}")
             print("aborted the creation of a new authentication file")
-            exit(0)
+            sys.exit(0)
 
         return uuid_user_id, uuid_api_token
 
@@ -178,4 +182,4 @@ class AuthorizationHandler:
             print("no credentials found")
             print("Please run:")
             print("    hopla auth")
-            sys.exit(1) # TODO: handle this better
+            sys.exit(1)  # TODO: handle this better

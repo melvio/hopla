@@ -1,3 +1,6 @@
+"""
+Library code that helps with outputting strings to the CLI user.
+"""
 import json
 
 
