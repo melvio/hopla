@@ -47,6 +47,7 @@ def user_inventory(item_group_name) -> dict:
     :param item_group_name: The type of items in the inventory (default: all)
     :return: The specified inventory
     """
+    # TODO: parsable output
     log.debug(f"hopla get user-inventory item_group={item_group_name}")
     response = HabiticaUserRequest().request_user()
     response_data: dict = handle_response(response)
@@ -83,6 +84,7 @@ def stat_alias_to_official_habitica_name(stat_name: str):
 @click.argument("stat_name", type=valid_stat_names, default="all")
 def user_stats(stat_name: str):
     """Get the stats of a user"""
+    # TODO: parsable output
     log.debug(f"hopla get user-stats stat={stat_name}")
     response = HabiticaUserRequest().request_user()
     response_data: dict = handle_response(response)
@@ -109,6 +111,7 @@ valid_auth_info_names = click.Choice(["username", "email", "profilename", "all"]
 # profilename -> 'data.profile.name'
 # *  is changeable at '<https://habitica.com/user/settings/site>' under 'Change Display Name'
 # profilename is not really in the .data.auth section of /user.. but fits well here
+# TODO: probably better to remove profilename here regardless
 
 
 @get.command()
@@ -118,19 +121,21 @@ def user_auth(auth_info_name: str):
     log.debug(f"hopla get user-auth auth={auth_info_name}")
     response = HabiticaUserRequest().request_user()
     response_data: dict = handle_response(response)
+    user = HabiticaUser(user_dict=response_data)
 
-    json_data_auth = response_data["auth"]
+    json_data_auth: dict = user.get_auth()
     if auth_info_name == "all":
-        click.echo(json_data_auth)
+        click.echo(JsonFormatter(json_data_auth).format_with_double_quotes())
         return json_data_auth
-    if auth_info_name == "profilename":
+    elif auth_info_name == "profilename":
         profile_name = response_data["profile"]["name"]
-        click.echo(profile_name)
+        click.echo(JsonFormatter(profile_name).format_with_double_quotes())
         return profile_name
     else:
         # TODO no support for non-local data yet (e.g. google SSO)
+        #      e.g. use hopla get user-info -f "auth.google" as workaround
         auth_info = json_data_auth["local"][auth_info_name]
-        click.echo(auth_info)
+        click.echo(JsonFormatter(auth_info).format_with_double_quotes())
         return auth_info
 
 
@@ -170,8 +175,8 @@ def user_info(filter_string: str) -> dict:
     hopla get user-info -f "achievements.streak,achievements.quests"
 
     \b
-    # get contributor status, croncount, profile description, and user id
-    hopla get user-info -f "contributor,flags.cronCount,profile.blurb,id"
+    # get contributor status, cron-count, profile description, and user id
+    hopla get user-info -f "contributor, flags.cronCount, profile.blurb, id"
 
 
     \f
@@ -213,6 +218,9 @@ class HabiticaUser:
 
     def get_inventory(self) -> dict:
         return self.user_dict["items"]
+
+    def get_auth(self) -> dict:
+        return self.user_dict["auth"]
 
     def filter_user(self, filter_string: str) -> dict:
         result = dict()
