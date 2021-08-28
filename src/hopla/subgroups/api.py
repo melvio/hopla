@@ -10,7 +10,6 @@ from hopla.hoplalib.OutputFormatter import JsonFormatter
 log = logging.getLogger()
 
 
-# TODO: add some kind of json filtering
 @click.group()
 def api():
     """GROUP for requesting Habitica API metadata"""
@@ -18,14 +17,20 @@ def api():
 
 
 @api.command()
-@click.option("--jq-filter", "-j", metavar="JQ_FILTER", help="JQ_FILTER is a `jq` filter that can be used to restructure output")
+@click.option("--jq-filter", "-j", metavar="JQ_FILTER",
+              help="JQ_FILTER is a `jq` filter that can be used to restructure output")
 def content(jq_filter: str) -> dict:
-    """get habitica content
+    """get detailed information about Habitica's API content
 
     \b
     Example
     ----
-    # get information on the 'Ruby Rapport' quest
+    # Tip: the content is pretty long so try piping it to an editor or pager
+    hopla api content | vim -
+
+    \b
+    # get content information about
+    # the [Ruby Rapport quest](https://habitica.fandom.com/wiki/Ruby_Rapport)
     hopla api content --jq-filter ".quests.ruby"
 
 
