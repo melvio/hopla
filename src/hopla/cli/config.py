@@ -4,7 +4,8 @@ import logging
 
 import click
 
-from hopla.hoplalib.Configuration import ConfigurationFileParser, HoplaConfigurationFile
+from hopla.hoplalib.Configuration import ConfigurationFileParser, \
+    HoplaConfigurationFile
 
 log = logging.getLogger()
 
@@ -14,14 +15,16 @@ def config_get(config_name):
         click.echo(config.help)
     else:
         config_file_parser = ConfigurationFileParser()
-        value = config_file_parser.get_full_config_name(full_config_name=config_name)
+        value = config_file_parser.get_full_config_name(
+            full_config_name=config_name)
         click.echo(f"{value}")
 
 
 def config_set(config_name: str, value):
     config_file_parser = ConfigurationFileParser()
-    value = config_file_parser.set_full_config_name(full_config_name=config_name,
-                                                    new_value=value)
+    value = config_file_parser.set_full_config_name(
+        full_config_name=config_name,
+        new_value=value)
     click.echo(f"{config_name}={value}")
 
 
@@ -35,15 +38,13 @@ def print_config_file_content():
             click.echo(line.strip())
 
 
-# TODO: get this value from the HoplaConfiguration class instead of duplicating it here
-supported_config_names = click.Choice(["cmd_all.loglevel"])
-
-
 # levels supported:
 # hopla config cmd_all.loglevel debug
 # hopla config cmd_all.loglevel info
 # hopla config cmd_all.loglevel warning
 # hopla config cmd_all.loglevel error
+# TODO: get this value from the HoplaConfiguration class instead of duplicating it here
+supported_config_names = click.Choice(["cmd_all.loglevel"])
 
 
 @click.command()
@@ -89,7 +90,8 @@ def config(config_name: str,
     :return:
     """
     log.debug(f"hopla config name={config_name} value={value}")
-    log.debug(f" options:  list={list_flag}, config_file_name={config_file_name_flag}")
+    log.debug(
+        f" options:  list={list_flag}, config_file_name={config_file_name_flag}")
 
     if list_flag:
         print_config_file_content()

@@ -1,3 +1,8 @@
+"""
+Library code to handle Hopla's authorization, authentication and
+identification.
+"""
+
 import logging
 import os
 from configparser import ConfigParser
@@ -7,6 +12,7 @@ log = logging.getLogger()
 
 
 class AuthorizationConstants:
+    """Class with authorization and authentication related constants"""
     CONFIG_SECTION_CREDENTIALS = "credentials"
     CONFIG_KEY_USER_ID = "user_id"
     CONFIG_KEY_API_TOKEN = "api_token"
@@ -25,8 +31,10 @@ class AuthorizationHandler:
     def auth_file(self) -> Path:
         """ Get the file with authorization"""
         auth_file: Path
-        hopla_auth_file_env_var: str = os.environ.get(AuthorizationConstants.GLOBAL_ENV_VAR_HOPLA_AUTH_FILE)
-        xdg_config_home_env_var: str = os.environ.get(AuthorizationConstants.GLOBAL_ENV_VAR_XDG_CONFIG_HOME)
+        hopla_auth_file_env_var: str = os.environ.get(
+            AuthorizationConstants.GLOBAL_ENV_VAR_HOPLA_AUTH_FILE)
+        xdg_config_home_env_var: str = os.environ.get(
+            AuthorizationConstants.GLOBAL_ENV_VAR_XDG_CONFIG_HOME)
 
         if hopla_auth_file_env_var:
             auth_file = Path(hopla_auth_file_env_var)
@@ -49,14 +57,16 @@ class AuthorizationHandler:
     def user_id(self):
         # violating that @property should be cheap; However, the auth file should be short. So we should be fine to parse
         self._parse()
-        return self.config_parser[AuthorizationConstants.CONFIG_SECTION_CREDENTIALS] \
+        return self.config_parser[
+            AuthorizationConstants.CONFIG_SECTION_CREDENTIALS] \
             .get(AuthorizationConstants.CONFIG_KEY_USER_ID)
 
     @property
     def api_token(self):
         # violating that @property should be cheap; However, the auth file should be short. So we should be fine to parse
         self._parse()
-        return self.config_parser[AuthorizationConstants.CONFIG_SECTION_CREDENTIALS] \
+        return self.config_parser[
+            AuthorizationConstants.CONFIG_SECTION_CREDENTIALS] \
             .get(AuthorizationConstants.CONFIG_KEY_API_TOKEN)
 
     def auth_file_exists(self):
@@ -65,7 +75,8 @@ class AuthorizationHandler:
     def set_hopla_credentials(self, *, overwrite: bool = False):
         log.debug(f"set_hopla_credentials overwrite={overwrite}")
         if self.auth_file_exists() and overwrite is False:
-            log.info(f"Auth file {self.auth_file} not recreated because it already exists")
+            log.info(
+                f"Auth file {self.auth_file} not recreated because it already exists")
             return
 
         # TODO: with mode=w here, we are essentially creating this empty auth file twice
@@ -73,7 +84,8 @@ class AuthorizationHandler:
 
         user_id, api_token = self.request_user_credentials()
         with open(self.auth_file, mode="w") as new_auth_file:
-            self.config_parser.add_section(AuthorizationConstants.CONFIG_SECTION_CREDENTIALS)
+            self.config_parser.add_section(
+                AuthorizationConstants.CONFIG_SECTION_CREDENTIALS)
             self.config_parser.set(
                 section=AuthorizationConstants.CONFIG_SECTION_CREDENTIALS,
                 option=AuthorizationConstants.CONFIG_KEY_USER_ID,
@@ -94,7 +106,8 @@ class AuthorizationHandler:
             return False
 
         self.config_parser.read(self.auth_file)
-        if self.config_parser.has_section(AuthorizationConstants.CONFIG_SECTION_CREDENTIALS) is False:
+        if self.config_parser.has_section(
+                AuthorizationConstants.CONFIG_SECTION_CREDENTIALS) is False:
             log.debug(f"{self.auth_file} has no credentials section")
             return False
         elif self._auth_file_has_user_id() is False:
@@ -107,16 +120,18 @@ class AuthorizationHandler:
             return True
 
     def _auth_file_has_api_token(self) -> bool:
-        return self.config_parser.has_option(section=AuthorizationConstants.CONFIG_SECTION_CREDENTIALS,
-                                             option=AuthorizationConstants.CONFIG_KEY_API_TOKEN)
+        return self.config_parser.has_option(
+            section=AuthorizationConstants.CONFIG_SECTION_CREDENTIALS,
+            option=AuthorizationConstants.CONFIG_KEY_API_TOKEN)
 
     def _auth_file_has_user_id(self) -> bool:
-        return self.config_parser.has_option(section=AuthorizationConstants.CONFIG_SECTION_CREDENTIALS,
-                                             option=AuthorizationConstants.CONFIG_KEY_USER_ID)
+        return self.config_parser.has_option(
+            section=AuthorizationConstants.CONFIG_SECTION_CREDENTIALS,
+            option=AuthorizationConstants.CONFIG_KEY_USER_ID)
 
     def _create_empty_auth_file(self):
         self._create_auth_dir()
-        with open(self.auth_file, "w"):
+        with open(self.auth_file, mode="w"):
             pass  # no need to write to it, just create it
 
     def _create_auth_dir(self):
@@ -124,8 +139,10 @@ class AuthorizationHandler:
 
     def request_user_credentials(self) -> (str, str):
         print("Please enter your credentials")
-        print("You can find them over at <https://habitica.com/user/settings/api> ")
-        print("The user id can be found under 'User ID' and you need to click 'Show API Token'")
+        print(
+            "You can find them over at <https://habitica.com/user/settings/api> ")
+        print(
+            "The user id can be found under 'User ID' and you need to click 'Show API Token'")
 
         try:
             # validate input:

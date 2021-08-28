@@ -15,6 +15,6 @@ def auth():
 
     hopla auth allows you interactively providing access credentials.
     """
-    log.debug("function: hopla auth")
+    log.debug("hopla auth")
     auth_handler = AuthorizationHandler()
     auth_handler.set_hopla_credentials(overwrite=True)

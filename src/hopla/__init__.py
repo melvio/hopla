@@ -4,16 +4,16 @@ import sys
 import click
 
 from hopla.hoplalib.Configuration import ConfigInitializer, ConfigurationFileParser
-from hopla.subcommands.auth import auth
-from hopla.subcommands.complete import complete
-from hopla.subcommands.config import config
-from hopla.subcommands.feed import feed
-from hopla.subcommands.version import version
-from hopla.subgroups.add import add
-from hopla.subgroups.api import api
-from hopla.subgroups.buy import buy
-from hopla.subgroups.get import get
-from hopla.subgroups.set import set
+from hopla.cli.auth import auth
+from hopla.cli.complete import complete
+from hopla.cli.config import config
+from hopla.cli.feed import feed
+from hopla.cli.version import version
+from hopla.cli.groupcmds.add import add
+from hopla.cli.groupcmds.api import api
+from hopla.cli.groupcmds.buy import buy
+from hopla.cli.groupcmds.get import get
+from hopla.cli.groupcmds.set import set
 
 
 def setup_logging() -> logging.Logger:

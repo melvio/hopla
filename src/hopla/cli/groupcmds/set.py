@@ -19,7 +19,8 @@ valid_day_start_hours = click.Choice([str(i) for i in range(0, 24)])
 
 
 @set.command()
-@click.argument("day_start_hour", type=valid_day_start_hours, default="0", metavar="[HOUR]")
+@click.argument("day_start_hour", type=valid_day_start_hours, default="0",
+                metavar="[HOUR]")
 @click.option("--json/--no-json", "json_flag", default=False, )
 def day_start(day_start_hour, json_flag: bool):
     """Set your day-start (CRON) to the specified HOUR.
