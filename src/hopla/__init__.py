@@ -1,21 +1,19 @@
 import logging
-
 import sys
 
 import click
-from hopla.subgroups.add import add
-from hopla.subgroups.api import api
-from hopla.subgroups.set import set
-from hopla.subcommands.version import version
+
+from hopla.hoplalib.Configuration import ConfigInitializer, ConfigurationFileParser
 from hopla.subcommands.auth import auth
+from hopla.subcommands.complete import complete
 from hopla.subcommands.config import config
 from hopla.subcommands.feed import feed
-from hopla.subcommands.complete import complete
+from hopla.subcommands.version import version
+from hopla.subgroups.add import add
+from hopla.subgroups.api import api
 from hopla.subgroups.buy import buy
 from hopla.subgroups.get import get
-
-from hopla.hoplalib.Configuration import ConfigInitializer
-from hopla.hoplalib.Configuration import ConfigurationFileParser
+from hopla.subgroups.set import set
 
 
 def setup_logging() -> logging.Logger:

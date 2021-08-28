@@ -1,6 +1,7 @@
-import requests
-import click
 import logging
+
+import click
+import requests
 
 from hopla.hoplalib.OutputFormatter import JsonFormatter
 

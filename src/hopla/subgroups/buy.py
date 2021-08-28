@@ -1,12 +1,12 @@
 import logging
-import click
-import requests
 import time
 
-from hopla.hoplalib.Http import UrlBuilder, RequestHeaders
-from hopla.hoplalib.ClickUtils import data_on_success_else_exit
-from hopla.hoplalib.OutputFormatter import JsonFormatter
+import click
+import requests
 
+from hopla.hoplalib.ClickUtils import data_on_success_else_exit
+from hopla.hoplalib.Http import RequestHeaders, UrlBuilder
+from hopla.hoplalib.OutputFormatter import JsonFormatter
 from hopla.subgroups import get
 
 log = logging.getLogger()

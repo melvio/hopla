@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
+import logging
+
 import click
 
-import logging
 from hopla.hoplalib.Authorization import AuthorizationHandler
 
 log = logging.getLogger()

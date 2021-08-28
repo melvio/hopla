@@ -1,10 +1,11 @@
 import logging
-import click
-import requests
-import jq
 
-from hopla.hoplalib.Http import UrlBuilder
+import click
+import jq
+import requests
+
 from hopla.hoplalib.ClickUtils import data_on_success_else_exit
+from hopla.hoplalib.Http import UrlBuilder
 from hopla.hoplalib.OutputFormatter import JsonFormatter
 
 log = logging.getLogger()

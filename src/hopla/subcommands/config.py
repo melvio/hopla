@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-import click
-
 import logging
+
+import click
 
 from hopla.hoplalib.Configuration import ConfigurationFileParser, HoplaConfigurationFile
 

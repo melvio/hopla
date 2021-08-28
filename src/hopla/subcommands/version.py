@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-import click
-
 import logging
+
+import click
 
 log = logging.getLogger()
 
