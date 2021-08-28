@@ -19,10 +19,10 @@ configure:
 # iso-date for tomorrow: YYYY-MM-DD
 tomorrow="$$(date --iso-8601 --date=tomorrow)"
 hopla_add_todo_checklist_tomorrow:
-	hopla add todo --difficulty medium --due-date $(tomorrow) --checklist-file ~/todo/todo_list/checklist.md "$(tomorrow) checklist"
+	hopla add todo --difficulty medium --due-date $(tomorrow) --checklist ~/todo/todo_list/checklist.md "$(tomorrow) checklist"
 
-hopla_add_todo_checklist_studroll:
-	hopla add todo --difficulty medium --due-date $(tomorrow) --checklist-file ~/todo/todo_list/roll.md "$(tomorrow) stud"
+hopla_add_todo_checklist_with_editor:
+	hopla add todo --difficulty medium --due-date $(tomorrow) --checklist-file ~/todo/todo_list/roll.md "$(tomorrow) studies"
 
 
 today="$$(date --iso-8601)"
@@ -33,17 +33,23 @@ hopla_add_todo_no_checklist:
 	hopla add todo --difficulty hard --due-date $$(date --iso-8601)  "my todo thingy here"
 
 
-hopla_enable_debug:
-	hopla set-hopla config debug_enabled 1
+hopla_config_get_loglevel:
+	hopla config 'cmd_all.loglevel'
 
-hopla_disable_debug:
-	hopla set-hopla config debug_enabled 0
+hopla_enable_debug:
+	hopla config 'cmd_all.loglevel' debug
+
+hopla_disable_verbosity:
+	hopla config 'cmd_all.loglevel' error
 
 hopla_buy_armoire:
 	hopla buy enchanted-armoire
 
 hopla_buy_armoire10:
 	hopla buy enchanted-armoire --times 10
+
+hopla_buy_armoire_until_poor:
+	hopla buy enchanted-armoire --until-poor
 
 
 hopla_version:

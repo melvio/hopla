@@ -21,7 +21,7 @@ class HoplaConfigurationFile:
         elif self._global_env_var_xdg_config_home is not None:
             config_file = Path(self._global_env_var_xdg_config_home) / "hopla" / "hopla.conf"
         else:
-            config_file = Path.home() / ".config" / "hopla" / "auth.conf"
+            config_file = Path.home() / ".config" / "hopla" / "hopla.conf"
 
         # TODO: check if resolve could fail if these dirs dont exist
         return config_file.resolve()
@@ -37,11 +37,11 @@ class ConfigurationFileParser:
 
         self.config_parser = ConfigParser()
 
-    def get_full_config_name(self, full_config_name:str):
+    def get_full_config_name(self, full_config_name: str):
         """takes a full_config_name and returns the corresponding value in the config file
 
-        For example:
-        get_full_config_name("cmd_all.loglevel") returns 'warning' if the hopla config file corresponds with:
+        For example: `get_full_config_name("cmd_all.loglevel")` returns 'warning' if
+        the hopla config file contains:
         \b
         [cmd_all]
         loglevel = warning
