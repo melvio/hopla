@@ -43,11 +43,15 @@ due_date_formats = click.DateTime(formats=["%Y-%m-%d",  # 2022-10-29
 @click.option("--difficulty", type=valid_difficulties, default="easy", show_default=True)
 @click.option("--due-date", "--deadline", type=due_date_formats, metavar="<date_format>",
               help="due date of the todo in either YYYY-MM-DD or DD-MM-YYYY")
-@click.option("--checklist-file", type=click.File(), help="every line in FILENAME will be an item of the checklist")
+@click.option("--checklist", "checklist_file", type=click.File(),
+              help="every line in FILENAME will be an item of the checklist")
+@click.option("--editor", "checklist_editor", is_flag=True, default=False,
+              help="Open up an editor to create a checklist interactively")
 @click.argument("todo_name")
 def todo(difficulty: str,
          due_date: datetime.datetime,
          checklist_file,
+         checklist_editor: bool,
          todo_name: str):
     """Add a To-Do.
 
@@ -89,6 +93,7 @@ def todo(difficulty: str,
     [apidocs](https://habitica.com/apidoc/#api-Task-CreateUserTasks)
 
     \f
+    :param checklist_editor:
     :param difficulty:
     :param due_date:
     :param checklist_file:
@@ -110,8 +115,15 @@ def todo(difficulty: str,
 
     if checklist_file is not None:
         # TODO: Make an object for this, not dicts of list of dicts
-        checklist_list: List[Dict[str, str]] = [{"text": line} for line in checklist_file.readlines()]
-        todo_item["checklist"] = checklist_list
+        todo_item["checklist"] = checklist_to_dict(checklist_file.readlines())
+
+    if checklist_editor:
+        comment = "# Every line below this comment represents an item on your checklist\n"
+        message = click.edit(text=comment)
+        if message is not None:
+            checklist_str = message.split(comment, maxsplit=1)[1]
+            checklist_list = checklist_str.split("\n")
+            todo_item["checklist"] = checklist_to_dict(checklist_list)
 
     url: str = UrlBuilder(path_extension="/tasks/user").url
     headers: dict = RequestHeaders().get_default_request_headers()
@@ -119,3 +131,12 @@ def todo(difficulty: str,
     todo_data = data_on_success_else_exit(response)
 
     click.echo(JsonFormatter(todo_data).format_with_double_quotes())
+
+
+def checklist_to_dict(checklist: list) -> List[Dict[str, str]]:
+    """
+
+    :param checklist: a list of checklist items
+    :return:
+    """
+    return [{"text": line} for line in checklist]
