@@ -62,7 +62,6 @@ def user_inventory(item_group_name) -> dict:
     :param item_group_name: The type of items in the inventory (default: all)
     :return: The specified inventory
     """
-    # TODO: parsable output
     log.debug(f"hopla get user-inventory item_group={item_group_name}")
     response = HabiticaUserRequest().request_user()
     response_data: dict = handle_response(response)
@@ -77,13 +76,16 @@ def user_inventory(item_group_name) -> dict:
     return data_requested_by_user
 
 
-valid_stat_names = click.Choice(["hp", "mp", "exp", "gp", "lvl", "class", "all"])
+valid_stat_names = click.Choice(["hp", "mp", "exp", "gp", "lvl", "class",
+                                 "maxMP", "all"])
 
 
 def stat_alias_to_official_habitica_name(stat_name: str):
     if stat_name in ["mana", "mana-points", "manapoints"]:
         return "mp"
-    elif stat_name in ["health"]:
+    elif stat_name in ["maxMp", "maxmp"]:
+        return "maxMP"
+    elif stat_name in ["health", "healthpoints"]:
         return "hp"
     elif stat_name in ["xp", "experience"]:
         return "exp"
@@ -106,14 +108,14 @@ def user_stats(stat_name: str):
 
     data_stats = habitica_user.get_stats()
     if stat_name == "all":
-        click.echo(data_stats)
-        return data_stats
+        data_requested_by_user = data_stats
     else:
-        click.echo(data_stats[stat_name])
-        return data_stats[stat_name]
+        data_requested_by_user = data_stats[stat_name]
+    click.echo(JsonFormatter(data_requested_by_user).format_with_double_quotes())
+    return data_requested_by_user
 
 
-# TODO: aliases
+# TODO: aliases (but probably first extract hopla get user-profile
 valid_auth_info_names = click.Choice(["username", "email", "profilename", "all"])
 
 
@@ -154,17 +156,22 @@ def user_auth(auth_info_name: str):
 
 
 @get.command()
-@click.option("--filter", "-f", "filter_string", type=str)
+# TODO: consider upgrading to full-blown JsonPath and dont handle this yourself
+# * https://jsonpath.com/
+# * https://goessner.net/articles/JsonPath/
+@click.option("--filter", "-f", "filter_string", metavar="FILTER_STRING",
+              help="a comma seperated list of keys to get from the user's")
 def user_info(filter_string: str) -> dict:
     """Return user information
 
-    If no filter_string is given, get all user info.
-    Else returns the result of filtering the user's info on the specified filter_string
+    If no FILTER_STRING is given, get all user info.
+    Otherwise, return the result of filtering the user's info with the
+    specified FILTER_STRING
 
-    -f filters the user according to the filter_string.
+    -f filters the user's information according to the FILTER_STRING
 
     [BNF](https://en.wikipedia.org/wiki/Backus-Naur-Form)
-    for the filter_string:
+    for the FILTER_STRING:
 
     \b
         filter_keys ::= [filter_keys]?[,filter_keys]*
@@ -197,9 +204,7 @@ def user_info(filter_string: str) -> dict:
     :param filter_string: string to filter the user dict on (e.g. "achievements.streak,purchased.plan")
     :return
     """
-
     log.debug(f"hopla get user-info filter={filter_string}")
-
     response = HabiticaUserRequest().request_user()
     response_data: dict = handle_response(response)
     habitica_user = HabiticaUser(user_dict=response_data)
