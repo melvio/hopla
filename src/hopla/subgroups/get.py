@@ -32,10 +32,26 @@ def handle_response(api_response: requests.Response):
         click.echo([response_json["message"]])
 
 
-valid_item_groups = click.Choice(["pets", "mounts", "food", "gear", "quests", "hatchingPotions", "eggs", "all"])
+valid_item_groups = click.Choice(["pets", "mounts", "food", "gear", "quests", "hatchingPotions", "eggs",
+                                  "currentPet", "currentMount", "all"])
 
 
-@get.command()
+def inventory_alias_to_official_habitica_name(inventory_name: str):
+    if inventory_name in ["hatchingpotions", "hatchingPotion"]:
+        return "hatchingPotions"
+    elif inventory_name in ["pet"]:
+        return "pets"
+    elif inventory_name in ["mount"]:
+        return "mounts"
+    elif inventory_name in ["currentpet"]:
+        return "currentPet"
+    elif inventory_name in ["currentmount"]:
+        return "currentMount"
+    else:
+        return inventory_name
+
+
+@get.command(context_settings=dict(token_normalize_func=inventory_alias_to_official_habitica_name))
 @click.argument("item_group_name", type=valid_item_groups, default="all")
 def user_inventory(item_group_name) -> dict:
     """Get items from the user's inventory
