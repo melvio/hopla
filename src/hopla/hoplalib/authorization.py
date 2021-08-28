@@ -48,6 +48,10 @@ class AuthorizationHandler:
 
     @property
     def auth_dir(self) -> Path:
+        """The directory that the authentication file is in.
+
+        :return:
+        """
         parent = self.auth_file.parent
         # TODO: cleanup with unittest
         assert parent.exists() and parent.is_dir(), f"expected dir {parent} to exist"
@@ -112,14 +116,16 @@ class AuthorizationHandler:
                 AuthorizationConstants.CONFIG_SECTION_CREDENTIALS) is False:
             log.debug(f"{self.auth_file} has no credentials section")
             return False
-        elif self._auth_file_has_user_id() is False:
+
+        if self._auth_file_has_user_id() is False:
             log.debug(f"{self.auth_file} has no user id")
             return False
-        elif self._auth_file_has_api_token() is False:
+
+        if self._auth_file_has_api_token() is False:
             log.debug(f"{self.auth_file} has no api token")
             return False
-        else:
-            return True
+
+        return True
 
     def _auth_file_has_api_token(self) -> bool:
         return self.config_parser.has_option(

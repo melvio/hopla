@@ -1,3 +1,6 @@
+"""
+The module with the hopla complete CLI
+"""
 import abc
 import logging
 import os
@@ -30,6 +33,11 @@ class RecognizedShell(abc.ABC):
 
 class RecognizedShellWithAutomaticAutocompleteDisabled(RecognizedShell,
                                                        abc.ABC):
+    """
+    Shells that Hopla currently does not have `hopla complete [shell] --enable`
+    support for.
+    """
+
     def __init__(self, shell_name: str):
         super().__init__(shell_name)
 
@@ -47,6 +55,10 @@ class RecognizedShellWithAutomaticAutocompleteDisabled(RecognizedShell,
 
 class RecognizedShellWithAutomaticAutocompleteEnabled(RecognizedShell,
                                                       abc.ABC):
+    """
+    Shells that Hopla currently has hopla complete [shell] --enable support for
+    """
+
     def __init__(self, shell_name: str):
         super().__init__(shell_name)
 
@@ -63,6 +75,10 @@ class RecognizedShellWithAutomaticAutocompleteEnabled(RecognizedShell,
 
 
 class Bash(RecognizedShellWithAutomaticAutocompleteEnabled):
+    """
+    Class representing the
+    [Bash Shell](https://en.wikipedia.org/wiki/Bash_(Unix_shell))
+    """
 
     def __init__(self):
         super().__init__("bash")
@@ -79,6 +95,10 @@ class Bash(RecognizedShellWithAutomaticAutocompleteEnabled):
 
 
 class Zsh(RecognizedShellWithAutomaticAutocompleteDisabled):
+    """
+    Class representing the [Z shell](https://en.wikipedia.org/wiki/Z_shell)
+    """
+
     def __init__(self):
         super().__init__("zsh")
         self.example_zsh_complete_file: str = "~/hopla-zsh-completion.zsh"

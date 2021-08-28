@@ -10,9 +10,8 @@ log = logging.getLogger()
 
 
 @click.group()
-def set():
+def set():  # pylint: disable redefined-builtin
     """GROUP to set things in Habitica"""
-    pass
 
 
 valid_day_start_hours = click.Choice([str(i) for i in range(0, 24)])
