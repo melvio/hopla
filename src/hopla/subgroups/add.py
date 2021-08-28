@@ -84,6 +84,11 @@ def todo(difficulty: str,
     hopla add todo --checklist <(sort ./tasks.txt) "Sorted Checklist"
 
     \b
+    # open up an editor and type in your checklist over there
+    hopla add todo --editor "My Long Checklist"
+
+
+    \b
     # create a hard To-Do with due date on the 22nd of october in 2077, and
     # use every line in the `my_todo.md` FILE as an item of your checklist.
     hopla add todo --difficulty hard --due-date=2077-10-21 \\
@@ -103,7 +108,7 @@ def todo(difficulty: str,
     """
     log.debug(f"habitica add todo name={todo_name}"
               f"   difficulty={difficulty} , due_date={due_date}"
-              f"   checklist ={checklist_file}")
+              f"   checklist ={checklist_file}, editor={checklist_editor}")
 
     todo_item = dict()
     todo_item["text"] = todo_name
