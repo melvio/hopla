@@ -3,6 +3,8 @@ import click
 import requests
 
 from hopla.hoplalib.Http import UrlBuilder
+from hopla.hoplalib.ClickUtils import data_on_success_else_exit
+from hopla.hoplalib.OutputFormatter import JsonFormatter
 
 log = logging.getLogger()
 
@@ -15,7 +17,7 @@ def api():
 
 
 @api.command()
-def content() -> str:
+def content() -> dict:
     """print habitica content
 
     "content" as in content distribution network
@@ -25,15 +27,14 @@ def content() -> str:
     :return:
     """
 
-    log.debug("function: content")
+    log.debug("hopla api content")
 
     url_builder = UrlBuilder(path_extension="/content")
     response = requests.get(url=url_builder.url)
+    content_data = data_on_success_else_exit(response)
 
-    # TODO: add --json argument to enable json output
-    text = response.text
-    click.echo(text)
-    return text
+    click.echo(JsonFormatter(content_data).format_with_double_quotes())
+    return content_data
 
 
 # todo: maybe get this dynamically from the API?
@@ -43,7 +44,7 @@ valid_model_names = click.Choice(["user", "group", "challenge", "tag", "habit", 
 
 @api.command()
 @click.argument("model_name", type=valid_model_names)
-def model(model_name: str):
+def model(model_name: str) -> dict:
     """returns the specified habitica API datamodel
 
     \b
@@ -58,16 +59,16 @@ def model(model_name: str):
     :param model_name: The particular data model
     :return:
     """
-    log.debug("function: model")
+    log.debug(f"hopla api model name={model_name}")
 
     url_builder = UrlBuilder(path_extension=f"/models/{model_name}/paths")
     # headers = RequestHeaders().get_default_request_headers()
 
     response = requests.get(url=url_builder.url)
+    model_data = data_on_success_else_exit(response)
 
-    text = response.text
-    click.echo(text)
-    return text
+    click.echo(JsonFormatter(model_data).format_with_double_quotes())
+    return model_data
 
 
 @api.command()
@@ -77,14 +78,14 @@ def version() -> str:
     \f
     :return The habitica API version string. (e.g. v3, v4)
     """
-    log.debug("function: version")
+    log.debug("hopla: version")
     api_version = UrlBuilder().api_version
     click.echo(api_version)
-    return api_version
+    return api_version          # .appVersion maybe also interesting?
 
 
 @api.command()
-def status() -> str:
+def status() -> dict:
     """get the hopla API availability status
 
 
@@ -95,8 +96,8 @@ def status() -> str:
 
     url_builder = UrlBuilder(path_extension="/status")
     response = requests.get(url=url_builder.url)
+    status_data = data_on_success_else_exit(response)
 
     # TODO: add --json argument to enable json output
-    text = response.text
-    click.echo(text)
-    return text
+    click.echo(JsonFormatter(status_data).format_with_double_quotes())
+    return status_data

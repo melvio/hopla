@@ -34,24 +34,6 @@ def difficulty_to_score(difficulty: str) -> str:
     return difficulties_scores[difficulty]
 
 
-# TODO: turn a ToDo in a @dataclass
-# from dataclasses import dataclass
-#
-#
-# @dataclass
-# class HabiticaTodo:
-#     difficulty: str
-#     todo_name: str
-#
-# def score(self) -> str:
-#     """return score for given difficulty
-#        throws KeyError in case of an invalid difficulty
-#     :param difficulty: habitica difficulty
-#     :return: corresponding score
-#     """
-#     return difficulties_scores[self.difficulty]
-
-
 due_date_formats = click.DateTime(formats=["%Y-%m-%d",  # 2022-10-29
                                            "%d-%m-%Y",  # 29-10-2022
                                            ])
