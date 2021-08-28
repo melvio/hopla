@@ -45,12 +45,14 @@ def times_until_poor(gp: float) -> int:
 @click.option("--until-poor", "-u", is_flag=True, help="buy from enchanted-armoire until gp runs out")
 @click.pass_context
 def enchanted_armoire(ctx, times: int, until_poor: bool):
-    """ Buy from the enchanted armoire
+    """Buy from the enchanted armoire
 
     TIMES - the number of times to buy from the enchanted armoire. Must be at least 0.
-    When TIMES is omitted, 1 is the default.
+    When TIMES is omitted, 1 is the default. When TIMES is larger than the budget allows,
+    --until-poor will be used instead.
 
-    If no options are specified, you buy once. Use the options to buy more often.
+    If no options are specified, you buy once.
+
     """
     log.debug(f"hopla buy enchanted-armoire times={times}, until_poor={until_poor}")
 
@@ -59,12 +61,16 @@ def enchanted_armoire(ctx, times: int, until_poor: bool):
     #  * if it is the case: this TODO is DONE
     #  * else: ensure the options become mutually exclusive (right now, the impl overwrites -t if -u is also given)
 
-    if until_poor:
-        # get gp and calculate how many times we should buy
-        click.echo("starting gp: ", nl=False)
-        gp = ctx.invoke(get.user_stats,
-                        stat_name="gp")  # TODO: this will echo 'gp': fix this, now its hacked with "starting gp: "
-        times = times_until_poor(gp)
+    # get gp and calculate how many times we should buy
+    click.echo("starting gp: ", nl=False)
+    budget = ctx.invoke(get.user_stats, stat_name="gp")
+    max_times = times_until_poor(budget)
+
+    if max_times < times:
+        click.echo(f"You can only buy {max_times} times instead of requested {times} times")
+        times = max(max_times, times)
+    if times != 1:
+        click.echo(f"I will buy {times} times for you.")
 
     # TODO: maybe also use gp to limit the --times option
     for _ in range(times):

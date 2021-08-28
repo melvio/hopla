@@ -22,7 +22,6 @@ def api():
 def content(jq_filter: str) -> dict:
     """get habitica content
 
-
     \b
     Example
     ----
@@ -104,7 +103,7 @@ def status() -> dict:
     \f
     :return: The api status (expected: "status": "up")
     """
-    log.debug("function: api")
+    log.debug("hopla api status")
 
     url_builder = UrlBuilder(path_extension="/status")
     response = requests.get(url=url_builder.url)
