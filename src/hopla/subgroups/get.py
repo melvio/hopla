@@ -33,7 +33,7 @@ def handle_response(api_response: requests.Response):
 
 
 valid_item_groups = click.Choice(["pets", "mounts", "food", "gear", "quests", "hatchingPotions", "eggs",
-                                  "currentPet", "currentMount", "all"])
+                                  "currentPet", "currentMount", "lastDrop", "all"])
 
 
 def inventory_alias_to_official_habitica_name(inventory_name: str):
@@ -47,6 +47,8 @@ def inventory_alias_to_official_habitica_name(inventory_name: str):
         return "currentPet"
     elif inventory_name in ["currentmount"]:
         return "currentMount"
+    elif inventory_name in ["lastdrop"]:
+        return "lastDrop"
     else:
         return inventory_name
 
@@ -115,8 +117,14 @@ def user_stats(stat_name: str):
     return data_requested_by_user
 
 
-# TODO: aliases (but probably first extract hopla get user-profile
 valid_auth_info_names = click.Choice(["username", "email", "profilename", "all"])
+
+
+def auth_alias_to_official_habitica_name(auth_info_name: str):
+    if auth_info_name in ["e-mail", "mail"]:
+        return "email"
+    else:
+        return auth_info_name
 
 
 # username -> 'data.auth.local.username':
@@ -130,10 +138,20 @@ valid_auth_info_names = click.Choice(["username", "email", "profilename", "all"]
 # TODO: probably better to remove profilename here regardless
 
 
-@get.command()
+@get.command(context_settings=dict(token_normalize_func=auth_alias_to_official_habitica_name))
 @click.argument("auth_info_name", type=valid_auth_info_names, default="all")
 def user_auth(auth_info_name: str):
-    """Get user authentication and identification info"""
+    """Get user authentication and identification info
+
+    NOTE: `hopla get user-auth` currently only supports email-based
+    logins (not 3rd party logins such as google SSO). As a workaround, you
+    can use `hopla get user-info --filter|-f FILTER_STRING`. For example, to
+    get google SSO credentials you can use:
+
+    \b
+        hopla get user-info -f "auth.google"
+
+    """
     log.debug(f"hopla get user-auth auth={auth_info_name}")
     response = HabiticaUserRequest().request_user()
     response_data: dict = handle_response(response)
@@ -160,7 +178,7 @@ def user_auth(auth_info_name: str):
 # * https://jsonpath.com/
 # * https://goessner.net/articles/JsonPath/
 @click.option("--filter", "-f", "filter_string", metavar="FILTER_STRING",
-              help="a comma seperated list of keys to get from the user's")
+              help="a comma seperated list of keys")
 def user_info(filter_string: str) -> dict:
     """Return user information
 
@@ -168,7 +186,7 @@ def user_info(filter_string: str) -> dict:
     Otherwise, return the result of filtering the user's info with the
     specified FILTER_STRING
 
-    -f filters the user's information according to the FILTER_STRING
+
 
     [BNF](https://en.wikipedia.org/wiki/Backus-Naur-Form)
     for the FILTER_STRING:
@@ -199,8 +217,13 @@ def user_info(filter_string: str) -> dict:
     # get contributor status, cron-count, profile description, and user id
     hopla get user-info -f "contributor, flags.cronCount, profile.blurb, id"
 
+    \b
+    # get last free rebirth, day start (in hours), timezone offset (in minutes), and account creation time
+    hopla get user-info -f 'flags.lastFreeRebirth, preferences.dayStart, preferences.timezoneOffset, auth.timestamps.created'
 
     \f
+    [APIdocs](https://habitica.com/apidoc/#api-User-UserGet)
+
     :param filter_string: string to filter the user dict on (e.g. "achievements.streak,purchased.plan")
     :return
     """
