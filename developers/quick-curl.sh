@@ -53,12 +53,12 @@ source "${this_script_parent_dir}/developer.env"
 
 
 # add TODO
-curl -XPOST "https://habitica.com/api/v3/tasks/user" \
-  --verbose \
-  --header "Content-Type: application/json" \
-  --header "x-api-user: ${user_id}" \
-  --header "x-api-key: ${api_token}" \
-  --header "x-client: Testing" \
-  --data '{ "text":"Update Habitica API Documentation - Tasks", "type":"todo", "alias":"hab-api-tasks", "notes":"Update the tasks api on GitHub", "tags":["ed427623-9a69-4aac-9852-13deb9c190c3"], "checklist":[{"text":"read wiki","completed":true},{"text":"write code"}], "priority":2 }' | jq .
+#curl -XPOST "https://habitica.com/api/v3/tasks/user" \
+#  --verbose \
+#  --header "Content-Type: application/json" \
+#  --header "x-api-user: ${user_id}" \
+#  --header "x-api-key: ${api_token}" \
+#  --header "x-client: Testing" \
+#  --data '{ "text":"Update Habitica API Documentation - Tasks", "type":"todo", "alias":"hab-api-tasks", "notes":"Update the tasks api on GitHub", "tags":["ed427623-9a69-4aac-9852-13deb9c190c3"], "checklist":[{"text":"read wiki","completed":true},{"text":"write code"}], "priority":2 }' | jq .
 #  --data '{"text" :"My todo", "notes":"#### subheader", "checklist" : [ { "text": "gather tools", "completed": true }, { "text": "build shed", "completed": false} ], "type":"todo" }' | jq .
 

@@ -6,6 +6,8 @@ import click
 import requests
 
 from hopla.hoplalib.Http import UrlBuilder, RequestHeaders
+from hopla.hoplalib.ClickUtils import data_on_success_else_exit
+from hopla.hoplalib.OutputFormatter import JsonFormatter
 
 log = logging.getLogger()
 
@@ -113,7 +115,8 @@ def todo(difficulty: str,
 
     """
     log.debug(f"habitica add todo name={todo_name}"
-              f"   difficulty={difficulty} , due_date={due_date}")
+              f"   difficulty={difficulty} , due_date={due_date}"
+              f"   checklist ={checklist_file}")
 
     todo_item = dict()
     todo_item["text"] = todo_name
@@ -131,5 +134,6 @@ def todo(difficulty: str,
     url: str = UrlBuilder(path_extension="/tasks/user").url
     headers: dict = RequestHeaders().get_default_request_headers()
     response = requests.post(url=url, headers=headers, json=todo_item)
+    todo_data = data_on_success_else_exit(response)
 
-    click.echo(response.text)
+    click.echo(JsonFormatter(todo_data).format_with_double_quotes())
