@@ -18,5 +18,5 @@ def data_on_success_else_exit(api_response: requests.Response):
         return response_json["data"]
     else:
         log.debug(f"received: {response_json}")
-        click.echo(JsonFormatter(response_json).format_with_double_quotes(response_json))
+        click.echo(JsonFormatter(response_json).format_with_double_quotes())
         exit()  # TODO: not sure if needed

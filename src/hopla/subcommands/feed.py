@@ -3,6 +3,8 @@ import click
 import requests
 
 from hopla.hoplalib.Http import UrlBuilder, RequestHeaders
+from hopla.hoplalib.ClickUtils import data_on_success_else_exit
+from hopla.hoplalib.OutputFormatter import JsonFormatter
 
 log = logging.getLogger()
 
@@ -105,7 +107,8 @@ def feed(pet_name: str, food_name: str, amount: int):
     )
 
     response = pet_feed_request.post_feed_pet_food()
-    # TODO: handle terminal output better
-    print(response.text)
+    feed_data = data_on_success_else_exit(response)
+
+    click.echo(JsonFormatter(feed_data).format_with_double_quotes())
 
 
