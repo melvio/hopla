@@ -1,4 +1,5 @@
 requests
+requests-mock
 pylint
 click
 build

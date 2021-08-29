@@ -8,7 +8,7 @@ import requests
 
 from hopla.hoplalib.common import GlobalConstants
 from hopla.hoplalib.http import UrlBuilder, RequestHeaders
-from hopla.hoplalib.clickutils import data_on_success_else_exit
+from hopla.hoplalib.clickhelper import data_on_success_else_exit
 
 log = logging.getLogger()
 

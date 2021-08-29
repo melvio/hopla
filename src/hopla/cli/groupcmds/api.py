@@ -7,8 +7,9 @@ import click
 import jq
 import requests
 
-from hopla.hoplalib.clickutils import data_on_success_else_exit
+from hopla.hoplalib.clickhelper import data_on_success_else_exit
 from hopla.hoplalib.http import UrlBuilder
+from hopla.hoplalib.common import GlobalConstants
 from hopla.hoplalib.outputformatter import JsonFormatter
 
 log = logging.getLogger()
@@ -101,10 +102,9 @@ def version() -> str:
     \f
     :return The habitica API version string. (e.g. v3, v4)
     """
-    log.debug("hopla version")
-    api_version = UrlBuilder().api_version
-    click.echo(api_version)
-    return api_version  # .appVersion maybe also interesting?
+    log.debug("hopla api version")
+    click.echo(GlobalConstants.HABITICA_API_VERSION)
+    return GlobalConstants.HABITICA_API_VERSION  # .appVersion maybe also interesting?
 
 
 @api.command()
