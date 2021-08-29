@@ -19,6 +19,7 @@ jobs:
         # https://github.com/actions/starter-workflows/issues/636
         run: |
           pylint $(find src -name "*.py" | xargs) --rcfile ./.github/workflows/pylintrc.conf
+
       - name: Run doctest
         # TODO: apply to all relevant *.py files
         run: |
@@ -26,7 +27,11 @@ jobs:
           python -m doctest --verbose src/hopla/cli/groupcmds/get.py
       - name: Run unittest with pytest
         run: |
-          pytest src/hopla/tests/
+          coverage_failure_threshold_percent=40
+          pytest --cov='hopla.hoplalib' --cov='hopla.cli' \
+            --cov-branch \
+            --cov-fail-under="${coverage_failure_threshold_percent}" \
+            src/hopla/tests/
 
 
 
