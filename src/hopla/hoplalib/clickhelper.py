@@ -57,6 +57,7 @@ def case_insensitive_aliases(argument: str, choices: List[str], *,
 
 
 class FeedingData:
+    """Class with valid food and pet names"""
     # Didn't include cakes because those are rare collectibles
     # for more info @see:
     #    hopla api content | jq .food

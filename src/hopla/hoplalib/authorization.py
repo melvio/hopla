@@ -3,60 +3,51 @@ Library code to handle Hopla's authorization, authentication and
 identification.
 """
 
+import uuid
 import logging
 import os
 import sys
 from configparser import ConfigParser
 from pathlib import Path
 
+import click
+
 log = logging.getLogger()
 
 
-class AuthorizationConstants:
+class AuthorizationFileConstants:
     """Class with authorization and authentication related constants"""
-    CONFIG_SECTION_CREDENTIALS = "credentials"
-    CONFIG_KEY_USER_ID = "user_id"
-    CONFIG_KEY_API_TOKEN = "api_token"
 
-    GLOBAL_ENV_VAR_XDG_CONFIG_HOME = "XDG_CONFIG_HOME"
+    CONFIG_SECTION_CREDENTIALS = "credentials"
+    """only section of the authorization file"""
+
+    CONFIG_KEY_USER_ID = "user_id"
+    """user id field in the hopla authorization file """
+    CONFIG_KEY_API_TOKEN = "api_token"
+    """api token field in the hopla authorization file """
+
     GLOBAL_ENV_VAR_HOPLA_AUTH_FILE = "HOPLA_AUTH_FILE"
+    """ environment variable to overwrite the default auth file location """
+
+
+def get_auth_file() -> Path:
+    """ Get the file with authorization"""
+    hopla_auth_file_env_var: str = \
+        os.environ.get(AuthorizationFileConstants.GLOBAL_ENV_VAR_HOPLA_AUTH_FILE)
+    if hopla_auth_file_env_var is not None:
+        auth_file = Path(hopla_auth_file_env_var)
+    else:
+        auth_file = click.get_app_dir("hopla") / Path("auth.conf")
+
+    return auth_file.resolve()
 
 
 class AuthorizationHandler:
     """ TODO: violates SRP """
 
-    def __init__(self):
+    def __init__(self, *, auth_file=get_auth_file()):
         self.config_parser = ConfigParser()
-
-    @property
-    def auth_file(self) -> Path:
-        """ Get the file with authorization"""
-        auth_file: Path
-        hopla_auth_file_env_var: str = os.environ.get(
-            AuthorizationConstants.GLOBAL_ENV_VAR_HOPLA_AUTH_FILE)
-        xdg_config_home_env_var: str = os.environ.get(
-            AuthorizationConstants.GLOBAL_ENV_VAR_XDG_CONFIG_HOME)
-
-        if hopla_auth_file_env_var:
-            auth_file = Path(hopla_auth_file_env_var)
-        elif xdg_config_home_env_var:
-            auth_file = Path(xdg_config_home_env_var) / "hopla" / "auth.conf"
-        else:
-            auth_file = Path.home() / ".config" / "hopla" / "auth.conf"
-
-        # TODO: check if resolve could fail if these dirs dont exist
-        return auth_file.resolve()
-
-    @property
-    def auth_dir(self) -> Path:
-        """The directory that the authentication file is in.
-
-        :return:
-        """
-        parent = self.auth_file.parent
-        # TODO: cleanup with unittest
-        assert parent.exists() and parent.is_dir(), f"expected dir {parent} to exist"
-        return parent
+        self.auth_file = auth_file
 
     @property
     def user_id(self):
@@ -64,8 +55,8 @@ class AuthorizationHandler:
         # violating that @property should be cheap;
         # However, the auth file should be short. So we should be fine to parse
         self._parse()
-        return self.config_parser[AuthorizationConstants.CONFIG_SECTION_CREDENTIALS] \
-            .get(AuthorizationConstants.CONFIG_KEY_USER_ID)
+        return self.config_parser[AuthorizationFileConstants.CONFIG_SECTION_CREDENTIALS] \
+            .get(AuthorizationFileConstants.CONFIG_KEY_USER_ID)
 
     @property
     def api_token(self):
@@ -73,35 +64,42 @@ class AuthorizationHandler:
         # violating that @property should be cheap;
         # However, the auth file should be short. So we should be fine to parse
         self._parse()
-        return self.config_parser[AuthorizationConstants.CONFIG_SECTION_CREDENTIALS] \
-            .get(AuthorizationConstants.CONFIG_KEY_API_TOKEN)
+        return self.config_parser[AuthorizationFileConstants.CONFIG_SECTION_CREDENTIALS] \
+            .get(AuthorizationFileConstants.CONFIG_KEY_API_TOKEN)
 
     def auth_file_exists(self) -> bool:
         """Return True if the authentication file exists"""
         return self.auth_file.exists and self.auth_file.is_file()
 
-    def set_hopla_credentials(self, *, overwrite: bool = False):
+    def set_hopla_credentials(self, *,
+                              user_id: uuid.UUID,
+                              api_token: uuid.UUID,
+                              overwrite: bool = False):
+        """set credentials in the credentials file
+
+        :param user_id:
+        :param api_token:
+        :param overwrite:
+        :return:
+        """
         log.debug(f"set_hopla_credentials overwrite={overwrite}")
         if self.auth_file_exists() and overwrite is False:
             log.info(f"Auth file {self.auth_file} not recreated because it already exists")
             return
 
-        # TODO: with mode=w here, we are essentially creating this empty auth file twice
-        self._create_empty_auth_file()
-
-        user_id, api_token = self.request_user_credentials()
+        self.create_auth_dir()
         with open(self.auth_file, mode="w", encoding="utf-8") as new_auth_file:
             self.config_parser.add_section(
-                AuthorizationConstants.CONFIG_SECTION_CREDENTIALS)
+                AuthorizationFileConstants.CONFIG_SECTION_CREDENTIALS)
             self.config_parser.set(
-                section=AuthorizationConstants.CONFIG_SECTION_CREDENTIALS,
-                option=AuthorizationConstants.CONFIG_KEY_USER_ID,
-                value=user_id
+                section=AuthorizationFileConstants.CONFIG_SECTION_CREDENTIALS,
+                option=AuthorizationFileConstants.CONFIG_KEY_USER_ID,
+                value=str(user_id)
             )
             self.config_parser.set(
-                section=AuthorizationConstants.CONFIG_SECTION_CREDENTIALS,
-                option=AuthorizationConstants.CONFIG_KEY_API_TOKEN,
-                value=api_token
+                section=AuthorizationFileConstants.CONFIG_SECTION_CREDENTIALS,
+                option=AuthorizationFileConstants.CONFIG_KEY_API_TOKEN,
+                value=str(api_token)
             )
             self.config_parser.write(new_auth_file)
 
@@ -114,7 +112,7 @@ class AuthorizationHandler:
 
         self.config_parser.read(self.auth_file)
         if self.config_parser.has_section(
-                AuthorizationConstants.CONFIG_SECTION_CREDENTIALS) is False:
+                AuthorizationFileConstants.CONFIG_SECTION_CREDENTIALS) is False:
             log.debug(f"{self.auth_file} has no credentials section")
             return False
 
@@ -129,48 +127,24 @@ class AuthorizationHandler:
         return True
 
     def _auth_file_has_api_token(self) -> bool:
+        """
+        Return true if the auth file has an api_token value inside the [credentials] section
+        """
         return self.config_parser.has_option(
-            section=AuthorizationConstants.CONFIG_SECTION_CREDENTIALS,
-            option=AuthorizationConstants.CONFIG_KEY_API_TOKEN)
+            section=AuthorizationFileConstants.CONFIG_SECTION_CREDENTIALS,
+            option=AuthorizationFileConstants.CONFIG_KEY_API_TOKEN)
 
     def _auth_file_has_user_id(self) -> bool:
+        """
+        Return true if the auth file has an user_id value inside the [credentials] section
+        """
         return self.config_parser.has_option(
-            section=AuthorizationConstants.CONFIG_SECTION_CREDENTIALS,
-            option=AuthorizationConstants.CONFIG_KEY_USER_ID)
+            section=AuthorizationFileConstants.CONFIG_SECTION_CREDENTIALS,
+            option=AuthorizationFileConstants.CONFIG_KEY_USER_ID)
 
-    def _create_empty_auth_file(self):
-        self._create_auth_dir()
-        with open(self.auth_file, mode="w", encoding="utf-8"):
-            pass  # no need to write to it, just create it
-
-    def _create_auth_dir(self):
-        Path.mkdir(self.auth_dir, parents=True, exist_ok=True)
-
-    def request_user_credentials(self) -> (str, str):
-        # TODO: printing should be click's responsibility
-        # and click should not be in this file, so we need to refactor responsibilities here.
-        print("Please enter your credentials")
-        print("You can find them over at <https://habitica.com/user/settings/api> ")
-        print("The user id can be found under 'User ID'.")
-        print("You need to click 'Show API Token' to get the api token")
-
-        try:
-            # validate input:
-            # TODO: look into https://docs.python.org/3/library/uuid.html
-            uuid_user_id: str = self._request_for_user_id()
-            uuid_api_token: str = self._request_for_api_token()
-        except (EOFError, KeyboardInterrupt) as ex:
-            log.debug(f"user send a EOF: {ex}")
-            print("aborted the creation of a new authentication file")
-            sys.exit(0)
-
-        return uuid_user_id, uuid_api_token
-
-    def _request_for_user_id(self) -> str:
-        return input("Please paste your user id here: ")
-
-    def _request_for_api_token(self) -> str:
-        return input("Please paste your api token id here: ")
+    def create_auth_dir(self):
+        """Create the directory that the authorization file is supposed to be in"""
+        Path.mkdir(self.auth_file.parent, parents=True, exist_ok=True)
 
     def _parse(self):
         if self.auth_file_exists():
