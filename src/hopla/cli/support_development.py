@@ -11,9 +11,27 @@ log = logging.getLogger()
 
 
 @click.command()
-@click.option("--gems", type=int, default=4)
-def support_development(gems):
+@click.option("--gems", "-g", type=int, default=4,
+              metavar="NUMBER_OF_GEMS", help="The number of gems you wish to contribute")
+def support_development(gems: int):
     """Support the development of hopla
+
+    Without options, hopla support-development sends 4 gems to the
+    development to be used for testing new features. Use the --gems option
+    to change the number of gems send.
+
+    Thanks for supporting Hopla! Your donation is thoroughly appreciated =D.
+
+
+    \b
+    Examples
+    -----
+    # support development by donating 4 gems
+    hopla support-development
+
+    # support development by donating 20 gems
+    hopla support-development -g 20
+
 
     [APIdocs](https://habitica.com/apidoc/#api-Member-TransferGems)
 
@@ -36,4 +54,7 @@ def support_development(gems):
     )
     response = requests.session().send(support_development_request.prepare())
     response_data = data_on_success_else_exit(response)
+
     click.echo(response_data)
+    click.echo()
+    click.echo("Thanks for supporting Hopla! Your donation is thoroughly appreciated =D.")

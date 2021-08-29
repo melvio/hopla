@@ -44,8 +44,13 @@ def setup_logging() -> logging.Logger:
 
 log = setup_logging()
 
+CLICK_CONTEXT_SETTINGS = dict(
+    help_option_names=["-h", "--help"],  # add -h
+    show_default=True  # alwasy shows @click.option' default=values (unless overridden downstream)
+)
 
-@click.group(context_settings=dict(help_option_names=["-h", "--help"]))
+
+@click.group(context_settings=CLICK_CONTEXT_SETTINGS)
 def hopla():
     """hopla - a command line interface (CLI) to interact with habitica.com"""
 
