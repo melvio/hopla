@@ -61,11 +61,9 @@ valid_feeding_amount = click.IntRange(min=0, max=50, clamp=False)
 @click.command()
 @click.argument("pet_name")
 @click.argument("food_name")
-@click.option("--amount",
-              default=1, show_default=True,
-              type=valid_feeding_amount,
-              metavar="N_FOOD", help="number of FOOD_NAME fed to PET_NAME"
-              )
+@click.option("--amount", default=1, type=valid_feeding_amount,
+              metavar="N_FOOD",
+              help="number of FOOD_NAME fed to PET_NAME")
 def feed(pet_name: str, food_name: str, amount: int):
     """feed a pet
 

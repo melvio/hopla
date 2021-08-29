@@ -354,7 +354,7 @@ class HabiticaUser:
         TODO: include doctests in the build process
         [see(](https://docs.python.org/3/library/doctest.html)
         >>> HabiticaUser({})._filter_user(
-        ...     user_dict={"items": {"currentPet": "Wolf-Base", "currentMount": "Aether-Invisible"}},
+        ...     user_dict={"items": {"currentPet":"Wolf-Base", "currentMount":"Aether-Invisible"}},
         ...     filter_keys = "items.currentMount")
         {'items.currentMount': 'Aether-Invisible'}
 
@@ -369,8 +369,7 @@ class HabiticaUser:
             if start_dict is not None:
                 start_dict = start_dict.get(dict_key)
             else:
-                log.debug(
-                    f"Didn't match anything with the given filter={filter_keys}")
+                log.debug(f"Didn't match anything with the given filter={filter_keys}")
                 return {filter_keys: {}}
         return {filter_keys: start_dict}
 

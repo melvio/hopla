@@ -41,7 +41,7 @@ due_date_formats = click.DateTime(formats=["%Y-%m-%d",  # 2022-10-29
 
 
 @add.command()
-@click.option("--difficulty", type=valid_difficulties, default="easy", show_default=True)
+@click.option("--difficulty", type=valid_difficulties, default="easy")
 @click.option("--due-date", "--deadline", type=due_date_formats, metavar="<date_format>",
               help="due date of the todo in either YYYY-MM-DD or DD-MM-YYYY")
 @click.option("--checklist", "checklist_file", type=click.File(),

@@ -46,7 +46,7 @@ log = setup_logging()
 
 CLICK_CONTEXT_SETTINGS = dict(
     help_option_names=["-h", "--help"],  # add -h
-    show_default=True  # alwasy shows @click.option' default=values (unless overridden downstream)
+    show_default=True  # always shows @click.option' default=values (unless overridden downstream)
 )
 
 
