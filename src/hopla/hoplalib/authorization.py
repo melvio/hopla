@@ -90,10 +90,7 @@ class AuthorizationHandler:
             log.info(f"Auth file {self.auth_file} not recreated because it already exists")
             return
 
-        # TODO: with mode=w here, we are essentially creating this empty auth file twice
-        self._create_empty_auth_file()
-
-        # user_id, api_token = self.request_user_credentials()
+        self._create_auth_dir()
         with open(self.auth_file, mode="w", encoding="utf-8") as new_auth_file:
             self.config_parser.add_section(
                 AuthorizationConstants.CONFIG_SECTION_CREDENTIALS)
@@ -141,11 +138,6 @@ class AuthorizationHandler:
         return self.config_parser.has_option(
             section=AuthorizationConstants.CONFIG_SECTION_CREDENTIALS,
             option=AuthorizationConstants.CONFIG_KEY_USER_ID)
-
-    def _create_empty_auth_file(self):
-        self._create_auth_dir()
-        with open(self.auth_file, mode="w", encoding="utf-8"):
-            pass  # no need to write to it, just create it
 
     def _create_auth_dir(self):
         Path.mkdir(self.auth_dir, parents=True, exist_ok=True)
