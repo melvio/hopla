@@ -10,7 +10,7 @@ import requests
 from hopla.hoplalib.clickhelper import data_on_success_else_exit
 from hopla.hoplalib.http import RequestHeaders, UrlBuilder
 from hopla.hoplalib.outputformatter import JsonFormatter
-from hopla.cli.groupcmds import get
+from hopla.cli.get import user_stats
 
 log = logging.getLogger()
 
@@ -95,7 +95,7 @@ def exceeds_throttle_limit(times: int) -> bool:
 def get_buy_times_within_budget(ctx, *, until_poor_flag: bool, requested_times: int):
     """Return how often we can buy, given the requested amount and our budget."""
     click.echo("starting gp: ", nl=False)
-    budget = ctx.invoke(get.user_stats, stat_name="gp")
+    budget = ctx.invoke(user_stats.user_stats, stat_name="gp")
 
     max_times = times_until_poor(budget)
     if until_poor_flag:

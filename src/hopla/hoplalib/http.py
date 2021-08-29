@@ -26,6 +26,8 @@ class RequestHeaders:
             self.hopla_auth_parser = AuthorizationHandler()
 
     def get_default_request_headers(self) -> dict:
+        """Return a dict of request headers that are used for nearly every
+        habitica API request"""
         return {
             RequestHeaders.CONTENT_TYPE_HEADER_NAME:
                 RequestHeaders.CONTENT_TYPE_HEADER_VALUE_APPLICATION_JSON,

@@ -14,6 +14,10 @@ from hopla.cli.config import config
 from hopla.cli.feed import feed
 from hopla.cli.version import version
 from hopla.cli.support_development import support_development
+from hopla.cli.get.user_inventory import user_inventory
+from hopla.cli.get.user_auth import user_auth
+from hopla.cli.get.user_info import user_info
+from hopla.cli.get.user_stats import user_stats
 from hopla.cli.groupcmds.add import add
 from hopla.cli.groupcmds.api import api
 from hopla.cli.groupcmds.buy import buy
@@ -70,6 +74,10 @@ def entry_cmd():
     hopla.add_command(set)
     hopla.add_command(buy)
     hopla.add_command(get)
+    get.add_command(user_inventory)
+    get.add_command(user_stats)
+    get.add_command(user_info)
+    get.add_command(user_auth)
     # subcommands
     hopla.add_command(config)
     hopla.add_command(complete)
