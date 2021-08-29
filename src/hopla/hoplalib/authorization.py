@@ -3,6 +3,7 @@ Library code to handle Hopla's authorization, authentication and
 identification.
 """
 
+import uuid
 import logging
 import os
 import sys
@@ -80,7 +81,10 @@ class AuthorizationHandler:
         """Return True if the authentication file exists"""
         return self.auth_file.exists and self.auth_file.is_file()
 
-    def set_hopla_credentials(self, *, overwrite: bool = False):
+    def set_hopla_credentials(self, *,
+                              user_id: uuid.UUID,
+                              api_token: uuid.UUID,
+                              overwrite: bool = False):
         log.debug(f"set_hopla_credentials overwrite={overwrite}")
         if self.auth_file_exists() and overwrite is False:
             log.info(f"Auth file {self.auth_file} not recreated because it already exists")
@@ -89,19 +93,19 @@ class AuthorizationHandler:
         # TODO: with mode=w here, we are essentially creating this empty auth file twice
         self._create_empty_auth_file()
 
-        user_id, api_token = self.request_user_credentials()
+        # user_id, api_token = self.request_user_credentials()
         with open(self.auth_file, mode="w", encoding="utf-8") as new_auth_file:
             self.config_parser.add_section(
                 AuthorizationConstants.CONFIG_SECTION_CREDENTIALS)
             self.config_parser.set(
                 section=AuthorizationConstants.CONFIG_SECTION_CREDENTIALS,
                 option=AuthorizationConstants.CONFIG_KEY_USER_ID,
-                value=user_id
+                value=str(user_id)
             )
             self.config_parser.set(
                 section=AuthorizationConstants.CONFIG_SECTION_CREDENTIALS,
                 option=AuthorizationConstants.CONFIG_KEY_API_TOKEN,
-                value=api_token
+                value=str(api_token)
             )
             self.config_parser.write(new_auth_file)
 
@@ -145,32 +149,6 @@ class AuthorizationHandler:
 
     def _create_auth_dir(self):
         Path.mkdir(self.auth_dir, parents=True, exist_ok=True)
-
-    def request_user_credentials(self) -> (str, str):
-        # TODO: printing should be click's responsibility
-        # and click should not be in this file, so we need to refactor responsibilities here.
-        print("Please enter your credentials")
-        print("You can find them over at <https://habitica.com/user/settings/api> ")
-        print("The user id can be found under 'User ID'.")
-        print("You need to click 'Show API Token' to get the api token")
-
-        try:
-            # validate input:
-            # TODO: look into https://docs.python.org/3/library/uuid.html
-            uuid_user_id: str = self._request_for_user_id()
-            uuid_api_token: str = self._request_for_api_token()
-        except (EOFError, KeyboardInterrupt) as ex:
-            log.debug(f"user send a EOF: {ex}")
-            print("aborted the creation of a new authentication file")
-            sys.exit(0)
-
-        return uuid_user_id, uuid_api_token
-
-    def _request_for_user_id(self) -> str:
-        return input("Please paste your user id here: ")
-
-    def _request_for_api_token(self) -> str:
-        return input("Please paste your api token id here: ")
 
     def _parse(self):
         if self.auth_file_exists():
