@@ -13,6 +13,10 @@ log = logging.getLogger()
 
 
 class RecognizedShell(abc.ABC):
+    """
+    Shells that Hopla recognizes for the 'hopla complete [shell]' command
+    """
+
     def __init__(self, shell_name: str):
         self.shell_name = shell_name
 
