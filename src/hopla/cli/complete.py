@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 
 import click
+from hopla.hoplalib.clickhelper import PrintableException
 
 log = logging.getLogger()
 
@@ -61,14 +62,22 @@ class RecognizedShellWithAutomaticAutocompleteEnabled(RecognizedShell,
     """
 
     @abc.abstractmethod
-    def enable_autocomplete(self) -> None:
-        """Enables hopla autocompletion"""
+    def enable_autocomplete(self) -> bool:
+        """ Enables hopla autocompletion, """
+
+    @abc.abstractmethod
+    def autocomplete_is_enabled(self) -> bool:
+        """ Return True if autocompletion is already enabled"""
 
     def handle_enable_complete_request(self) -> None:
         self.enable_autocomplete()
 
     def supports_automatic_complete_enablement(self) -> bool:
         return True
+
+
+class AlreadyEnabledException(PrintableException):
+    """Raised when autocomplete is already enabled"""
 
 
 class Bash(RecognizedShellWithAutomaticAutocompleteEnabled):
@@ -84,11 +93,28 @@ class Bash(RecognizedShellWithAutomaticAutocompleteEnabled):
     def get_generated_autocomplete_cmd(self) -> str:
         return f"_HOPLA_COMPLETE={self.shell_name}_source hopla"
 
+    def get_enablement_code_for_bashrc(self):
+        """Return the code that is used to enable autocompletion"""
+        return f'eval "$({self.get_generated_autocomplete_cmd()})"'
+
+    def autocomplete_is_enabled(self) -> bool:
+        """Returns true if the autocompletion enablement code is in ~/.bashrc"""
+        with open(self.config_file, mode="r", encoding="utf-8") as bashrc:
+            enablement_code = self.get_enablement_code_for_bashrc()
+            for bashrc_line in bashrc.readlines():
+                if enablement_code in bashrc_line:
+                    return True
+        return False
+
     def enable_autocomplete(self):
-        cmd = self.get_generated_autocomplete_cmd()
-        enablement_code_for_bashrc = f'eval "$({cmd})"'
+        enablement_code_for_bashrc = self.get_enablement_code_for_bashrc()
+
+        if self.autocomplete_is_enabled():
+            msg = f"{enablement_code_for_bashrc} was already in {self.config_file}"
+            raise AlreadyEnabledException(msg)
+
         with open(self.config_file, mode="a", encoding="utf-8") as bashrc:
-            bashrc.write(enablement_code_for_bashrc)
+            bashrc.writelines([enablement_code_for_bashrc, "\n"])
 
 
 class Zsh(RecognizedShellWithAutomaticAutocompleteDisabled):
@@ -173,50 +199,57 @@ def complete(shell: str, enable: bool):
     shell_obj: RecognizedShell = get_shell_by_name(shell_name=shell)
 
     if enable is False:
-        show_autocomplete_code(shell_obj)
+        show_autocomplete_code(shell=shell_obj)
     else:
-        # TODO: check if it is already enabled, if it is then abort in friendly manner
-        if shell_obj.supports_automatic_complete_enablement():
-            enable_autocomplete(shell_obj)
-        else:
-            show_manual_autocomplete_code(shell_obj)
+        try_enable_autocomplete(shell=shell_obj)
 
 
-def show_manual_autocomplete_code(shell_obj: RecognizedShell):
+def try_enable_autocomplete(shell: RecognizedShell):
+    """Try to enable autocompletion. If it is already enabled, inform the user.
+    If it cannot be enabled automatically, provide instructions"""
+    if shell.supports_automatic_complete_enablement():
+        try:
+            enable_autocomplete(shell)
+        except AlreadyEnabledException as ex:
+            click.echo(ex.msg)
+    else:
+        show_manual_autocomplete_code(shell=shell)
+
+
+def show_manual_autocomplete_code(shell: RecognizedShell):
     """Print instructions on how to enable autocomplete for the specified shell if
     --enable is not supported by hopla.
 
-    :param shell_obj:
+    :param shell:
     :return:
     """
-    click.echo(
-        f"Sorry, automatic installation is not supported for {shell_obj.shell_name}.")
+    click.echo(f"Sorry, automatic installation is not supported for {shell.shell_name}.")
     click.echo("You can enable autocompletion manually by running:")
-    instructions: [str] = shell_obj.handle_enable_complete_request()
+    instructions: [str] = shell.handle_enable_complete_request()
     for instruction in instructions:
         click.echo(instruction)
 
 
-def enable_autocomplete(shell_obj: RecognizedShell):
+def enable_autocomplete(shell: RecognizedShell):
     """
     Adds a command to the relevant configuration files s.t. autocompletion
     code is automatically loaded. This is used with the `--enable` flag for
     hopla complete [shell] --enable commands.
 
-    :param shell_obj:
+    :param shell:
     :return:
     """
-    shell_obj.handle_enable_complete_request()
+    shell.handle_enable_complete_request()
     click.echo("enabled autocompletion")
-    click.echo(f"restart {shell_obj.shell_name} to make use of it")
+    click.echo(f"restart {shell.shell_name} to make use of it")
 
 
-def show_autocomplete_code(shell_obj: RecognizedShell):
+def show_autocomplete_code(shell: RecognizedShell):
     """
     Prints autocompletion code for the passed shell.
 
-    :param shell_obj:
+    :param shell:
     :return:
     """
-    cmd_str = shell_obj.get_generated_autocomplete_cmd()
+    cmd_str = shell.get_generated_autocomplete_cmd()
     os.system(cmd_str)
