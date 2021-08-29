@@ -3,6 +3,7 @@ The module with CLI code that handles the `hopla auth` command.
 """
 import logging
 from uuid import UUID
+from dataclasses import dataclass
 
 import click
 
@@ -20,13 +21,23 @@ def auth():
     """
     log.debug("hopla auth")
 
-    api_token, user_id = request_user_for_credentials()
+    hopla_user_credentials: HoplaUserCredentials = request_user_for_credentials()
 
-    auth_handler = AuthorizationHandler()
-    auth_handler.set_hopla_credentials(user_id=user_id, api_token=api_token, overwrite=True)
+    AuthorizationHandler().set_hopla_credentials(
+        user_id=hopla_user_credentials.user_id,
+        api_token=hopla_user_credentials.api_token,
+        overwrite=True
+    )
 
 
-def request_user_for_credentials() -> (UUID, UUID):
+@dataclass(frozen=True)
+class HoplaUserCredentials:
+    """Class representing the user's credentials"""
+    user_id: UUID
+    api_token: UUID
+
+
+def request_user_for_credentials() -> HoplaUserCredentials:
     """Request the user for the user id and api token"""
     click.echo("Please enter your credentials.")
     click.echo("You can find them over at <https://habitica.com/user/settings/api>.")
@@ -36,4 +47,4 @@ def request_user_for_credentials() -> (UUID, UUID):
                            type=click.UUID)
     api_token = click.prompt(text="Please paste your user API Token here (input remains hidden)",
                              type=click.UUID, hide_input=True)
-    return api_token, user_id
+    return HoplaUserCredentials(user_id=user_id, api_token=api_token)
