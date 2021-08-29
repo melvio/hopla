@@ -29,6 +29,7 @@ def data_on_success_else_exit(api_response: requests.Response):
 
 
 class PrintableException(BaseException):
+    """A BaseException that implements a default __str__"""
     def __init__(self, msg: str):
         super().__init__(PrintableException.__class__)
         self.msg = msg

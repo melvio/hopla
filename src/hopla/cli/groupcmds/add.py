@@ -20,24 +20,67 @@ def add():
     """GROUP for adding things to habitica"""
 
 
+DIFFICULTIES_SCORE_MAPPING = {"hard": "2", "medium": "1.5", "easy": "1", "trivial": "0.1"}
+
+
+class HabiticaChecklist:
+    """ Habitica Checklist """
+
+    def __init__(self, *, checklist=None):
+        self.checklist = checklist
+
+    def is_empty(self) -> bool:
+        """Return true if checklist is none or empty"""
+        return self.checklist is None or len(self.checklist) == 0
+
+    def to_json_list(self) -> List[Dict[str, str]]:
+        """Turn a checklist into a list that we can pass to the habitica API"""
+        return [{"text": line} for line in self.checklist]
+
+
+class HabiticaTodo:
+    """ Habitica To-Do"""
+
+    def __init__(self, *, todo_name, difficulty, due_date=None, checklist=None):
+        self.todo_name = todo_name
+        self._type = "todo"
+        self.difficulty = difficulty
+        self.due_date = due_date
+        self.checklist: HabiticaChecklist = checklist
+
+    def difficulty_to_score(self) -> str:
+        """return score for a difficulty
+           throws KeyError in case of an invalid difficulty
+        """
+        return DIFFICULTIES_SCORE_MAPPING[self.difficulty]
+
+    def str_due_date_to_date(self) -> str:
+        """Turn the due_date into a valid ISO 8601 date format"""
+        habitica_date_format = "%Y-%m-%d"
+        return self.due_date.strftime(habitica_date_format)
+
+    def to_json_dict(self) -> dict:
+        """Turn an instance of this class into a dict that we can pass to the habitica API"""
+        todo_dict = {
+            "text": self.todo_name,
+            "type": self._type,
+            "priority": self.difficulty_to_score(),
+            "checklist": self.checklist.to_json_list()
+        }
+
+        if self.due_date:
+            todo_dict["date"] = self.str_due_date_to_date()
+
+        return todo_dict
+
+
 # @see https://habitica.com/apidoc/#api-Task-CreateUserTasks
-difficulties_scores = {"hard": "2", "medium": "1.5", "easy": "1",
-                       "trivial": "0.1"}
-valid_difficulties = click.Choice(list(difficulties_scores.keys()))
+valid_difficulties = click.Choice(list(DIFFICULTIES_SCORE_MAPPING.keys()))
 
-
-def difficulty_to_score(difficulty: str) -> str:
-    """return score for given difficulty
-       throws KeyError in case of an invalid difficulty
-    :param difficulty: habitica difficulty
-    :return: corresponding score
-    """
-    return difficulties_scores[difficulty]
-
-
-due_date_formats = click.DateTime(formats=["%Y-%m-%d",  # 2022-10-29
-                                           "%d-%m-%Y",  # 29-10-2022
-                                           ])
+due_date_formats = click.DateTime(formats=[
+    "%Y-%m-%d",  # 2022-10-29
+    "%d-%m-%Y",  # 29-10-2022
+])
 
 
 @add.command()
@@ -61,8 +104,8 @@ def todo(difficulty: str,
     \b
     Examples:
     ---
-    # create a To-Do without any hoopla:
-    hopla add todo 'Text for my todo'
+    # Simplest way to create a To-Do
+    hopla add todo "My todo"
 
     \b
     # override the default 'easy' difficulty using either
@@ -85,8 +128,13 @@ def todo(difficulty: str,
     hopla add todo --checklist <(sort ./tasks.txt) "Sorted Checklist"
 
     \b
-    # open up an editor and type in your checklist over there
+    # open up an editor and type in your new checklist on the go
     hopla add todo --editor "My Long Checklist"
+
+    \b
+    # open up a file, edit it, and send it as a checklist.
+    # note that this keeps the underlying file unchanged
+    hopla add todo --checklist tasks.txt --editor "My editable checklist"
 
 
     \b
@@ -111,38 +159,33 @@ def todo(difficulty: str,
               f"   difficulty={difficulty} , due_date={due_date}"
               f"   checklist ={checklist_file}, editor={checklist_editor}")
 
-    todo_item = {}
-    todo_item["text"] = todo_name
-    todo_item["priority"] = difficulty_to_score(difficulty)
-    todo_item["type"] = "todo"  # task type key
-    if due_date is not None:
-        habitica_date_format = "%Y-%m-%d"  # ISO 8601 date format
-        todo_item["date"] = due_date.strftime(habitica_date_format)
-
-    if checklist_file is not None:
-        # TODO: Make an object for this, not dicts of list of dicts
-        todo_item["checklist"] = checklist_to_dict(checklist_file.readlines())
-
-    if checklist_editor:
-        comment = "# Every line below this comment represents an item on your checklist\n"
-        message = click.edit(text=comment)
-        if message is not None:
-            checklist_str = message.split(comment, maxsplit=1)[1]
-            checklist_list = checklist_str.split("\n")
-            todo_item["checklist"] = checklist_to_dict(checklist_list)
+    habitica_checklist = get_checklist(checklist_file=checklist_file,
+                                       checklist_editor=checklist_editor)
+    habitica_todo = HabiticaTodo(todo_name=todo_name, difficulty=difficulty,
+                                 due_date=due_date, checklist=habitica_checklist)
 
     url: str = UrlBuilder(path_extension="/tasks/user").url
     headers: dict = RequestHeaders().get_default_request_headers()
-    response = requests.post(url=url, headers=headers, json=todo_item)
+    response = requests.post(url=url, headers=headers, json=habitica_todo.to_json_dict())
     todo_data = data_on_success_else_exit(response)
 
     click.echo(JsonFormatter(todo_data).format_with_double_quotes())
 
 
-def checklist_to_dict(checklist: list) -> List[Dict[str, str]]:
-    """
+def get_checklist(checklist_file, checklist_editor: bool) -> HabiticaChecklist:
+    """Get a habitica checklist from the user
 
-    :param checklist: a list of checklist items
-    :return:
+     Returns an empty HabiticaChecklist if user did not want a checklist
     """
-    return [{"text": line} for line in checklist]
+    if checklist_editor:
+        comment = "# Every line below this comment represents an item on your checklist\n"
+        original_checklist = "".join(checklist_file.readlines()) if checklist_file else ""
+        message = click.edit(text=comment + original_checklist)
+        if message is not None:
+            checklist_str_with_comment: List[str] = message.split(comment, maxsplit=1)
+            checklist_str = checklist_str_with_comment[1]
+            return HabiticaChecklist(checklist=checklist_str.split("\n"))
+    elif checklist_file:
+        return HabiticaChecklist(checklist=checklist_file.readlines())
+
+    return HabiticaChecklist(checklist=[])
