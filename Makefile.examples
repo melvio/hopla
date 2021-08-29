@@ -12,6 +12,11 @@ print_autocomplete:
 	&& hopla complete zsh  \
 	&& hopla complete fish
 
+
+hopla_support_development:
+	# send 4 gems to development (fails if not enough gems are available)
+	hopla support-development
+
 hopla_add_simple_todo:
 	hopla add todo "Donate"
 

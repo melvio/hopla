@@ -1,3 +1,6 @@
+"""
+Module with some Hopla common logic and data
+"""
 from typing import Final
 
 

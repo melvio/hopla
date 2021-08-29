@@ -9,7 +9,7 @@ from typing import List
 import click
 import requests
 
-from hopla.hoplalib.clickutils import data_on_success_else_exit
+from hopla.hoplalib.clickhelper import data_on_success_else_exit
 from hopla.hoplalib.http import RequestHeaders, UrlBuilder
 from hopla.hoplalib.outputformatter import JsonFormatter
 
@@ -50,8 +50,7 @@ def inventory_alias_to_official_habitica_name(inventory_name: str):
     return inventory_name
 
 
-@get.command(context_settings=dict(
-    token_normalize_func=inventory_alias_to_official_habitica_name))
+@get.command(context_settings=dict(token_normalize_func=inventory_alias_to_official_habitica_name))
 @click.argument("item_group_name", type=valid_item_groups, default="all")
 def user_inventory(item_group_name) -> dict:
     """Get items from the user's inventory
@@ -193,7 +192,7 @@ def info_alias_to_official_habitica_name(user_info_name: str) -> str:
     """Return the canonical habitica name"""
     if user_info_name in ["userid", "user-id"]:
         return "id"
-    elif user_info_name in ["gems", "gem"]:
+    if user_info_name in ["gems", "gem"]:
         return "balance"
     return user_info_name
 
@@ -310,8 +309,12 @@ class HabiticaUserRequest:
 
 @dataclass(frozen=True)
 class HabiticaUser:
-    # This user_dict is assumed to be returned from a 200 ok Response as (using
-    # Response.json()) when calling the /user endpoint and getting .data
+    """
+    Class representing a user model.
+
+    The user_dict is assumed to be returned from a 200 ok Response as (using
+    Response.json()) when calling the /user endpoint and getting .data
+    """
     user_dict: dict
 
     def get_stats(self) -> dict:
