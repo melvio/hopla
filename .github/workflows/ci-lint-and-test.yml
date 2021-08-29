@@ -21,7 +21,6 @@ jobs:
           pylint $(find src -name "*.py" | xargs) --rcfile ./.github/workflows/pylintrc.conf
       - name: Run doctest
         # TODO: apply to all relevant *.py files
-        # TODO: Fix: https://github.com/melvio/hopla/runs/3451638065?check_suite_focus=true
         run: |
           pip install --upgrade --editable .
           python -m doctest --verbose src/hopla/cli/groupcmds/get.py
