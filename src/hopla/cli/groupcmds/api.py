@@ -1,3 +1,6 @@
+"""
+The module with CLI code that handles the `hopla api` group command.
+"""
 import logging
 
 import click
@@ -56,7 +59,6 @@ def content(jq_filter: str) -> dict:
     return content_data
 
 
-# todo: maybe get this dynamically from the API?
 valid_model_names = click.Choice(
     choices=["user", "group", "challenge", "tag", "habit", "daily", "todo", "reward"],
     case_sensitive=False

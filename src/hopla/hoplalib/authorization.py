@@ -64,8 +64,7 @@ class AuthorizationHandler:
         # violating that @property should be cheap;
         # However, the auth file should be short. So we should be fine to parse
         self._parse()
-        return self.config_parser[
-            AuthorizationConstants.CONFIG_SECTION_CREDENTIALS] \
+        return self.config_parser[AuthorizationConstants.CONFIG_SECTION_CREDENTIALS] \
             .get(AuthorizationConstants.CONFIG_KEY_USER_ID)
 
     @property
@@ -74,8 +73,7 @@ class AuthorizationHandler:
         # violating that @property should be cheap;
         # However, the auth file should be short. So we should be fine to parse
         self._parse()
-        return self.config_parser[
-            AuthorizationConstants.CONFIG_SECTION_CREDENTIALS] \
+        return self.config_parser[AuthorizationConstants.CONFIG_SECTION_CREDENTIALS] \
             .get(AuthorizationConstants.CONFIG_KEY_API_TOKEN)
 
     def auth_file_exists(self) -> bool:
@@ -85,8 +83,7 @@ class AuthorizationHandler:
     def set_hopla_credentials(self, *, overwrite: bool = False):
         log.debug(f"set_hopla_credentials overwrite={overwrite}")
         if self.auth_file_exists() and overwrite is False:
-            log.info(
-                f"Auth file {self.auth_file} not recreated because it already exists")
+            log.info(f"Auth file {self.auth_file} not recreated because it already exists")
             return
 
         # TODO: with mode=w here, we are essentially creating this empty auth file twice

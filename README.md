@@ -1,6 +1,7 @@
 # Hopla
 [![hopla](https://img.shields.io/static/v1?label=melvio&message=hopla&color=blue&logo=github)](https://github.com/melvio/hopla) 
 [![stars - hopla](https://img.shields.io/github/stars/melvio/hopla?style=social)](https://github.com/melvio/hopla)      
+[![Continuous Integration](https://github.com/melvio/hopla/actions/workflows/ci-lint-and-test.yml/badge.svg)](https://github.com/melvio/hopla/actions/workflows/ci-lint-and-test.yml)
 
 hopla - a command line interface (CLI) for [habitica.com](https://habitica.com)
 

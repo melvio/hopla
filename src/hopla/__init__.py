@@ -13,6 +13,7 @@ from hopla.cli.complete import complete
 from hopla.cli.config import config
 from hopla.cli.feed import feed
 from hopla.cli.version import version
+from hopla.cli.support_development import support_development
 from hopla.cli.groupcmds.add import add
 from hopla.cli.groupcmds.api import api
 from hopla.cli.groupcmds.buy import buy
@@ -43,8 +44,13 @@ def setup_logging() -> logging.Logger:
 
 log = setup_logging()
 
+CLICK_CONTEXT_SETTINGS = dict(
+    help_option_names=["-h", "--help"],  # add -h
+    show_default=True  # always shows @click.option' default=values (unless overridden downstream)
+)
 
-@click.group(context_settings=dict(help_option_names=["-h", "--help"]))
+
+@click.group(context_settings=CLICK_CONTEXT_SETTINGS)
 def hopla():
     """hopla - a command line interface (CLI) to interact with habitica.com"""
 
@@ -69,4 +75,5 @@ def entry_cmd():
     hopla.add_command(version)
     hopla.add_command(auth)
     hopla.add_command(feed)
+    hopla.add_command(support_development)
     hopla()

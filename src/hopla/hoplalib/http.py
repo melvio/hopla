@@ -2,8 +2,8 @@
 Library code to help with Habitica API HTTPS-requests
 """
 
-
 from hopla.hoplalib.authorization import AuthorizationHandler
+from hopla.hoplalib.common import GlobalConstants
 
 
 class RequestHeaders:
@@ -13,12 +13,11 @@ class RequestHeaders:
 
     For more information see <https://habitica.fandom.com/wiki/Guidance_for_Comrades>
     """
-    CONTENT_TYPE = "Content-Type"
-    CONTENT_TYPE_JSON = "application/json"
-    X_CLIENT = "x-client"
-    X_API_USER = "x-api-user"
-    X_API_KEY = "x-api-key"
-    X_CLIENT_VALUE = "79551d98-31e9-42b4-b7fa-9d89b0944319-hopla"
+    CONTENT_TYPE_HEADER_NAME = "Content-Type"
+    CONTENT_TYPE_HEADER_VALUE_APPLICATION_JSON = "application/json"
+    X_CLIENT_HEADER_NAME = "x-client"
+    X_API_USER_HEADER_NAME = "x-api-user"
+    X_API_KEY_HEADER_NAME = "x-api-key"
 
     def __init__(self, auth_parser: AuthorizationHandler = None):
         if auth_parser:
@@ -28,10 +27,11 @@ class RequestHeaders:
 
     def get_default_request_headers(self) -> dict:
         return {
-            RequestHeaders.CONTENT_TYPE: RequestHeaders.CONTENT_TYPE_JSON,
-            RequestHeaders.X_CLIENT: RequestHeaders.X_CLIENT_VALUE,
-            RequestHeaders.X_API_USER: self.hopla_auth_parser.user_id,
-            RequestHeaders.X_API_KEY: self.hopla_auth_parser.api_token
+            RequestHeaders.CONTENT_TYPE_HEADER_NAME:
+                RequestHeaders.CONTENT_TYPE_HEADER_VALUE_APPLICATION_JSON,
+            RequestHeaders.X_CLIENT_HEADER_NAME: GlobalConstants.X_CLIENT,
+            RequestHeaders.X_API_USER_HEADER_NAME: self.hopla_auth_parser.user_id,
+            RequestHeaders.X_API_KEY_HEADER_NAME: self.hopla_auth_parser.api_token
         }
 
 
@@ -39,9 +39,10 @@ class UrlBuilder:
     """
     Helper class for building habitica API URLs.
     """
+
     def __init__(self, *,
-                 domain: str = "https://habitica.com",
-                 api_version: str = "v3",    # TODO: probably not the location to be storing this
+                 domain: str = GlobalConstants.API_DOMAIN,
+                 api_version: str = GlobalConstants.HABITICA_API_VERSION,
                  path_extension: str = ""):
         self.domain = domain
         self.api_version = api_version
