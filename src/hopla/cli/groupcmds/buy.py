@@ -36,6 +36,7 @@ def buy_from_enchanted_armoire_once():
 def times_until_poor(gp_budget: float) -> int:
     """Returns how many times you can buy from enchanted_armoire given some budget.
 
+    \f
     :param gp_budget:
     :return:
     """
@@ -60,7 +61,6 @@ def enchanted_armoire(ctx, requested_times: int, until_poor_flag: bool):
     --until-poor will be used instead.
 
     If no options are specified, you buy once.
-
     """
     log.debug(f"hopla buy enchanted-armoire times={requested_times}, until_poor={until_poor_flag}")
 

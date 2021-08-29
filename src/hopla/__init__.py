@@ -13,6 +13,7 @@ from hopla.cli.complete import complete
 from hopla.cli.config import config
 from hopla.cli.feed import feed
 from hopla.cli.version import version
+from hopla.cli.support_development import support_development
 from hopla.cli.groupcmds.add import add
 from hopla.cli.groupcmds.api import api
 from hopla.cli.groupcmds.buy import buy
@@ -69,4 +70,5 @@ def entry_cmd():
     hopla.add_command(version)
     hopla.add_command(auth)
     hopla.add_command(feed)
+    hopla.add_command(support_development)
     hopla()
