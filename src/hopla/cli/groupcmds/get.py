@@ -118,8 +118,7 @@ def user_stats(stat_name: str):
     return data_requested_by_user
 
 
-valid_auth_info_names = click.Choice(
-    ["username", "email", "profilename", "all"])
+valid_auth_info_names = click.Choice(["username", "email", "profilename", "all"])
 
 
 def auth_alias_to_official_habitica_name(auth_info_name: str):
@@ -153,7 +152,14 @@ def user_auth(auth_info_name: str):
     get google SSO credentials you can use:
 
     \b
-        hopla get user-info -f "auth.google"
+    Examples
+    ---
+    # get email
+    hopla get user-auth email
+
+    \b
+    # workaround for SSO information
+    hopla get user-info -f "auth.google"
 
     """
     log.debug(f"hopla get user-auth auth={auth_info_name}")
@@ -179,19 +185,37 @@ def user_auth(auth_info_name: str):
     return auth_info
 
 
-@get.command()
+valid_info_names = click.Choice(["gems", "id", "notifications", "tags", "lastCron",
+                                 "loginIncentives", "all"])
+
+
+def info_alias_to_official_habitica_name(user_info_name: str) -> str:
+    """Return the canonical habitica name"""
+    if user_info_name in ["userid", "user-id"]:
+        return "id"
+    elif user_info_name in ["gems", "gem"]:
+        return "balance"
+    return user_info_name
+
+
+@get.command(context_settings=dict(token_normalize_func=info_alias_to_official_habitica_name))
 # TODO: consider upgrading to full-blown jq and dont handle this yourself
+@click.argument("user_info_name", type=valid_info_names, default="all")
 @click.option("--filter", "-f", "filter_string", metavar="FILTER_STRING",
               help="a comma seperated list of keys")
-def user_info(filter_string: str) -> dict:
+def user_info(user_info_name: str,
+              filter_string: str) -> dict:
     """Return user information
 
     If no FILTER_STRING is given, get all user info.
     Otherwise, return the result of filtering the user's info with the
-    specified FILTER_STRING
+    specified FILTER_STRING.
+
+    USER_INFO_NAME the particular type of information that you want to return, by
+    default "all".
 
 
-
+    \b
     [BNF](https://en.wikipedia.org/wiki/Backus-Naur-Form)
     for the FILTER_STRING:
 
@@ -202,6 +226,22 @@ def user_info(filter_string: str) -> dict:
     \b
     Examples:
     ---
+    # get all user info
+    hopla get user-info
+
+    \b
+    # get number of gems
+    hopla get user-info gems
+
+    \b
+    # get user id
+    hopla get user-info id
+
+    \b
+    # get number of times logged in
+    hopla get user-info loginIncentives
+
+    \b
     # get all items of a user:
     hopla get user-info ---filter "items"
 
@@ -229,21 +269,33 @@ def user_info(filter_string: str) -> dict:
     \f
     [APIdocs](https://habitica.com/apidoc/#api-User-UserGet)
 
+    :param user_info_name:
     :param filter_string: string to filter the user dict on (e.g. "achievements.streak,purchased.plan")
     :return
     """
-    log.debug(f"hopla get user-info filter={filter_string}")
+    log.debug(f"hopla get user-info user_info_name={user_info_name} filter={filter_string}")
     response = HabiticaUserRequest().request_user()
     response_data: dict = data_on_success_else_exit(response)
     habitica_user = HabiticaUser(user_dict=response_data)
 
     if filter_string:
         user: dict = habitica_user.filter_user(filter_string)
-    else:
+    elif user_info_name == "all":
         user: dict = habitica_user.user_dict
+        # TODO: refactor
+    elif user_info_name == "gems":
+        gems = habitica_user.get_gems()
+        user: dict = {"gems": gems}
+    else:
+        user: dict = habitica_user.filter_user(user_info_name)
 
     user_str = JsonFormatter(user).format_with_double_quotes()
     click.echo(user_str)
+    # return user
+
+
+def turn_balance_into_gems(habitica_user):
+    user: dict = habitica_user.filter_user("balance")
     return user
 
 
@@ -270,6 +322,15 @@ class HabiticaUser:
 
     def get_auth(self) -> dict:
         return self.user_dict["auth"]
+
+    def get_gems(self):
+        """Get the number of gems of a user.
+
+        gems are stored in the 'balance' field. 1 'balance' equals 4 gems
+        [see](https://habitica.fandom.com/wiki/Gems#Information_for_Developers)
+        """
+        balance = self.user_dict["balance"]
+        return balance * 4
 
     def filter_user(self, filter_string: str) -> dict:
         # TODO: this code is generic, it can be used to filter any dict
