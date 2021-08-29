@@ -96,15 +96,16 @@ def model(model_name: str) -> dict:
 
 
 @api.command()
-def version() -> str:
+def version() -> dict:
     """print the version string of the Habitica API (e.g. v3)
 
     \f
     :return The habitica API version string. (e.g. v3, v4)
     """
     log.debug("hopla api version")
-    click.echo(GlobalConstants.HABITICA_API_VERSION)
-    return GlobalConstants.HABITICA_API_VERSION  # .appVersion maybe also interesting?
+    api_version = {"version": GlobalConstants.HABITICA_API_VERSION}
+    click.echo(JsonFormatter(api_version).format_with_double_quotes())
+    return api_version  # .appVersion maybe also interesting?
 
 
 @api.command()
