@@ -9,9 +9,7 @@ from typing import List
 import click
 import requests
 
-from hopla.hoplalib.clickhelper import data_on_success_else_exit
 from hopla.hoplalib.http import RequestHeaders, UrlBuilder
-from hopla.hoplalib.outputformatter import JsonFormatter
 
 log = logging.getLogger()
 
@@ -26,6 +24,7 @@ def get():
 
 
 class HabiticaUserRequest:
+    """Class that requests a user model from the Habitica API"""
     def __init__(self):
         self.url = UrlBuilder(path_extension="/user").url
         self.headers = RequestHeaders().get_default_request_headers()

@@ -37,7 +37,9 @@ def inventory_alias_to_official_habitica_name(inventory_name: str):
     return inventory_name
 
 
-@click.command(context_settings=dict(token_normalize_func=inventory_alias_to_official_habitica_name))
+@click.command(
+    context_settings=dict(token_normalize_func=inventory_alias_to_official_habitica_name)
+)
 @click.argument("item_group_name", type=valid_item_groups, default="all")
 def user_inventory(item_group_name) -> dict:
     """Get items from the user's inventory
@@ -61,4 +63,3 @@ def user_inventory(item_group_name) -> dict:
     click.echo(
         JsonFormatter(data_requested_by_user).format_with_double_quotes())
     return data_requested_by_user
-
