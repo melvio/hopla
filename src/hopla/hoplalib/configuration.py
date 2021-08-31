@@ -2,9 +2,13 @@
 Library code to handle Hopla's configuration.
 """
 import logging
-import os
 from configparser import ConfigParser
 from pathlib import Path
+from typing import List
+from collections import namedtuple
+
+from hopla.hoplalib.clickhelper import PrintableException
+from hopla.hoplalib.common import get_configuration_dirpath, EnvironmentVariables
 
 log = logging.getLogger()
 
@@ -12,33 +16,31 @@ log = logging.getLogger()
 class HoplaConfigurationFile:
     """Hopla's configuration file"""
 
-    def __init__(self):
-        # TODO: we can probably use python-click to handle this for us
-        self._global_env_var_xdg_config_home = os.environ.get("XDG_CONFIG_HOME")
-        self._global_env_var_hopla_conf_file = os.environ.get("HOPLA_CONF_FILE")
+    def __init__(self, *, alternative_file=None):
+        self.__alternative_file = alternative_file
+        self.__global_env_var_hopla_conf_file = EnvironmentVariables.HOPLA_CONF_FILE
 
     @property
     def file_path(self) -> Path:
-        if self._global_env_var_hopla_conf_file is not None:
-            config_file = Path(self._global_env_var_hopla_conf_file)
-        elif self._global_env_var_xdg_config_home is not None:
-            config_file = Path(self._global_env_var_xdg_config_home) / "hopla" / "hopla.conf"
+        if self.__alternative_file is not None:
+            config_file: Path = Path(self.__alternative_file)
+        elif self.__global_env_var_hopla_conf_file is not None:
+            config_file: Path = Path(self.__global_env_var_hopla_conf_file)
         else:
-            config_file = Path.home() / ".config" / "hopla" / "hopla.conf"
+            config_file: Path = get_configuration_dirpath() / "hopla.conf"
 
-        # TODO: check if resolve could fail if these dirs dont exist
         return config_file.resolve()
 
-    @property
     def exists(self) -> bool:
         """Return true if the hopla configuration file exists"""
         return self.file_path.exists() and self.file_path.is_file()
 
 
 class ConfigurationFileParser:
-    def __init__(self):
-        self._conf_file: Path = HoplaConfigurationFile().file_path
+    """Class that writes and reads from the Hopla configuration file"""
 
+    def __init__(self):
+        self._conf_file = HoplaConfigurationFile()
         self.config_parser = ConfigParser()
 
     def get_full_config_name(self, full_config_name: str, *, fallback=None):
@@ -57,62 +59,77 @@ class ConfigurationFileParser:
         :return:
         """
 
-        self.config_parser.read(self._conf_file)
-        section_name = FullConfigurationName(full_config_name=full_config_name).section
-        config_name = FullConfigurationName(full_config_name=full_config_name).config_name
+        self.config_parser.read(self._conf_file.file_path)
+        configuration_setting = FullConfigurationNameStr(full_config_name_str=full_config_name)
 
         return self.config_parser.get(
-            section=section_name,
-            option=config_name,
+            section=configuration_setting.section,
+            option=configuration_setting.short_config_name,
             fallback=fallback
         )
 
     def set_full_config_name(self, full_config_name: str, new_value):
-        self.config_parser.read(self._conf_file)
-
-        section_name = FullConfigurationName(full_config_name=full_config_name).section
-        config_name = FullConfigurationName(full_config_name=full_config_name).config_name
+        self.config_parser.read(self._conf_file.file_path)
+        configuration_setting = FullConfigurationNameStr(full_config_name_str=full_config_name)
 
         self.config_parser.set(
-            section=section_name,
-            option=config_name,
+            section=configuration_setting.section,
+            option=configuration_setting.short_config_name,
             value=new_value
         )
-        with open(self._conf_file, mode="w", encoding="utf-8") as updated_conf_file:
+        with open(self._conf_file.file_path, mode="w", encoding="utf-8") as updated_conf_file:
             self.config_parser.write(updated_conf_file)
 
         return new_value
 
 
-class FullConfigurationName:
-    def __init__(self, full_config_name: str):
-        """
-           config_name format:
-                ini_section_name.key_name
+class InvalidFullNameFormat(PrintableException):
+    pass
 
-            so cmd_all.loglevel maps to:
-            [cmd_all]
-            loglevel = ...
-        """
-        self.full_config_name = full_config_name
+
+ConfigurationName = namedtuple(typename="ConfigurationNameType",
+                               field_names=["section", "config_name"])
+
+
+class FullConfigurationNameStr:
+    """The full configuration name of format:
+            ini_section_name.key_name
+
+        the full name 'cmd_all.loglevel' maps to the following in a config file:
+        [cmd_all]
+        loglevel = ...
+    """
+
+    # TODO: this would be nicely testable
+
+    def __init__(self, full_config_name_str: str):
+        try:
+            split_name: List[str] = full_config_name_str.split(".")
+            self.__section, self.__config_short_name = split_name
+            self.__config_name = ConfigurationName(section=self.__section,
+                                                   config_name=self.__config_short_name)
+        except ValueError as ex:
+            raise InvalidFullNameFormat(
+                "Expected a full_config_name of format: 'ini_section_name.key_name'"
+                f"but received {full_config_name_str}"
+            ) from ex
 
     def __str__(self) -> str:
-        return self.__class__.__name__ + f"(section={self.section}, config_name={self.config_name})"
+        return str(self.get_validated_config_name())
 
-    def _split_config_name(self):
-        result = self.full_config_name.split(".")
-        if len(result) != 2:
-            raise ValueError(f"config_name={self.full_config_name} has an invalid format")
-        # TODO: upgrade to named tuple
-        return result[0], result[1]
+    def get_validated_config_name(self) -> ConfigurationName:
+        """Return the underlying named tuple"""
+        return self.__config_name
 
     @property
-    def section(self):
-        return self._split_config_name()[0]
+    def section(self) -> str:
+        """Return the section part of the Full configuration name string"""
+        return self.__section
 
     @property
-    def config_name(self):
-        return self._split_config_name()[1]
+    def short_config_name(self):
+        """Return the (short) name part of the Full configuration name string"""
+        return self.__config_short_name
 
 
 class HoplaConfiguration:
@@ -154,7 +171,7 @@ class ConfigInitializer:
 
         :return: True if a file was created, false else.
         """
-        if self.config_file.exists is False:
+        if self.config_file.exists() is False:
             self._create_empty_config_file()
             default_config = HoplaConfiguration().default_config
             with open(self.config_file.file_path, mode="w", encoding="utf-8") as new_conf_file:

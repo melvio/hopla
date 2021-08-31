@@ -29,6 +29,10 @@ valid_auth_info_names = click.Choice(["username", "email", "profilename", "all"]
 
 
 def auth_alias_to_official_habitica_name(auth_info_name: str):
+    """
+    Function that returns habitica official names for the CLI cmd:
+    hopla get user-auth [alias]
+    """
     if auth_info_name in ["e-mail", "mail"]:
         return "email"
     return auth_info_name

@@ -7,8 +7,9 @@ from pathlib import Path
 
 import click
 
-from hopla.hoplalib.configuration import ConfigurationFileParser, \
-    HoplaConfigurationFile
+from hopla.hoplalib.configuration import ConfigurationFileParser
+from hopla.hoplalib.configuration import HoplaConfigurationFile
+
 
 log = logging.getLogger()
 
@@ -32,6 +33,9 @@ def config_set(config_name: str, value):
 
 
 def print_config_file_name():
+    """
+    Prints the path of the configuration file that this `hopla config ...` invocation uses.
+    """
     click.echo(HoplaConfigurationFile().file_path)
 
 
@@ -60,6 +64,8 @@ supported_config_names = click.Choice(["cmd_all.loglevel"])
 @click.option("--config-file-name", "config_file_name_flag",
               is_flag=True,
               help="get the absolute path of the config file")
+# @click.option("--file", "alternative_file",
+#                type=click.File(encoding="utf-8"), help="Specify which config file to use")
 def config(config_name: str,
            value,
            list_flag: bool,
@@ -94,7 +100,8 @@ def config(config_name: str,
     :return:
     """
     log.debug(f"hopla config name={config_name} value={value}")
-    log.debug(f" options:  list={list_flag}, config_file_name={config_file_name_flag}")
+    log.debug(f" options: --list={list_flag} --config_file_name={config_file_name_flag}")
+    # log.debug(f"          --file={alternative_file} ")
 
     if list_flag:
         print_config_file_content()
