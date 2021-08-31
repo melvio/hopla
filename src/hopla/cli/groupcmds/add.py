@@ -159,6 +159,7 @@ def todo(difficulty: str,
               f"   difficulty={difficulty} , due_date={due_date}"
               f"   checklist ={checklist_file}, editor={checklist_editor}")
 
+    #   TODO: look into ---editor list out of range issue I encoutnered
     habitica_checklist = get_checklist(checklist_file=checklist_file,
                                        checklist_editor=checklist_editor)
     habitica_todo = HabiticaTodo(todo_name=todo_name, difficulty=difficulty,
