@@ -33,6 +33,3 @@ jobs:
             --cov-fail-under="${coverage_failure_threshold_percent}" \
             src/hopla/tests/
 
-
-
-
