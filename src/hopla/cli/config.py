@@ -40,6 +40,7 @@ def print_config_file_name():
 
 
 def print_config_file_content():
+    """Print the hopla config file's content."""
     config_file_path: Path = HoplaConfigurationFile().file_path
     with open(config_file_path, mode="r", encoding="utf-8") as conf_file:
         for line in conf_file.readlines():

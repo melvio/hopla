@@ -20,6 +20,7 @@ valid_item_groups = click.Choice([
 
 
 def inventory_alias_to_official_habitica_name(inventory_name: str):
+    """Take an inventory_name argument and return the canonical Habitica item name"""
     # pylint: disable=too-many-return-statements
     if inventory_name in ["hatchingpotions", "hatchingPotion"]:
         return "hatchingPotions"
