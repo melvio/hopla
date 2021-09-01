@@ -1,6 +1,7 @@
 """
 The module with CLI code that handles the `hopla add` group command.
 """
+import sys
 import datetime
 import logging
 from typing import Dict, List
@@ -28,6 +29,9 @@ class HabiticaChecklist:
 
     def __init__(self, *, checklist=None):
         self.checklist = checklist
+
+    def __repr__(self) -> object:
+        return self.__class__.__name__ + f"(checklist={self.checklist})"
 
     def is_empty(self) -> bool:
         """Return true if checklist is none or empty"""
@@ -179,7 +183,6 @@ def todo(difficulty: str,
               f"   difficulty={difficulty} , due_date={due_date}"
               f"   checklist ={checklist_file}, editor={checklist_editor}")
 
-    #   TODO: look into ---editor list out of range issue I encountered
     habitica_todo = create_habitica_todo(checklist_editor=checklist_editor,
                                          checklist_file=checklist_file,
                                          difficulty=difficulty,
@@ -207,21 +210,43 @@ def create_habitica_todo(*,
     return habitica_todo
 
 
-
 def get_checklist(checklist_file, checklist_editor: bool) -> HabiticaChecklist:
     """Get a habitica checklist from the user
 
      Returns an empty HabiticaChecklist if user did not want a checklist
+
+     >>> get_checklist(None, False)
+     HabiticaChecklist(checklist=[])
     """
     if checklist_editor:
-        comment = "# Every line below this comment represents an item on your checklist\n"
-        original_checklist = "".join(checklist_file.readlines()) if checklist_file else ""
-        message = click.edit(text=comment + original_checklist, extension=".md")
-        if message is not None:
-            checklist_str_with_comment: List[str] = message.split(comment, maxsplit=1)
-            checklist_str = checklist_str_with_comment[1]
-            return HabiticaChecklist(checklist=checklist_str.split("\n"))
-    elif checklist_file:
+        return get_checklist_with_editor(checklist_file)
+    if checklist_file:
         return HabiticaChecklist(checklist=checklist_file.readlines())
-
     return HabiticaChecklist(checklist=[])
+
+
+def get_checklist_with_editor(checklist_file) -> HabiticaChecklist:
+    """
+    Get the HabiticaUser given that the user requested the use of an editor.
+    """
+    comment = "# Every line below this comment represents an item on your checklist\n"
+    if checklist_file:
+        text = comment + "".join(checklist_file.readlines())
+    else:
+        text = comment
+    message = click.edit(text=text, extension=".md")
+    if message is not None:
+        try:
+            checklist_str_with_comment: List[str] = message.split(comment, maxsplit=1)
+        except IndexError as ex:
+            sys.exit(f"could not find the checklist below the specified comment: {ex}")
+        checklist_str = checklist_str_with_comment[1]
+        return HabiticaChecklist(checklist=checklist_str.split("\n"))
+
+    sys.exit("editor exited")
+
+
+if __name__ == "__main__":
+    import doctest
+
+    doctest.testmod()

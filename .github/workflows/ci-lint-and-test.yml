@@ -24,7 +24,8 @@ jobs:
         # TODO: apply to all relevant *.py files
         run: |
           pip install --upgrade --editable .
-          python -m doctest --verbose src/hopla/cli/groupcmds/get.py
+          python -m doctest --verbose src/hopla/cli/groupcmds/get.py \
+                                      src/hopla/cli/groupcmds/add.py
       - name: Run unittest with pytest
         run: |
           coverage_failure_threshold_percent=40

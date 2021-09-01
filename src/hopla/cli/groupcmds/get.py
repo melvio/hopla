@@ -25,6 +25,7 @@ def get():
 
 class HabiticaUserRequest:
     """Class that requests a user model from the Habitica API"""
+
     def __init__(self):
         self.url = UrlBuilder(path_extension="/user").url
         self.headers = RequestHeaders().get_default_request_headers()
