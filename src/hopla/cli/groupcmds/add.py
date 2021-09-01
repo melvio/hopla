@@ -76,12 +76,15 @@ class HabiticaTodo:
 
 
 class AddTodoRequest:
+    """An object that can perform an add To-Do request"""
+
     def __init__(self, habitica_todo: HabiticaTodo):
         self.url: str = UrlBuilder(path_extension="/tasks/user").url
         self.headers: dict = RequestHeaders().get_default_request_headers()
         self.habitica_todo = habitica_todo
 
     def post_add_todo_request(self):
+        """Perform the add To-Do request and return the data in case of success"""
         response = requests.post(
             url=self.url,
             headers=self.headers,
@@ -204,6 +207,7 @@ def create_habitica_todo(*,
     return habitica_todo
 
 
+
 def get_checklist(checklist_file, checklist_editor: bool) -> HabiticaChecklist:
     """Get a habitica checklist from the user
 
@@ -212,7 +216,7 @@ def get_checklist(checklist_file, checklist_editor: bool) -> HabiticaChecklist:
     if checklist_editor:
         comment = "# Every line below this comment represents an item on your checklist\n"
         original_checklist = "".join(checklist_file.readlines()) if checklist_file else ""
-        message = click.edit(text=comment + original_checklist)
+        message = click.edit(text=comment + original_checklist, extension=".md")
         if message is not None:
             checklist_str_with_comment: List[str] = message.split(comment, maxsplit=1)
             checklist_str = checklist_str_with_comment[1]
