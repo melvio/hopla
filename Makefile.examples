@@ -34,7 +34,7 @@ hopla_add_todo_use_file_as_checklist:
 
 today="$$(date --iso-8601)"
 hopla_add_todo_checklist_today:
-	hopla add todo --difficulty medium --due-date $(today) --checklist ~/todo/todo_list/today.md "$(today) checklist"
+	hopla add todo --difficulty trivial --due-date $(today) --checklist ~/todo/todo_list/today.md "$(today) checklist"
 
 
 

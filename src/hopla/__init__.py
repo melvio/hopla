@@ -30,7 +30,6 @@ def setup_logging() -> logging.Logger:
 
     parsed_loglevel = ConfigurationFileParser().get_full_config_name("cmd_all.loglevel",
                                                                      fallback="info")
-    # TODO: move mapping to config itself.. logging should not be responsible for this
     loglevel_mapping = {
         "debug": logging.DEBUG,
         "info": logging.INFO,
@@ -62,6 +61,7 @@ def hopla():
 
 
 def entry_cmd():
+    """The entry function for the hopla command"""
     had_to_create_new_config_file = ConfigInitializer().initialize_before_running_cmds()
     if had_to_create_new_config_file:
         click.echo("Thank you for trying out hopla in its early release")
