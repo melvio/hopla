@@ -3,7 +3,8 @@ Module with commonly used python-click functionality.
 """
 import logging
 import sys
-from typing import List
+import datetime
+from typing import List, Optional, Any
 
 import click
 import requests
@@ -30,6 +31,7 @@ def data_on_success_else_exit(api_response: requests.Response):
 
 class PrintableException(BaseException):
     """A BaseException that implements a default __str__"""
+
     def __init__(self, msg: str):
         super().__init__(PrintableException.__class__)
         self.msg = msg
@@ -307,3 +309,23 @@ class FeedingData:
         "Jackalope-RoyalPurple", "Orca-Base", "Bear-Veteran", "Hippogriff-Hopeful", "Fox-Veteran",
         "JackOLantern-Glow", "Gryphon-Gryphatrice", "JackOLantern-RoyalPurple"
     ])
+
+
+class EnhancedDate(click.DateTime):
+    """EnhancedDate adds 'today' and 'tomorrow' keywords to the click.DateTime type."""
+    name = "enhanceddate"
+
+    def __init__(self):
+        super().__init__(formats=["%Y-%m-%d", "%d-%m-%Y"])
+
+        # This will add 'today' and 'tomorrow to the help message
+        self.formats += ["today", "tomorrow"]
+
+    def convert(self, value: Any, param: Optional["Parameter"], ctx: Optional["Context"]) -> Any:
+        """Convert a value provided by the user into a datetime object."""
+        if value == "today":
+            return datetime.date.today()
+        if value == "tomorrow":
+            return datetime.date.today() + datetime.timedelta(days=1)
+
+        return super().convert(value, param, ctx)
