@@ -20,21 +20,23 @@ hopla_support_development:
 hopla_add_simple_todo:
 	hopla add todo "Donate"
 
+# the 'today' keyword will use today as the due date
 hopla_add_todo_hard_now_without_checklist:
-	hopla add todo --difficulty hard --due-date $$(date --iso-8601)  "my todo thingy here"
+	hopla add todo --difficulty hard --due-date 'today' "my todo thingy here"
 
 # GNU date: iso-date for tomorrow: YYYY-MM-DD
 tomorrow="$$(date --iso-8601 --date=tomorrow)"
+
+# --due-date supports the 'tomorrow' keyword which will use tomorrow as the due date
 hopla_add_todo_use_editor_for_checklist_tomorrow:
-	hopla add todo --difficulty medium --due-date $(tomorrow) --editor "$(tomorrow) checklist"
+	hopla add todo --difficulty medium --due-date=tomorrow --editor "$(tomorrow) checklist"
 
 hopla_add_todo_use_file_as_checklist:
-	hopla add todo --difficulty medium --due-date $(tomorrow) --checklist ~/todo/todo_list/roll.md "$(tomorrow) studies"
-
+	hopla add todo --difficulty medium --due-date tomorrow --checklist ~/todo/todo_list/roll.md "$(tomorrow) studies"
 
 today="$$(date --iso-8601)"
 hopla_add_todo_checklist_today:
-	hopla add todo --difficulty trivial --due-date $(today) --checklist ~/todo/todo_list/today.md "$(today) checklist"
+	hopla add todo --difficulty trivial --due-date=today --checklist ~/todo/todo_list/today.md "$(today) checklist"
 
 
 
