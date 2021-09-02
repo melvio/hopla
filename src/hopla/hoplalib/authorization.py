@@ -26,6 +26,10 @@ class AuthorizationFileConstants:
 
 
 class HoplaAuthFile:
+    """
+    Class representing the Hopla Auth file. This file keeps the user uuid and user
+    api token separate from other hopla configuration.
+    """
     def __init__(self):
         self.global_env_var_hopla_auth_file = EnvironmentVariables.HOPLA_AUTH_FILE
 
@@ -49,7 +53,11 @@ class HoplaAuthFile:
 
 
 class AuthorizationHandler:
-    """ TODO: violates SRP """
+    """
+    TODO: violates SRP
+
+    This class *should* only get and set values in the hopla authorization file.
+    """
 
     def __init__(self, *, auth_file: HoplaAuthFile = None):
         self.config_parser = ConfigParser()

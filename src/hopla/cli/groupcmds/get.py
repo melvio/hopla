@@ -31,6 +31,7 @@ class HabiticaUserRequest:
         self.headers = RequestHeaders().get_default_request_headers()
 
     def request_user(self) -> requests.Response:
+        """Perform the user get request and return the response"""
         return requests.get(url=self.url, headers=self.headers)
 
 

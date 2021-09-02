@@ -22,6 +22,7 @@ class HoplaConfigurationFile:
 
     @property
     def file_path(self) -> Path:
+        """Get the hopla configuration file as a Path"""
         if self.__alternative_file is not None:
             config_file: Path = Path(self.__alternative_file)
         elif self.__global_env_var_hopla_conf_file is not None:
@@ -69,6 +70,10 @@ class ConfigurationFileParser:
         )
 
     def set_full_config_name(self, full_config_name: str, new_value):
+        """
+        Given a fully qualified config name (such cmd_all.loglevel) and a value, this
+        function sets the new_value and returns the new_value.
+        """
         self.config_parser.read(self._conf_file.file_path)
         configuration_setting = FullConfigurationNameStr(full_config_name_str=full_config_name)
 
@@ -84,7 +89,7 @@ class ConfigurationFileParser:
 
 
 class InvalidFullNameFormat(PrintableException):
-    pass
+    """An exception that is thrown when a configuration full name doesn't have the valid format"""
 
 
 ConfigurationName = namedtuple(typename="ConfigurationNameType",
@@ -132,9 +137,13 @@ class FullConfigurationNameStr:
         return self.__config_short_name
 
 
-class HoplaConfiguration:
+class HoplaDefaultConfiguration:
+    """
+    A class responsible for keeping track of the supported configuration and the default values.
+    """
+
     @property
-    def default_config(self) -> ConfigParser:
+    def default_config_as_parser(self) -> ConfigParser:
         """
         Returns a ConfigParser with the default configuration assuming that nobody
         ever configured anything.
@@ -156,7 +165,7 @@ class HoplaConfiguration:
 
     def supported_sections(self):
         """Return the sections that are supported in the Hopla Configuration file."""
-        return self.default_config.sections()
+        return self.default_config_as_parser.sections()
 
 
 class ConfigInitializer:
@@ -173,7 +182,7 @@ class ConfigInitializer:
         """
         if self.config_file.exists() is False:
             self._create_empty_config_file()
-            default_config = HoplaConfiguration().default_config
+            default_config = HoplaDefaultConfiguration().default_config_as_parser
             with open(self.config_file.file_path, mode="w", encoding="utf-8") as new_conf_file:
                 default_config.write(new_conf_file)
             return True

@@ -25,7 +25,7 @@ def data_on_success_else_exit(api_response: requests.Response):
 
     log.debug(f"received: {response_json}")
     click.echo(JsonFormatter(response_json).format_with_double_quotes())
-    sys.exit()  # TODO: not sure if needed
+    sys.exit("The habitica API call wasn't successful")
 
 
 class PrintableException(BaseException):

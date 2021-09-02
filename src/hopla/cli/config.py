@@ -52,7 +52,7 @@ def print_config_file_content():
 # hopla config cmd_all.loglevel info
 # hopla config cmd_all.loglevel warning
 # hopla config cmd_all.loglevel error
-# TODO: get this value from the HoplaConfiguration class instead of duplicating it here
+# TODO: get this value from the HoplaDefaultConfiguration class instead of duplicating it here
 supported_config_names = click.Choice(["cmd_all.loglevel"])
 
 

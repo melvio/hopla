@@ -34,6 +34,7 @@ class PetFeedPostRequester:
 
     @property
     def request_headers(self) -> dict:
+        """Return the required headers for a feed-pet post request."""
         return RequestHeaders().get_default_request_headers()
 
     @property
@@ -43,9 +44,11 @@ class PetFeedPostRequester:
 
     @property
     def feed_pet_food_url(self) -> str:
+        """Return the url to feed a pet"""
         return UrlBuilder(path_extension=self.path).url
 
     def post_feed_pet_food_request(self) -> requests.Response:
+        """Performs the feed pet post requests and return the response"""
         return requests.post(
             url=self.feed_pet_food_url,
             headers=self.request_headers,
@@ -54,7 +57,7 @@ class PetFeedPostRequester:
 
 
 # pets can eat up to 50 units of non-preferred foods
-# TODO: Not sure if, want to clamp=True (which results
+# TODO: Not sure if we want to clamp=True (which results
 #  in 100 automatically becomes max, -10 becomes min, instead of failing
 #   with an click validation error message)
 # * Look into other options first, such as; --until-mount
