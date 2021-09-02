@@ -6,8 +6,8 @@ Nice to haves:
 ### Python
 * Use logging framework 
   + [DONE] add logging to entry command
-  + Enable reading of $HOPLA_CONFIG_FILE to get debug settings
-  + add python logging throughout the application
+  + [DONE] Enable reading of $HOPLA_CONFIG_FILE to get debug settings
+  + [DONE] add python logging throughout the application
 * Extract helper classes for common code
 * consider @dataclasses for:
   + Environment data class 
@@ -16,13 +16,13 @@ Nice to haves:
 * add project structure with proper imports
 * [DONE] click autocomplete
 * Use click's context classes
-* support with gems functionality
 * get error checking for wrong commands
 * get quest info
 * get next free rebirth
-* get gems
-* hopla support-development cmd
-* check uuid input format (or even ask the api for confirmation using .data.auth.nogiets)
+* [DONE] get gems
+* [DONE] hopla support-development cmd
+* [DONE] check uuid input format 
+* after auth: ask the API for user info
 * --background flag 
 * --json flag for json and CLI-user friendly output by default
    * get consistent output (e.g. double quoted & consistent 2-space indentation)
@@ -38,5 +38,8 @@ CI-CD:
 * add doctest build-step:
   + [DONE] add step
   + update the step s.t. it automatically picks up doctest in all the right locations
-* add pytest-cov
-* 
+* [DONE] add pytest-cov
+  + increase coverage to 40%
+  + increase coverage to 60%
+  + increase coverage to 80%
+  + increase coverage to 90%

@@ -8,6 +8,7 @@ import click
 
 from hopla.hoplalib.configuration import ConfigInitializer
 from hopla.hoplalib.configuration import ConfigurationFileParser
+from hopla.hoplalib.common import GlobalConstants
 from hopla.cli.auth import auth
 from hopla.cli.complete import complete
 from hopla.cli.config import config
@@ -48,13 +49,14 @@ def setup_logging() -> logging.Logger:
 
 log = setup_logging()
 
-CLICK_CONTEXT_SETTINGS = dict(
+HOPLA_CONTEXT_SETTINGS = dict(
     help_option_names=["-h", "--help"],  # add -h
-    show_default=True  # always shows @click.option' default=values (unless overridden downstream)
+    show_default=True,  # always shows @click.option' default=values (unless overridden downstream)
+    auto_envvar_prefix=GlobalConstants.APPLICATION_NAME
 )
 
 
-@click.group(context_settings=CLICK_CONTEXT_SETTINGS)
+@click.group(context_settings=HOPLA_CONTEXT_SETTINGS)
 @click.version_option()
 def hopla():
     """hopla - a command line interface (CLI) to interact with habitica.com"""
@@ -69,6 +71,13 @@ def entry_cmd():
             "Bug reports, pull requests, and feature requests are welcomed over at:  ")
         click.echo("  <https://github.com/melvio/hopla>")
     log.debug(f"start application with arguments: {sys.argv}")
+
+    organize_cli()
+    hopla()
+
+
+def organize_cli():
+    """Attach the subgroups and subcommands to the top hopla group command"""
     # subgroups
     hopla.add_command(add)
     hopla.add_command(api)
@@ -86,4 +95,3 @@ def entry_cmd():
     hopla.add_command(auth)
     hopla.add_command(feed)
     hopla.add_command(support_development)
-    hopla()

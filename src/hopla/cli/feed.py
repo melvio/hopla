@@ -96,7 +96,7 @@ def feed(pet_name: str, food_name: str, amount: int):
     Note: this API endpoint expect 'amount' as a query params (?amount=N) instead
     of a request body (even though it is a HTTP POST).
     """
-    log.debug(f"hopla feed pet={pet_name}, food={food_name}")
+    log.debug(f"hopla feed pet={pet_name}, food={food_name}, amount={amount}")
     pet_feed_request = PetFeedPostRequester(
         pet_name=pet_name,
         food_name=food_name,
