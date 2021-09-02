@@ -84,8 +84,6 @@ class HabiticaUser:
             {filter_keys: D["hi"]["ya"]["there"]} or {filter_string: {}} if D["hi"]["ya"]["there"]
             does not exist.
 
-        TODO: include doctests in the build process
-        [see(](https://docs.python.org/3/library/doctest.html)
         >>> HabiticaUser({})._filter_user(
         ...     user_dict={"items": {"currentPet":"Wolf-Base", "currentMount":"Aether-Invisible"}},
         ...     filter_keys = "items.currentMount")

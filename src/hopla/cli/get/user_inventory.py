@@ -61,6 +61,5 @@ def user_inventory(item_group_name) -> dict:
         data_requested_by_user = data_items
     else:
         data_requested_by_user = data_items[item_group_name]
-    click.echo(
-        JsonFormatter(data_requested_by_user).format_with_double_quotes())
+    click.echo(JsonFormatter(data_requested_by_user).format_with_double_quotes())
     return data_requested_by_user
