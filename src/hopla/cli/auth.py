@@ -17,7 +17,7 @@ log = logging.getLogger()
 def auth():
     """Authorize yourself to access the Habitica.com API
 
-    hopla auth allows you interactively providing access credentials.
+    hopla auth allows you to interactively provide access credentials.
     """
     log.debug("hopla auth")
 

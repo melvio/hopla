@@ -20,15 +20,15 @@ def set():  # pylint: disable=redefined-builtin
 @set.command()
 @click.argument("day_start_hour", type=click.IntRange(min=0, max=23),
                 default=0, metavar="[HOUR]")
-@click.option("--json/--no-json", "json_flag", default=False,
-              help="Output JSON or not")
+@click.option("--json/--no-json", "json_flag",
+              default=False, show_default=True,
+              help="Output the command result in JSON.")
 def day_start(day_start_hour, json_flag: bool):
     """Set your day-start (CRON) to the specified HOUR.
 
     HOUR - sets the day start to the N-th hour of the day. HOUR may range
     from 0 to 23 (inclusive). 0 AM (midnight) will be used as the
     default day start hour when no hour is specified.
-
 
 
     \b

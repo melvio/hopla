@@ -10,7 +10,6 @@ import click
 from hopla.hoplalib.configuration import ConfigurationFileParser
 from hopla.hoplalib.configuration import HoplaConfigurationFile
 
-
 log = logging.getLogger()
 
 
@@ -59,11 +58,11 @@ supported_config_names = click.Choice(["cmd_all.loglevel"])
 @click.command()
 @click.argument("config_name", required=False, type=supported_config_names)
 @click.argument("value", required=False)
-@click.option("--list", "list_flag",
-              is_flag=True,
+@click.option("--list/--no-flag", "list_flag",
+              default=False, show_default=True,
               help="list the contents of the config file")
-@click.option("--config-file-name", "config_file_name_flag",
-              is_flag=True,
+@click.option("--config-file-name/--no-config-file-name", "config_file_name_flag",
+              default=False, show_default=True,
               help="get the absolute path of the config file")
 # @click.option("--file", "alternative_file",
 #                type=click.File(encoding="utf-8"), help="Specify which config file to use")
@@ -91,6 +90,14 @@ def config(config_name: str,
     # set logging level to info
     $ hopla config cmd_all.loglevel info
     cmd_all.loglevel=info
+
+    \b
+    # list the configuration values
+    $ hopla config --list
+
+    \b
+    # display the config file path
+    $ hopla config --config-file-name
 
 
     \f

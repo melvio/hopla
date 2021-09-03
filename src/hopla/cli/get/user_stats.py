@@ -42,7 +42,24 @@ def stat_alias_to_official_habitica_name(stat_name: str) -> str:
 @click.command(context_settings=dict(token_normalize_func=stat_alias_to_official_habitica_name))
 @click.argument("stat_name", type=valid_stat_names, default="all")
 def user_stats(stat_name: str):
-    """Get the stats of a user"""
+    """Get the stats of a user
+
+    TODO: if no argument specified, what then?
+
+    \b
+    Examples
+    ---
+    # get all user stats
+    hopla get user-stats all
+
+    \b
+    # get mana, health, level
+    hopla get user-stats mp
+    hopla get user-stats hp
+    hopla get user-stats lvl
+    TODO:
+
+    """
     log.debug(f"hopla get user-stats stat={stat_name}")
     response = HabiticaUserRequest().request_user()
     response_data: dict = data_on_success_else_exit(response)

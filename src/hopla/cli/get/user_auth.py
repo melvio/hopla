@@ -52,11 +52,11 @@ def user_auth(auth_info_name: str):
     Examples
     ---
     # get email
-    hopla get user-auth email
+    $ hopla get user-auth email
 
     \b
-    # workaround for SSO information
-    hopla get user-info -f "auth.google"
+    # use the 'hopla get user-info' workaround to get SSO information:
+    $ hopla get user-info -f "auth.google"
 
     """
     log.debug(f"hopla get user-auth auth={auth_info_name}")

@@ -173,8 +173,9 @@ autocomplete_supported_shells = click.Choice(supported_shell_id_strings)
 
 @click.command()
 @click.argument("shell", type=autocomplete_supported_shells, default="bash")
-@click.option("--enable", is_flag=True, default=False,
-              help="Automatically add hopla autocompletion to your shell's config")
+@click.option("--enable/--no-enable", is_flag=True, default=False, show_default=True,
+              help="When True, automatically add hopla autocompletion to your shell's config. "
+                   "When False, just print the autocomplete code to the terminal")
 def complete(shell: str, enable: bool):
     """print or enable shell autocompletion
 
@@ -182,11 +183,11 @@ def complete(shell: str, enable: bool):
     Examples
     ---
     # automatically add autocompletion for bash (bash is used when no shell is provided)
-    hopla complete --enable
+    $ hopla complete --enable
 
     \b
     # show the autocomplete code for zsh
-    hopla complete zsh
+    $ hopla complete zsh
 
 
     \f
