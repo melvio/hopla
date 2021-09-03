@@ -14,8 +14,8 @@ log = logging.getLogger()
 
 
 @click.command()
-@click.option("--gems", "-g", type=int, default=4,
-              metavar="NUMBER_OF_GEMS", help="The number of gems you wish to contribute")
+@click.option("--gems", "-g", type=click.IntRange(min=0), default=4, show_default=True,
+              metavar="N_GEMS", help="N_GEMS is the number of gems you wish to contribute")
 def support_development(gems: int):
     """Support the development of hopla
 

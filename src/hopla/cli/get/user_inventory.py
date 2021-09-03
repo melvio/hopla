@@ -45,7 +45,7 @@ def inventory_alias_to_official_habitica_name(inventory_name: str):
 def user_inventory(item_group_name) -> dict:
     """Get items from the user's inventory
 
-    If no specific item group is specified,
+    Get all items if no specific item group is specified.
 
     \f
     :param item_group_name: The type of items in the inventory (default: all)

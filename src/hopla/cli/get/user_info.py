@@ -54,44 +54,44 @@ def user_info(user_info_name: str,
     Examples:
     ---
     # get all user info
-    hopla get user-info
+    $ hopla get user-info
 
     \b
     # get number of gems
-    hopla get user-info gems
+    $ hopla get user-info gems
 
     \b
     # get user id
-    hopla get user-info id
+    $ hopla get user-info id
 
     \b
     # get number of times logged in
-    hopla get user-info loginIncentives
+    $ hopla get user-info loginIncentives
 
     \b
     # get all items of a user:
-    hopla get user-info ---filter "items"
+    $ hopla get user-info --filter=items
 
     \b
     # get all mounts
-    hopla get user-info ---filter "items.mounts"
+    $ hopla get user-info --filter "items.mounts"
 
     \b
     # get all mounts+pets
-    hopla get user-info ---filter "items.mounts,items.pets"
+    $ hopla get user-info --filter "items.mounts,items.pets"
 
     \b
     # get streaks+completed quests
-    hopla get user-info -f "achievements.streak,achievements.quests"
+    $ hopla get user-info -f "achievements.streak,achievements.quests"
 
     \b
     # get contributor status, cron-count, profile description, and user id
-    hopla get user-info -f "contributor, flags.cronCount, profile.blurb, id"
+    $ hopla get user-info -f "contributor, flags.cronCount, profile.blurb, id"
 
     \b
     # get last free rebirth, day start (in hours), timezone offset (in minutes), and
     # account creation time
-    hopla get user-info -f 'flags.lastFreeRebirth, preferences.dayStart, preferences.timezoneOffset, auth.timestamps.created'   # pylint: disable=line-too-long
+    $ hopla get user-info -f 'flags.lastFreeRebirth, preferences.dayStart, preferences.timezoneOffset, auth.timestamps.created'   # pylint: disable=line-too-long
 
     \f
     [APIdocs](https://habitica.com/apidoc/#api-User-UserGet)

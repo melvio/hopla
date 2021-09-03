@@ -51,7 +51,6 @@ log = setup_logging()
 
 HOPLA_CONTEXT_SETTINGS = dict(
     help_option_names=["-h", "--help"],  # add -h
-    show_default=True,  # always shows @click.option' default=values (unless overridden downstream)
     auto_envvar_prefix=GlobalConstants.APPLICATION_NAME
 )
 

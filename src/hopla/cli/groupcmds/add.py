@@ -103,15 +103,19 @@ valid_difficulties = click.Choice(list(DIFFICULTIES_SCORE_MAPPING.keys()))
 
 
 @add.command()
-@click.option("--difficulty", type=valid_difficulties, default="easy")
+@click.option("--difficulty", type=valid_difficulties,
+              default="easy",
+              show_default=True,
+              help="the priority of the To-Do")
 @click.option("--due-date", "--deadline", type=EnhancedDate(),
               help="due date of the To-Do in format YYYY-MM-DD or DD-MM-YYYY."
                    "The special keywords 'today' and 'tomorrow' specify the "
                    "current day, or tomorrow.")
 @click.option("--checklist", "checklist_file", type=click.File(),
-              help="every line in FILENAME will be an item of the checklist")
-@click.option("--editor", "checklist_editor", is_flag=True, default=False,
-              help="Open up an editor to create a checklist interactively")
+              help="Every line in FILENAME will be an item of the checklist.")
+@click.option("--editor/--no-editor", "checklist_editor", default=False,
+              help="Open up an editor to create a checklist interactively",
+              show_default=True)
 @click.argument("todo_name", required=False)
 def todo(difficulty: str,
          due_date: datetime.datetime,
@@ -127,49 +131,49 @@ def todo(difficulty: str,
     Examples:
     ---
     # Simplest way to create a To-Do
-    hopla add todo "My todo"
+    $ hopla add todo "My todo"
 
     \b
     # If you don't specify a To-Do name, hopla will prompt you for one.
-    hopla add todo
+    $ hopla add todo
     Please provide a name for your todo: My todo
 
 
     \b
     # override the default 'easy' difficulty using either
     # --difficulty hard|medium|trivial
-    hopla add --difficulty=hard todo 'This is a hard todo'
+    $ hopla add --difficulty=hard todo 'This is a hard todo'
 
     \b
     # --due-date and --deadline work as synonyms.
-    hopla add todo --deadline 2042-01-21 "My Todo"
-    hopla add todo --due-date 2042-01-21 "My Todo"
+    $ hopla add todo --deadline 2042-01-21 "My Todo"
+    $ hopla add todo --due-date 2042-01-21 "My Todo"
 
 
     \b
     # You can use the 'today' or 'tomorrow' special keywords instead
     # of a date format.
-    hopla add todo --due-date today "Feed pet"
+    $ hopla add todo --due-date today "Feed pet"
 
     \b
     # You can use cool shell tricks to provide checklists on the fly
     # e.g. sort a list in a file:
-    hopla add todo --checklist <(sort ./tasks.txt) "Sorted Checklist"
+    $ hopla add todo --checklist <(sort ./tasks.txt) "Sorted Checklist"
 
     \b
     # open up an editor and type in your new checklist on the go
-    hopla add todo --editor "My Long Checklist"
+    $ hopla add todo --editor "My Long Checklist"
 
     \b
     # open up a file, edit it, and send it as a checklist.
     # note that this keeps the underlying file unchanged
-    hopla add todo --checklist tasks.txt --editor "My editable checklist"
+    $ hopla add todo --checklist tasks.txt --editor "My editable checklist"
 
 
     \b
     # create a hard To-Do with due date on the 22nd of october in 2077, and
     # use every line in the `my_todo.md` FILE as an item of your checklist.
-    hopla add todo --difficulty hard --due-date=2077-10-21 \\
+    $ hopla add todo --difficulty hard --due-date=2077-10-21 \\
                    --checklist-file ./my_todo.md 'Text for my todo'
 
 

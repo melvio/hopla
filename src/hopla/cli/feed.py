@@ -67,7 +67,8 @@ valid_feeding_amount = click.IntRange(min=0, max=50, clamp=False)
 @click.command()
 @click.argument("pet_name", type=FeedingData.VALID_PET_NAMES, metavar="PET_NAME")
 @click.argument("food_name", type=FeedingData.VALID_FOOD_NAMES, metavar="FOOD_NAME")
-@click.option("--amount", default=1, type=valid_feeding_amount,
+@click.option("--amount", default=1, show_default=True,
+              type=valid_feeding_amount,
               metavar="N_FOOD",
               help="number of FOOD_NAME fed to PET_NAME")
 def feed(pet_name: str, food_name: str, amount: int):
@@ -81,13 +82,18 @@ def feed(pet_name: str, food_name: str, amount: int):
      Examples:
      ---
      # Feed a Beetle-Skeleton a Fish
-     hopla feed pet Beetle-Skeleton Fish
+     $ hopla feed Beetle-Skeleton Fish
 
      \b
      # Feed a Snail-Desert 5 Potatoes
-     #   This fails to feed anything if less than 5 Potatoes are
-     #   required for a pet to become a mount.
-     hopla feed --amount=5 Snail-Desert Potatoe
+     # This commands fails to feed anything if less than 5 Potatoes are
+     # required for a pet to become a mount.
+     $ hopla feed --amount=5 Snail-Desert Potatoe
+
+     \b
+     # Tip: You can use the <Tab> key to show the pet and food keys
+     $ hopla feed <Tab><Tab>
+     $ hopla feed Axolotl-White <Tab><Tab>
 
      [API-docs](https://habitica.com/apidoc/#api-User-UserFeed)
     \f

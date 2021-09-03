@@ -50,8 +50,9 @@ def times_until_poor(gp_budget: float) -> int:
               type=click.IntRange(min=0),
               metavar="[TIMES]",
               help="number of times to buy from the enchanted-armoire")
-@click.option("--until-poor", "-u", "until_poor_flag", is_flag=True,
-              help="buy from enchanted-armoire until gp runs out")
+@click.option("--until-poor/--no-until-poor", "-u", "until_poor_flag",
+              help="buy from enchanted-armoire until gp runs out",
+              default=False, show_default=True)
 @click.pass_context
 def enchanted_armoire(ctx, requested_times: int, until_poor_flag: bool):
     """Buy from the enchanted armoire
@@ -61,6 +62,24 @@ def enchanted_armoire(ctx, requested_times: int, until_poor_flag: bool):
     --until-poor will be used instead.
 
     If no options are specified, you buy once.
+
+    \b
+    Examples
+    ----
+    # buy once
+    $ hopla buy enchanted-armoire
+
+    \b
+    # buy 3 times
+    $ hopla buy enchanted-armoire -t3
+    $ hopla buy enchanted-armoire -t 3
+    $ hopla buy enchanted-armoire --times 3
+    $ hopla buy enchanted-armoire --times=3
+
+    \b
+    # buy until you cannot afford the enchanted-armoire anymore
+    $ hopla buy enchanted-armoire --until-poor
+    $ hopla buy enchanted-armoire -u
     """
     log.debug(f"hopla buy enchanted-armoire times={requested_times}, until_poor={until_poor_flag}")
 
