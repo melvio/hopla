@@ -57,11 +57,11 @@ class PetFeedPostRequester:
 
 
 # pets can eat up to 50 units of non-preferred foods
-# TODO: Not sure if we want to clamp=True (which results
+# TODO: document clamp=True (which results
 #  in 100 automatically becomes max, -10 becomes min, instead of failing
 #   with an click validation error message)
 # * Look into other options first, such as; --until-mount
-valid_feeding_amount = click.IntRange(min=0, max=50, clamp=False)
+valid_feeding_amount = click.IntRange(min=0, max=50, clamp=True)
 
 
 @click.command()

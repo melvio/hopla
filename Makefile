@@ -14,4 +14,4 @@ lint:
 	pylint $$(find src/ -name "*.py") --rcfile=./.github/workflows/pylintrc.conf
 
 unittest:
-	pytest
+	pytest -c ./.github/workflows/pytest.ini
