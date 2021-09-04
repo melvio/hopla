@@ -1,5 +1,5 @@
 """
-The module with CLI code that handles the `hopla auth` command.
+The module with CLI code that handles the `hopla support-development` command.
 """
 import logging
 
@@ -55,7 +55,7 @@ def support_development(gems: int):
     support_development_request = requests.Request(
         method="POST", url=url, headers=headers, json=params
     )
-    response = requests.session().send(support_development_request.prepare())
+    response: requests.Response = requests.session().send(support_development_request.prepare())
     response_data = data_on_success_else_exit(response)
 
     click.echo(response_data)

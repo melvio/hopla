@@ -26,7 +26,7 @@ class GlobalConstants:
 
     X_CLIENT: Final[str] = f"{DEVELOPMENT_UUID}-{APPLICATION_NAME}"
     """
-    Header value used by hopla to identify itself to
+    BodyParam value used by hopla to identify itself to
     the habitica API <https://habitica.fandom.com/wiki/Guidance_for_Comrades>
     """
 
