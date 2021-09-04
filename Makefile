@@ -6,7 +6,7 @@ develop:
 	pip install --upgrade --editable .
 
 
-# This works like running: "make lint && make unittest && make doctest"
+# This works like running: "make lint && make unittest"
 test: lint unittest
 
 
