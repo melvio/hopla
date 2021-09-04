@@ -22,5 +22,5 @@ jobs:
       - name: Run doctests and unittest with pytest
         run: |
           pip install --upgrade --editable .
-          pytest
+          pytest -c ./.github/workflows/pytest.ini
 
