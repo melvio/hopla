@@ -4,7 +4,7 @@ The module with CLI code that handles the `hopla add` group command.
 import sys
 import datetime
 import logging
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import click
 import requests
@@ -48,22 +48,39 @@ class HabiticaChecklist:
 class HabiticaTodo:
     """ Habitica To-Do"""
 
-    def __init__(self, *, todo_name, difficulty, due_date=None, checklist=None):
+    def __init__(self, *,
+                 todo_name: str,
+                 difficulty: str,
+                 due_date: Optional[datetime.datetime] = None,
+                 checklist: Optional[HabiticaChecklist] = None):
         self.todo_name = todo_name
         self._type = "todo"
         self.difficulty = difficulty
         self.due_date = due_date
-        self.checklist: HabiticaChecklist = checklist
+        self.checklist: Optional[HabiticaChecklist] = checklist
 
     def difficulty_to_score(self) -> str:
-        """
-        return score for a difficulty
+        """Return score for the To-Do's difficulty.
+
+        >>> hab_todo = HabiticaTodo(todo_name="my-task", difficulty="easy")
+        >>> hab_todo.difficulty_to_score()
+        '1'
+        >>> hab_todo.difficulty = "trivial"
+        >>> hab_todo.difficulty_to_score()
+        '0.1'
+
         :raise KeyError in case of an invalid difficulty
         """
         return DIFFICULTIES_SCORE_MAPPING[self.difficulty]
 
-    def str_due_date_to_date(self) -> str:
-        """Turn the due_date into a valid ISO 8601 date format"""
+    def due_date_to_date_str(self) -> str:
+        """Turn the due_date into a valid ISO 8601 date format
+
+        >>> hab_todo = HabiticaTodo(todo_name="my-task", difficulty="easy",\
+                                    due_date=datetime.datetime(day=31, month=1, year=2069))
+        >>> hab_todo.due_date_to_date_str()
+        '2069-01-31'
+        """
         habitica_date_format = "%Y-%m-%d"
         return self.due_date.strftime(habitica_date_format)
 
@@ -77,7 +94,7 @@ class HabiticaTodo:
         }
 
         if self.due_date:
-            todo_dict["date"] = self.str_due_date_to_date()
+            todo_dict["date"] = self.due_date_to_date_str()
 
         return todo_dict
 
