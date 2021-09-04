@@ -14,6 +14,7 @@ from hopla.cli.complete import complete
 from hopla.cli.config import config
 from hopla.cli.feed import feed
 from hopla.cli.version import version
+from hopla.cli.request import request
 from hopla.cli.support_development import support_development
 from hopla.cli.get.user_inventory import user_inventory
 from hopla.cli.get.user_auth import user_auth
@@ -94,3 +95,4 @@ def organize_cli():
     hopla.add_command(auth)
     hopla.add_command(feed)
     hopla.add_command(support_development)
+    hopla.add_command(request)
