@@ -9,4 +9,4 @@ addopts = [
     "--doctest-modules",
     "--cov-branch",
     "--cov=hopla",
-    "--cov-fail-under=40"]
+    "--cov-fail-under=45"]

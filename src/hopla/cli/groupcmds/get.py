@@ -69,6 +69,7 @@ class HabiticaUser:
         return balance * 4
 
     def filter_user(self, filter_string: str) -> dict:
+        """Return a dict after filtering."""
         # TODO: this code is generic, it can be used to filter any dict
         #       move it out of this class and reuse
         result = {}
@@ -108,7 +109,3 @@ class HabiticaUser:
         return {filter_keys: start_dict}
 
 
-if __name__ == "__main__":
-    import doctest
-
-    doctest.testmod()

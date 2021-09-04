@@ -30,14 +30,21 @@ DIFFICULTIES_SCORE_MAPPING = {"hard": "2", "medium": "1.5", "easy": "1", "trivia
 class HabiticaChecklist:
     """ Habitica Checklist """
 
-    def __init__(self, *, checklist=None):
-        self.checklist = checklist
+    def __init__(self, *, checklist: Optional[list] = None):
+        self.checklist = checklist or []
 
     def __repr__(self) -> object:
         return self.__class__.__name__ + f"(checklist={self.checklist})"
 
     def is_empty(self) -> bool:
-        """Return true if checklist is none or empty"""
+        """Return true if the checklist is empty.
+
+        >>> HabiticaChecklist(checklist=[]).is_empty()
+        True
+        >>> HabiticaChecklist(checklist=["item 1"]).is_empty()
+        False
+
+        """
         return self.checklist is None or len(self.checklist) == 0
 
     def to_json_list(self) -> List[Dict[str, str]]:
@@ -57,7 +64,7 @@ class HabiticaTodo:
         self._type = "todo"
         self.difficulty = difficulty
         self.due_date = due_date
-        self.checklist: Optional[HabiticaChecklist] = checklist
+        self.checklist: Optional[HabiticaChecklist] = checklist or HabiticaChecklist()
 
     def difficulty_to_score(self) -> str:
         """Return score for the To-Do's difficulty.
@@ -85,7 +92,13 @@ class HabiticaTodo:
         return self.due_date.strftime(habitica_date_format)
 
     def to_json_dict(self) -> dict:
-        """Turn an instance of this class into a dict that we can pass to the habitica API"""
+        """Turn an instance of this class into a dict that we can pass to the habitica API.
+
+        >>> hab_todo = HabiticaTodo(todo_name="my-task", difficulty="medium",\
+                                    checklist=HabiticaChecklist(checklist=["myitem"]))
+        >>> hab_todo.to_json_dict()
+        {'text': 'my-task', 'type': 'todo', 'priority': '1.5', 'checklist': [{'text': 'myitem'}]}
+        """
         todo_dict = {
             "text": self.todo_name,
             "type": self._type,
@@ -255,7 +268,7 @@ def get_checklist(checklist_file, checklist_editor: bool) -> HabiticaChecklist:
 
 def get_checklist_with_editor(checklist_file) -> HabiticaChecklist:
     """
-    Get the HabiticaUser given that the user requested the use of an editor.
+    Get the HabiticaUser for an user that requested the editor.
     """
     comment = "# Every line below this comment represents an item on your checklist\n"
     if checklist_file:
@@ -274,7 +287,3 @@ def get_checklist_with_editor(checklist_file) -> HabiticaChecklist:
     sys.exit("editor exited")
 
 
-if __name__ == "__main__":
-    import doctest
-
-    doctest.testmod()
