@@ -19,7 +19,9 @@ log = logging.getLogger()
 
 @click.group()
 def add():
-    """GROUP for adding things to habitica"""
+    """
+    GROUP for adding things to Habitica.
+    """
 
 
 DIFFICULTIES_SCORE_MAPPING = {"hard": "2", "medium": "1.5", "easy": "1", "trivial": "0.1"}

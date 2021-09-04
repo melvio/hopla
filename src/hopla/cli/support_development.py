@@ -17,7 +17,7 @@ log = logging.getLogger()
 @click.option("--gems", "-g", type=click.IntRange(min=0), default=4, show_default=True,
               metavar="N_GEMS", help="N_GEMS is the number of gems you wish to contribute")
 def support_development(gems: int):
-    """Support the development of hopla
+    """Support the development of Hopla.
 
     Without options, hopla support-development sends 4 gems to the
     development to be used for testing new features. Use the --gems option

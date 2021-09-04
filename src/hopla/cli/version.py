@@ -33,7 +33,7 @@ def hopla_version() -> str:
 
 @click.command()
 def version():
-    """print the hopla version string
+    """Print the Hopla version string.
 
     \f
     :return:

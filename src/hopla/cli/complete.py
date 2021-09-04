@@ -177,7 +177,7 @@ autocomplete_supported_shells = click.Choice(supported_shell_id_strings)
               help="When True, automatically add hopla autocompletion to your shell's config. "
                    "When False, just print the autocomplete code to the terminal")
 def complete(shell: str, enable: bool):
-    """print or enable shell autocompletion
+    """Print or enable shell autocompletion.
 
     \b
     Examples
