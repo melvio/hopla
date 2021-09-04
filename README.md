@@ -75,25 +75,28 @@ hopla complete fish
 After installation, you can use `hopla`. The supported commands can be found by running:
 
 ```bash
-$ hopla -h
+$ hopla --help
 Usage: hopla [OPTIONS] COMMAND [ARGS]...
 
   hopla - a command line interface (CLI) to interact with habitica.com
 
 Options:
+  --version   Show the version and exit.
   -h, --help  Show this message and exit.
 
 Commands:
-  add       GROUP for adding things to habitica
-  api       GROUP for requesting Habitica API metadata
-  auth      Authorize yourself to access the Habitica.com API
-  buy       GROUP to buy things
-  complete  print or enable shell autocompletion
-  config    get, set, or list config values
-  feed      feed a pet
-  get       GROUP for getting information from habitica
-  set       GROUP to set things in Habitica
-  version   print the hopla version string
+  add                  GROUP for adding things to Habitica.
+  api                  GROUP for requesting Habitica API metadata.
+  auth                 Authorize yourself to access the Habitica.com API.
+  buy                  GROUP to buy things.
+  complete             Print or enable shell autocompletion.
+  config               Get, set, or list config values.
+  feed                 Feed a pet.
+  get                  GROUP for getting information from Habitica.
+  request              Perform a HTTP request on the Habitica API.
+  set                  GROUP to set things in Habitica.
+  support-development  Support the development of Hopla.
+  version              Print the Hopla version string.
   # etcetera
 ```
 

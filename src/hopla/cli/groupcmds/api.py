@@ -17,14 +17,14 @@ log = logging.getLogger()
 
 @click.group()
 def api():
-    """GROUP for requesting Habitica API metadata"""
+    """GROUP for requesting Habitica API metadata."""
 
 
 @api.command()
 @click.option("--jq-filter", "-j", metavar="JQ_FILTER",
               help="JQ_FILTER is a `jq` filter that can be used to restructure output")
 def content(jq_filter: str) -> dict:
-    """get detailed information about Habitica's API content
+    """Print detailed information about Habitica's API content.
 
     \b
     Example
@@ -69,7 +69,7 @@ valid_model_names = click.Choice(
 @api.command()
 @click.argument("model_name", type=valid_model_names)
 def model(model_name: str) -> dict:
-    """returns the specified habitica API datamodel
+    """Print the specified Habitica API datamodel.
 
     \b
     Example:
@@ -110,11 +110,11 @@ def version() -> dict:
 
 @api.command()
 def status() -> dict:
-    """get the hopla API availability status
+    """Print the Habitica API availability status.
 
 
     \f
-    :return: The api status (expected: "status": "up")
+    :return: The API status (expected: "status": "up")
     """
     log.debug("hopla api status")
 

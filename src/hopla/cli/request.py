@@ -19,17 +19,17 @@ BodyParam = Tuple[str, str]
 @click.command()
 @click.option("--method", "-X", default="GET", show_default=True,
               type=supported_http_request_methods,
-              help="The HTTP method")
+              help="The HTTP method.")
 @click.option("--domain", default="https://habitica.com", show_default=True,
               metavar="URL",
               help="The domain name where the Habitica API is hosted.")
 @click.option("--body-param", "body_param_list", multiple=True, type=click.Tuple([str, str]),
               metavar="KEY VALUE",
-              help="A key-value pair for in the JSON body. E.g. --body-param 'dayStart' '0'. "
-                   "The --body-param option can be used multiple times")
+              help="A key-value pair for in the JSON body. E.g. --body-param 'dayStart' '0' ."
+                   "The --body-param option can be used multiple times.")
 @click.argument("path")
 def request(method, domain: str, body_param_list: List[BodyParam], path: str):
-    """Perform a HTTP request on the Habitica API
+    """Perform a HTTP request on the Habitica API.
 
     PATH This is the path of the endpoint that you want to perform a HTTP
     request on. For example, /api/v3/groups.

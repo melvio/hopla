@@ -16,7 +16,9 @@ log = logging.getLogger()
 
 @click.group()
 def get():
-    """GROUP for getting information from habitica"""
+    """
+    GROUP for getting information from Habitica.
+    """
 
 
 # TODO: add jq back again https://pypi.org/project/jq/

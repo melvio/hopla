@@ -17,7 +17,9 @@ log = logging.getLogger()
 
 @click.group()
 def buy():
-    """GROUP to buy things"""
+    """
+    GROUP to buy things.
+    """
 
 
 def buy_from_enchanted_armoire_once():

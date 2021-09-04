@@ -72,7 +72,7 @@ valid_feeding_amount = click.IntRange(min=0, max=50, clamp=False)
               metavar="N_FOOD",
               help="number of FOOD_NAME fed to PET_NAME")
 def feed(pet_name: str, food_name: str, amount: int):
-    """feed a pet
+    """Feed a pet.
 
      \b
      PET_NAME   name of the pet (e.g. "Wolf-Golden")

@@ -60,17 +60,17 @@ supported_config_names = click.Choice(["cmd_all.loglevel"])
 @click.argument("value", required=False)
 @click.option("--list/--no-flag", "list_flag",
               default=False, show_default=True,
-              help="list the contents of the config file")
+              help="List the contents of the config file.")
 @click.option("--config-file-name/--no-config-file-name", "config_file_name_flag",
               default=False, show_default=True,
-              help="get the absolute path of the config file")
+              help="Get the absolute path of the config file.")
 # @click.option("--file", "alternative_file",
 #                type=click.File(encoding="utf-8"), help="Specify which config file to use")
 def config(config_name: str,
            value,
            list_flag: bool,
            config_file_name_flag: bool):
-    """get, set, or list config values
+    """Get, set, or list config values.
 
     Note that hopla config emulates git config in structure
 
