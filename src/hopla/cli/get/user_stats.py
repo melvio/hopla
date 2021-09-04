@@ -44,12 +44,12 @@ def stat_alias_to_official_habitica_name(stat_name: str) -> str:
 def user_stats(stat_name: str):
     """Get the stats of a user
 
-    TODO: if no argument specified, what then?
 
     \b
     Examples
     ---
     # get all user stats
+    hopla get user-stats
     hopla get user-stats all
 
     \b
@@ -57,7 +57,6 @@ def user_stats(stat_name: str):
     hopla get user-stats mp
     hopla get user-stats hp
     hopla get user-stats lvl
-    TODO:
 
     """
     log.debug(f"hopla get user-stats stat={stat_name}")
