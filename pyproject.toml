@@ -3,9 +3,9 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.pytest.ini_options]
-testpaths = "src/hopla/tests/"
+testpaths = "src/tests/"
 addopts = [
     "--verbose",
     "--cov-branch",
-    "--cov=hopla.hoplalib", "--cov=hopla.cli",
+    "--cov=hopla",
     "--cov-fail-under=40"]
