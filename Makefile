@@ -7,17 +7,11 @@ develop:
 
 
 # This works like running: "make lint && make unittest && make doctest"
-test: lint unittest doctest
+test: lint unittest
 
 
 lint:
 	pylint $$(find src/ -name "*.py") --rcfile=./.github/workflows/pylintrc.conf
-
-
-doctest:
-	python -m doctest --verbose src/hopla/cli/groupcmds/get.py \
-                                src/hopla/cli/groupcmds/add.py
-
 
 unittest:
 	pytest
