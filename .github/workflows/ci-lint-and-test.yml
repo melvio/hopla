@@ -19,14 +19,8 @@ jobs:
         # https://github.com/actions/starter-workflows/issues/636
         run: |
           pylint $(find src -name "*.py" | xargs) --rcfile ./.github/workflows/pylintrc.conf
-
-      - name: Run doctest
-        # TODO: apply to all relevant *.py files
+      - name: Run doctests and unittest with pytest
         run: |
           pip install --upgrade --editable .
-          python -m doctest --verbose src/hopla/cli/groupcmds/get.py \
-                                      src/hopla/cli/groupcmds/add.py
-      - name: Run unittest with pytest
-        run: |
           pytest
 
