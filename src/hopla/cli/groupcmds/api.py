@@ -4,13 +4,13 @@ The module with CLI code that handles the `hopla api` group command.
 import logging
 
 import click
-import jq
 import requests
 
 from hopla.hoplalib.clickhelper import data_on_success_else_exit
 from hopla.hoplalib.http import UrlBuilder
 from hopla.hoplalib.common import GlobalConstants
 from hopla.hoplalib.outputformatter import JsonFormatter
+from hopla.hoplalib.dict_filters import JqFilter
 
 log = logging.getLogger()
 
@@ -18,6 +18,25 @@ log = logging.getLogger()
 @click.group()
 def api():
     """GROUP for requesting Habitica API metadata."""
+
+
+class ApiContentRequest:
+    """Class that requests a user model from the Habitica API"""
+
+    def __init__(self):
+        self.url = UrlBuilder(path_extension="/content").url
+
+    def request_api_content(self) -> requests.Response:
+        """Perform the get API content request and return the response"""
+        return requests.get(url=self.url)
+
+    def request_api_content_on_fail_exit(self) -> dict:
+        """
+        Function that requests the habitica API content.
+        If the request was successful return the content, else exits.
+        """
+        api_response: requests.Response = self.request_api_content()
+        return data_on_success_else_exit(api_response)
 
 
 @api.command()
@@ -29,34 +48,27 @@ def content(jq_filter: str) -> dict:
     \b
     Example
     ----
-    # Tip: the content is pretty long so try piping it to an editor or pager
-    hopla api content | vim -
+    # Tip: The content is long, you can try piping it to an editor or pager.
+    $ hopla api content | vim -
+    $ hopla api content | less -
 
     \b
     # get content information about
     # the [Ruby Rapport quest](https://habitica.fandom.com/wiki/Ruby_Rapport)
-    hopla api content --jq-filter ".quests.ruby"
+    $ hopla api content --jq-filter ".quests.ruby"
 
 
     [API-docs](https://habitica.com/apidoc/#api-Content-ContentGet)
     \f
     :return:
     """
+    log.debug(f"hopla api content {jq_filter=}")
 
-    log.debug("hopla api content")
-
-    url_builder = UrlBuilder(path_extension="/content")
-    response = requests.get(url=url_builder.url)
-    content_data: dict = data_on_success_else_exit(response)
-
-    if jq_filter:
-        user_requested_content_data = jq.compile(jq_filter).input(content_data).first()
-    else:
-        user_requested_content_data = content_data
-
-    content_as_json: str = JsonFormatter(user_requested_content_data).format_with_double_quotes()
+    content_data: dict = ApiContentRequest().request_api_content_on_fail_exit()
+    jq_filter = JqFilter(jq_filter_spec=jq_filter)
+    user_requested_content = jq_filter.filter_dict(content_data)
+    content_as_json: str = JsonFormatter(user_requested_content).format_with_double_quotes()
     click.echo(content_as_json)
-
     return content_data
 
 
@@ -86,8 +98,6 @@ def model(model_name: str) -> dict:
     log.debug(f"hopla api model name={model_name}")
 
     url_builder = UrlBuilder(path_extension=f"/models/{model_name}/paths")
-    # headers = RequestHeaders().get_default_request_headers()
-
     response = requests.get(url=url_builder.url)
     model_data = data_on_success_else_exit(response)
 
