@@ -94,5 +94,11 @@ these should have a mutually exclusive --json vs. 'everyday' user output:
 
 these should have a mutually exclusive --json vs. 'everyday' user output:
     hopla get-user info --filter [FILTER]   -- filter on the core user information
+    
+user-friendly output (e.g. colors+emoticons, not JSON) of user information
+   hopla get-user summary
+   hopla get-user auth summary
+   hopla get-user stats summary
+   hopla get-user inventory summary
 
 ```
