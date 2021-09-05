@@ -30,15 +30,15 @@ class HabiticaUser:
 
     def get_stats(self) -> dict:
         """Index the user_dict for 'stats' and return the result"""
-        return self.user_dict["stats"]
+        return self["stats"]
 
     def get_inventory(self) -> dict:
         """Index the user_dict for 'items' and return the result"""
-        return self.user_dict["items"]
+        return self["items"]
 
     def get_auth(self) -> dict:
         """Index the user_dict for 'auth' and return the result"""
-        return self.user_dict["auth"]
+        return self["auth"]
 
     def get_gems(self):
         """Get the number of gems of a user.

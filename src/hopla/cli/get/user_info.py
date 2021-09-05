@@ -6,9 +6,8 @@ import logging
 
 import click
 
-from hopla.hoplalib.clickhelper import data_on_success_else_exit
 from hopla.hoplalib.outputformatter import JsonFormatter
-from hopla.cli.groupcmds.get import HabiticaUserRequest, HabiticaUser
+from hopla.cli.groupcmds.get import pass_user, HabiticaUser
 
 log = logging.getLogger()
 
@@ -30,7 +29,9 @@ def info_alias_to_official_habitica_name(user_info_name: str) -> str:
 @click.argument("user_info_name", type=valid_info_names, default="all")
 @click.option("--filter", "-f", "filter_string", metavar="FILTER_STRING",
               help="a comma seperated list of keys")
-def user_info(user_info_name: str,
+@pass_user
+def user_info(user: HabiticaUser,
+              user_info_name: str,
               filter_string: str) -> dict:
     """Return user information
 
@@ -96,26 +97,23 @@ def user_info(user_info_name: str,
     \f
     [APIdocs](https://habitica.com/apidoc/#api-User-UserGet)
 
+    :param user: HabiticaUser
     :param user_info_name:
     :param filter_string: string to filter the user dict on (e.g. "achievements.streak,purchased.plan")
     :return
     """
     log.debug(f"hopla get user-info user_info_name={user_info_name} filter={filter_string}")
-    response = HabiticaUserRequest().request_user()
-    response_data: dict = data_on_success_else_exit(response)
-    habitica_user = HabiticaUser(user_dict=response_data)
 
     if filter_string:
-        user: dict = habitica_user.filter_user(filter_string)
+        requested_user_data: dict = user.filter_user(filter_string)
     elif user_info_name == "all":
-        user: dict = habitica_user.user_dict
-        # TODO: refactor
+        requested_user_data: dict = user.user_dict
     elif user_info_name == "gems":
-        gems = habitica_user.get_gems()
-        user: dict = {"gems": gems}
+        gems = user.get_gems()
+        requested_user_data: dict = {"gems": gems}
     else:
-        user: dict = habitica_user.filter_user(user_info_name)
+        requested_user_data: dict = user.filter_user(user_info_name)
 
-    user_str = JsonFormatter(user).format_with_double_quotes()
+    user_str = JsonFormatter(requested_user_data).format_with_double_quotes()
     click.echo(user_str)
-    return user
+    return requested_user_data

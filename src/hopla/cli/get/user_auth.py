@@ -6,9 +6,8 @@ import logging
 
 import click
 
-from hopla.hoplalib.clickhelper import data_on_success_else_exit
 from hopla.hoplalib.outputformatter import JsonFormatter
-from hopla.cli.groupcmds.get import HabiticaUserRequest, HabiticaUser
+from hopla.cli.groupcmds.get import pass_user, HabiticaUser
 
 log = logging.getLogger()
 
@@ -25,7 +24,11 @@ log = logging.getLogger()
 # profilename is not really in the .data.auth section of /user.. but fits well here
 # TODO: probably better to remove profilename here regardless
 
-valid_auth_info_names = click.Choice(["username", "email", "profilename", "all"])
+
+__SIGN_IN_OPTIONS = ["local", "google", "apple", "facebook"]
+valid_auth_info_names = click.Choice([
+    "username", "email", "profilename", *__SIGN_IN_OPTIONS, "all"
+])
 
 
 def auth_alias_to_official_habitica_name(auth_info_name: str):
@@ -40,7 +43,8 @@ def auth_alias_to_official_habitica_name(auth_info_name: str):
 
 @click.command(context_settings=dict(token_normalize_func=auth_alias_to_official_habitica_name))
 @click.argument("auth_info_name", type=valid_auth_info_names, default="all")
-def user_auth(auth_info_name: str):
+@pass_user
+def user_auth(user: HabiticaUser, auth_info_name: str):
     """Get user authentication and identification info
 
     NOTE: `hopla get user-auth` currently only supports email-based
@@ -51,32 +55,35 @@ def user_auth(auth_info_name: str):
     \b
     Examples
     ---
-    # get email
-    $ hopla get user-auth email
+    \b
+    # get "local" (email based) sign in information
+    $ hopla get user-auth local
 
     \b
-    # use the 'hopla get user-info' workaround to get SSO information:
-    $ hopla get user-info -f "auth.google"
+    # get apple/facebook/google sign in information
+    $ hopla get user-auth apple
+    $ hopla get user-auth facebook
+    $ hopla get user-auth google
+
+    \b
+    # get email (assumes email based login)
+    $ hopla get user-auth email
+
 
     """
     log.debug(f"hopla get user-auth auth={auth_info_name}")
-    response = HabiticaUserRequest().request_user()
-    response_data: dict = data_on_success_else_exit(response)
-    user = HabiticaUser(user_dict=response_data)
-
-    json_data_auth: dict = user.get_auth()
-
-    if auth_info_name == "all":
-        click.echo(JsonFormatter(json_data_auth).format_with_double_quotes())
-        return json_data_auth
+    auth_data: dict = user.get_auth()
 
     if auth_info_name == "profilename":
-        profile_name = response_data["profile"]["name"]
-        click.echo(JsonFormatter(profile_name).format_with_double_quotes())
-        return profile_name
+        requested_data = user["profile"]["name"]
+    elif auth_info_name == "username":
+        requested_data = auth_data["local"]["username"]
+    elif auth_info_name == "email":
+        requested_data = auth_data["local"]["email"]
+    elif auth_info_name in __SIGN_IN_OPTIONS:
+        requested_data = auth_data[auth_info_name]
+    else:
+        requested_data = auth_data
 
-    # TODO no support for non-local data yet (e.g. google SSO)
-    #      e.g. use hopla get user-info -f "auth.google" as workaround
-    auth_info = json_data_auth["local"][auth_info_name]
-    click.echo(JsonFormatter(auth_info).format_with_double_quotes())
-    return auth_info
+    click.echo(JsonFormatter(requested_data).format_with_double_quotes())
+    return requested_data

@@ -12,7 +12,9 @@ from hopla.cli.groupcmds.get import pass_user, HabiticaUser
 log = logging.getLogger()
 
 valid_stat_names = click.Choice(["hp", "mp", "exp", "gp", "lvl", "class",
-                                 "maxMP", "all"])
+                                 "maxMP",
+                                 "int", "str", "per", "con",
+                                 "all"])
 
 
 def stat_alias_to_official_habitica_name(stat_name: str) -> str:
@@ -22,6 +24,7 @@ def stat_alias_to_official_habitica_name(stat_name: str) -> str:
     :param stat_name:
     :return:
     """
+    # pylint: disable=too-many-return-statements
     if stat_name in ["mana", "mana-points", "manapoints"]:
         return "mp"
     if stat_name in ["maxMp", "maxmp"]:
@@ -34,6 +37,14 @@ def stat_alias_to_official_habitica_name(stat_name: str) -> str:
         return "gp"
     if stat_name in ["level"]:
         return "lvl"
+    if stat_name in ["intelligence"]:
+        return "int"
+    if stat_name in ["strength"]:
+        return "str"
+    if stat_name in ["perception"]:
+        return "per"
+    if stat_name in ["constitution"]:
+        return "con"
 
     return stat_name
 
@@ -61,11 +72,10 @@ def user_stats(user: HabiticaUser, stat_name: str):
     """
     log.debug(f"hopla get user-stats stat={stat_name}")
 
-    stats_data = user.user_dict["stats"]
+    stats_data = user.get_stats()
     if stat_name == "all":
-        data_requested_by_user = stats_data
+        requested_user_data = stats_data
     else:
-        data_requested_by_user = stats_data[stat_name]
-    click.echo(
-        JsonFormatter(data_requested_by_user).format_with_double_quotes())
-    return data_requested_by_user
+        requested_user_data = stats_data[stat_name]
+    click.echo(JsonFormatter(requested_user_data).format_with_double_quotes())
+    return requested_user_data
