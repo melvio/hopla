@@ -18,7 +18,6 @@ valid_stat_names = click.Choice(["hp", "mp", "exp", "gp", "lvl", "class",
 
 
 def stat_alias_to_official_habitica_name(stat_name: str) -> str:
-    # pylint: disable=too-many-return-statements
     """Turn typos and similar namings into stats recognized by the habitica API.
 
     :param stat_name:
@@ -61,15 +60,15 @@ def stats(user: HabiticaUser, stat_name: str):
     \b
     Examples
     ---
-    # get_user all user stats
-    hopla get_user user-stats
-    hopla get_user user-stats all
+    # get all user stats
+    $ hopla get-user stats
+    $ hopla get-user stats all
 
     \b
     # get_user mana, health, level
-    hopla get_user user-stats mp
-    hopla get_user user-stats hp
-    hopla get_user user-stats lvl
+    $ hopla get_user stats mp
+    $ hopla get_user stats hp
+    $ hopla get_user stats lvl
 
     """
     log.debug(f"hopla get_user user-stats stat={stat_name}")

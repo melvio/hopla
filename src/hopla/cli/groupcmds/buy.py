@@ -30,7 +30,7 @@ def buy_from_enchanted_armoire_once():
     response = requests.post(url=url, headers=headers)
     buy_data = data_on_success_else_exit(response)
 
-    # by default we get_user way too much info in the json so filter on "armoire"
+    # By default, we get way too much JSON info, so filter on "armoire".
     enchanted_armoire_award = JsonFormatter(buy_data["armoire"]).format_with_double_quotes()
     click.echo(enchanted_armoire_award)
 

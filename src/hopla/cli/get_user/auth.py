@@ -41,7 +41,9 @@ def auth_alias_to_official_habitica_name(auth_info_name: str):
     return auth_info_name
 
 
-@click.command(context_settings=dict(token_normalize_func=auth_alias_to_official_habitica_name))
+@click.command(
+    context_settings=dict(token_normalize_func=auth_alias_to_official_habitica_name)
+)
 @click.argument("auth_info_name", type=valid_auth_info_names, default="all")
 @pass_user
 def auth(user: HabiticaUser, auth_info_name: str):
@@ -51,17 +53,17 @@ def auth(user: HabiticaUser, auth_info_name: str):
     Examples
     ---
     \b
-    # get_user "local" (email based) sign in information
+    # get a user's "local" (email based) sign in information
     $ hopla get-user auth local
 
     \b
-    # get_user apple/facebook/google sign in information
+    # get a user's apple/facebook/google sign in information
     $ hopla get-user auth apple
     $ hopla get-user auth facebook
     $ hopla get-user auth google
 
     \b
-    # get_user email (assumes email based login)
+    # get the user email (assumes email based login)
     $ hopla get-user auth email
 
 

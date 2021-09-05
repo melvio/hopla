@@ -160,7 +160,8 @@ class AuthorizationHandler:
         if self.auth_file.exists():
             self.config_parser.read(self.auth_file.file_path)
         if self._auth_file_has_api_token() is False or self._auth_file_has_user_id() is False:
+            # TODO: handle this better:
             print("no credentials found")
             print("Please run:")
             print("    hopla authenticate")
-            sys.exit(1)  # TODO: handle this better
+            sys.exit(1)

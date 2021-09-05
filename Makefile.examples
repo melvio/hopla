@@ -69,7 +69,7 @@ hopla_api_version:
 	hopla api version
 
 
-# hopla get_user-user auth
+# hopla get-user auth
 hopla_get_user_auth:
 	hopla get-user auth \
 	&& hopla get-user auth all \
@@ -81,7 +81,7 @@ hopla_get_user_auth:
 	&& hopla get-user auth facebook \
 	&& hopla get-user auth local \
 
-# hopla get_user-user stats
+# hopla get-user stats
 hopla_get_user_stats:
 	hopla get-user stats \
 	&& hopla get-user stats all  \
@@ -95,6 +95,7 @@ hopla_get_user_stats:
     && hopla get-user stats per
 
 
+# hopla get-user inventory
 hopla_get_user_inventory:
 	hopla get-user inventory \
 	&& hopla get-user inventory --help \
@@ -105,6 +106,7 @@ hopla_get_user_inventory:
 	&& hopla get-user inventory lastDrop
 
 
+# hopla get-user info
 hopla_get_user_info:
 	hopla get-user info \
 	&& hopla get-user info --filter 'profile' \
