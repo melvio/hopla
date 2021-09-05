@@ -59,7 +59,6 @@ class JqFilter:
         :param json_dict:
         :return:
         """
-        # TODO: error handling
         try:
             return self.compiled_jq_filter.input(json_dict).first()
         except ValueError as ex:
