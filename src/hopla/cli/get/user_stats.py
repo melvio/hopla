@@ -6,9 +6,8 @@ import logging
 
 import click
 
-from hopla.hoplalib.clickhelper import data_on_success_else_exit
 from hopla.hoplalib.outputformatter import JsonFormatter
-from hopla.cli.groupcmds.get import HabiticaUserRequest, HabiticaUser
+from hopla.cli.groupcmds.get import pass_user, HabiticaUser
 
 log = logging.getLogger()
 
@@ -41,7 +40,8 @@ def stat_alias_to_official_habitica_name(stat_name: str) -> str:
 
 @click.command(context_settings=dict(token_normalize_func=stat_alias_to_official_habitica_name))
 @click.argument("stat_name", type=valid_stat_names, default="all")
-def user_stats(stat_name: str):
+@pass_user
+def user_stats(user: HabiticaUser, stat_name: str):
     """Get the stats of a user
 
 
@@ -60,15 +60,12 @@ def user_stats(stat_name: str):
 
     """
     log.debug(f"hopla get user-stats stat={stat_name}")
-    response = HabiticaUserRequest().request_user()
-    response_data: dict = data_on_success_else_exit(response)
-    habitica_user = HabiticaUser(user_dict=response_data)
 
-    data_stats = habitica_user.get_stats()
+    stats_data = user.user_dict["stats"]
     if stat_name == "all":
-        data_requested_by_user = data_stats
+        data_requested_by_user = stats_data
     else:
-        data_requested_by_user = data_stats[stat_name]
+        data_requested_by_user = stats_data[stat_name]
     click.echo(
         JsonFormatter(data_requested_by_user).format_with_double_quotes())
     return data_requested_by_user

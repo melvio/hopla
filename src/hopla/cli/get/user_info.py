@@ -118,4 +118,4 @@ def user_info(user_info_name: str,
 
     user_str = JsonFormatter(user).format_with_double_quotes()
     click.echo(user_str)
-    # return user
+    return user
