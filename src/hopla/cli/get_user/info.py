@@ -33,7 +33,7 @@ def info_alias_to_official_habitica_name(user_info_name: str) -> str:
 def info(user: HabiticaUser, user_info_name: str, filter_string: str) -> dict:
     """Return user information
 
-    If no FILTER_STRING is given, get all user's info.
+    If no FILTER_STRING is given, get all the user's info.
     Otherwise, return the result of filtering the user's info with the
     specified FILTER_STRING.
 
