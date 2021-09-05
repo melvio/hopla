@@ -21,20 +21,20 @@ class TestJqFilter:
             JqFilter(jq_filter_spec=invalid_filter)
         assert "Exiting: Please provide a different compile string" in str(execinfo.value)
 
-    def test_filter_dict_proper_parsing(self):
+    def test_call_proper_parsing(self):
         content_dict: dict = {"userCanOwnQuestCategories": ["gold", "hatchingPotion", "pet"]}
         jq_filter = JqFilter(jq_filter_spec=".userCanOwnQuestCategories")
-        assert jq_filter.filter_dict(content_dict) == ['gold', 'hatchingPotion', 'pet']
+        assert jq_filter(content_dict) == ['gold', 'hatchingPotion', 'pet']
 
-    def test_filter_dict_proper_parsing2(self):
+    def test_call_proper_parsing2(self):
         content_dict: dict = {"buffs": {"int": 8932}, "int": 69}
         jq_filter = JqFilter(jq_filter_spec="[.buffs.int, .int] | add")
-        assert jq_filter.filter_dict(content_dict) == 9001
+        assert jq_filter(content_dict) == 9001
 
     def test_filter_dict_invalid_operation(self):
         content_dict: dict = {"buffs": {"int": 8932}, "int": 69}
         valid_filter_containing_invalid_operation = "[.buffs, .int] | add"
         jq_filter = JqFilter(jq_filter_spec=valid_filter_containing_invalid_operation)
         with pytest.raises(SystemExit) as execinfo:
-            jq_filter.filter_dict(content_dict)
+            jq_filter(content_dict)
         assert "Exiting: Please try filtering in a different way" in str(execinfo.value)

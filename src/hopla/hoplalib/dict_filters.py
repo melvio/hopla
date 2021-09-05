@@ -11,6 +11,12 @@ import jq
 log = logging.getLogger()
 
 
+def click_jq_filter_option():
+    """Return the --jq-filter @click.option"""
+    return click.option("--jq-filter", "-j", metavar="JQ_FILTER",
+                        help="JQ_FILTER is a `jq` filter that can be used to restructure output")
+
+
 class JqFilter:
     """Wrapper for `jq` filtering.
 
@@ -43,18 +49,24 @@ class JqFilter:
             click.echo(str(ex))
             sys.exit("Exiting: Please provide a different compile string")
 
-    def filter_dict(self, json_dict: dict):
-        """Filter the provided json_dict. Exit on failure.
-
+    def __call__(self, json_dict: dict):
+        """
+        Calling the JqFilter instance applies the filter to provided dict.
         >>> content_dict = { "userCanOwnQuestCategories" : [ "gold", "hatchingPotion", "pet" ]}
         >>> jq_filter = JqFilter(jq_filter_spec=".userCanOwnQuestCategories")
-        >>> jq_filter.filter_dict(content_dict)
+        >>> jq_filter(content_dict)
         ['gold', 'hatchingPotion', 'pet']
 
         >>> content_dict = { "buffs": { "int" : 8932 }, "int" : 69 }
         >>> jq_filter = JqFilter(jq_filter_spec="[.buffs.int, .int] | add")
-        >>> jq_filter.filter_dict(content_dict)
+        >>> jq_filter(content_dict)
         9001
+        """
+        return self.__filter_dict(json_dict=json_dict)
+
+    def __filter_dict(self, json_dict: dict):
+        """Filter the provided json_dict. Exit on failure.
+
 
         :param json_dict:
         :return:

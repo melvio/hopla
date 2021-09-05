@@ -10,7 +10,7 @@ from hopla.hoplalib.clickhelper import data_on_success_else_exit
 from hopla.hoplalib.http import UrlBuilder
 from hopla.hoplalib.common import GlobalConstants
 from hopla.hoplalib.outputformatter import JsonFormatter
-from hopla.hoplalib.dict_filters import JqFilter
+from hopla.hoplalib.dict_filters import JqFilter, click_jq_filter_option
 
 log = logging.getLogger()
 
@@ -40,8 +40,7 @@ class ApiContentRequest:
 
 
 @api.command()
-@click.option("--jq-filter", "-j", metavar="JQ_FILTER",
-              help="JQ_FILTER is a `jq` filter that can be used to restructure output")
+@click_jq_filter_option()
 def content(jq_filter: str) -> dict:
     """Print detailed information about Habitica's API content.
 
@@ -66,7 +65,7 @@ def content(jq_filter: str) -> dict:
 
     content_data: dict = ApiContentRequest().request_api_content_on_fail_exit()
     jq_filter = JqFilter(jq_filter_spec=jq_filter)
-    user_requested_content = jq_filter.filter_dict(content_data)
+    user_requested_content = jq_filter(content_data)
     content_as_json: str = JsonFormatter(user_requested_content).format_with_double_quotes()
     click.echo(content_as_json)
     return content_data

@@ -8,11 +8,13 @@ import click
 
 from hopla.hoplalib.outputformatter import JsonFormatter
 from hopla.cli.groupcmds.get_user import pass_user, HabiticaUser
+from hopla.hoplalib.dict_filters import click_jq_filter_option, JqFilter
 
 log = logging.getLogger()
 
 valid_info_names = click.Choice(["gems", "id", "notifications", "tags", "lastCron",
-                                 "loginIncentives", "all"])
+                                 "loginIncentives", "achievements",
+                                 "all"])
 
 
 def info_alias_to_official_habitica_name(user_info_name: str) -> str:
@@ -25,21 +27,20 @@ def info_alias_to_official_habitica_name(user_info_name: str) -> str:
 
 
 @click.command(context_settings=dict(token_normalize_func=info_alias_to_official_habitica_name))
-# TODO: consider upgrading to full-blown jq and dont handle this yourself
 @click.argument("user_info_name", type=valid_info_names, default="all")
-@click.option("--filter", "-f", "filter_string", metavar="FILTER_STRING",
-              help="a comma seperated list of keys")
+@click_jq_filter_option()
 @pass_user
-def info(user: HabiticaUser, user_info_name: str, filter_string: str) -> dict:
+def info(user: HabiticaUser,
+         user_info_name: str,
+         jq_filter: str) -> dict:
     """Return user information
 
-    If no FILTER_STRING is given, get all the user's info.
-    Otherwise, return the result of filtering the user's info with the
-    specified FILTER_STRING.
-
-    USER_INFO_NAME the particular type of information that you want to return, by
+    USER_INFO_NAME is the particular type of information that you want to return, by
     default "all".
 
+    JQ_FILTER is a valid `jq` filter.
+    USER_INFO_DICT get the relevant data from the user. Then the JQ_FILTER is
+    applied on the that result.
 
     \b
     [BNF](https://en.wikipedia.org/wiki/Backus-Naur-Form)
@@ -69,49 +70,54 @@ def info(user: HabiticaUser, user_info_name: str, filter_string: str) -> dict:
 
     \b
     # get-user all items of a user:
-    $ hopla get-user info --filter=items
+    $ hopla get-user info --jq-filter=.items
 
     \b
     # get-user all mounts
-    $ hopla get-user info --filter "items.mounts"
+    $ hopla get-user info --jq-filter ".items.mounts"
 
     \b
-    # get-user all mounts+pets
-    $ hopla get-user info --filter "items.mounts,items.pets"
-
-    \b
-    # get-user streaks+completed quests
-    $ hopla get-user info -f "achievements.streak,achievements.quests"
-
-    \b
-    # get-user contributor status, cron-count, profile description, and user id
-    $ hopla get-user info -f "contributor, flags.cronCount, profile.blurb, id"
-
-    \b
-    # get-user last free rebirth, day start (in hours), timezone offset (in minutes), and
-    # account creation time
-    $ hopla get-user info -f 'flags.lastFreeRebirth, preferences.dayStart, preferences.timezoneOffset, auth.timestamps.created'   # pylint: disable=line-too-long
+    # first get the notifications and than use jq to filter the notications
+    $ hopla get-user info notifications -j '.[].type'
 
     \f
     [APIdocs](https://habitica.com/apidoc/#api-User-UserGet)
 
+    :param jq_filter:
     :param user: HabiticaUser
     :param user_info_name:
-    :param filter_string: string to filter the user dict on (e.g. "achievements.streak,purchased.plan")
     :return
     """
-    log.debug(f"hopla get-user info user_info_name={user_info_name} filter={filter_string}")
+    log.debug(f"hopla get-user info \n"
+              f"{user_info_name=} {jq_filter=}")
 
-    if filter_string:
-        requested_user_data: dict = user.filter_user(filter_string)
-    elif user_info_name == "all":
-        requested_user_data: dict = user.user_dict
-    elif user_info_name == "gems":
-        gems = user.get_gems()
-        requested_user_data: dict = {"gems": gems}
-    else:
-        requested_user_data: dict = user.filter_user(user_info_name)
+    prefilter_user_dict: dict = prefilter(user, user_info_name)
+    requested_user_data = postfilter(prefilter_user_dict, jq_filter)
 
     user_str = JsonFormatter(requested_user_data).format_with_double_quotes()
     click.echo(user_str)
     return requested_user_data
+
+
+def postfilter(prefilter_user_dict: dict, jq_filter):
+    """Second time we filter the user"""
+    if jq_filter is None:
+        return prefilter_user_dict
+
+    jq_filter = JqFilter(jq_filter_spec=jq_filter)
+    return jq_filter(json_dict=prefilter_user_dict)
+
+
+def prefilter(user: HabiticaUser, user_info_name: str) -> dict:
+    """First time we filter the user"""
+    if user_info_name == "gems":
+        gems = user.get_gems()
+        prefilter_user_dict: dict = {"gems": gems}
+    elif user_info_name == "all":
+        # warning: order of the predicate statements matter
+        prefilter_user_dict: dict = user.user_dict
+    elif user_info_name is not None:
+        prefilter_user_dict: dict = user[user_info_name]
+    else:
+        prefilter_user_dict: dict = user.user_dict
+    return prefilter_user_dict

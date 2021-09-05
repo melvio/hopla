@@ -109,7 +109,8 @@ hopla_get_user_inventory:
 # hopla get-user info
 hopla_get_user_info:
 	hopla get-user info \
-	&& hopla get-user info --filter 'profile' \
-	&& hopla get-user info -f "achievements.streak,achievements.quests" \
-	&& hopla get-user info -f 'flags.lastFreeRebirth, preferences.dayStart, preferences.timezoneOffset, auth.timestamps.created'
+	&& hopla get-user info --jq-filter '.achievements.streak' \
+	&& hopla get-user info -j '.flags.lastFreeRebirth' \
+	&& hopla get-user info -j '.preferences.timezoneOffset' \
+    && hopla get-user info -j '.items.mounts | keys | length'  # count number of unique mounts
 
