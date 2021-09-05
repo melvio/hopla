@@ -2,7 +2,7 @@
 The module with CLI code that handles the `hopla request` command.
 """
 import logging
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 import click
 import requests
@@ -28,7 +28,10 @@ BodyParam = Tuple[str, str]
               help="A key-value pair for in the JSON body. E.g. --body-param 'dayStart' '0' ."
                    "The --body-param option can be used multiple times.")
 @click.argument("path")
-def request(method, domain: str, body_param_list: List[BodyParam], path: str):
+def request(method: str,
+            domain: str,
+            body_param_list: Optional[List[BodyParam]],
+            path: str):
     """Perform a HTTP request on the Habitica API.
 
     PATH This is the path of the endpoint that you want to perform a HTTP
@@ -57,11 +60,17 @@ def request(method, domain: str, body_param_list: List[BodyParam], path: str):
     request_endpoint: str = domain + path
     headers: dict = RequestHeaders().get_default_request_headers()
 
-    # no support for body and query parameters yet
-    http_request = requests.Request(method=method,
-                                    url=request_endpoint,
-                                    headers=headers,
-                                    json=dict(body_param_list))
+    # no support for query parameters yet
+    if body_param_list:
+        http_request = requests.Request(method=method,
+                                        url=request_endpoint,
+                                        headers=headers,
+                                        json=dict(body_param_list))
+    else:
+        http_request = requests.Request(method=method,
+                                        url=request_endpoint,
+                                        headers=headers)
+
     response: requests.Response = requests.session().send(http_request.prepare())
 
     click.echo(f"HTTP Status Code: {response.status_code}")
