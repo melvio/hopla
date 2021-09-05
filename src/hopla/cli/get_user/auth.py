@@ -1,5 +1,5 @@
 """
-The module with CLI code that handles the `hopla get-user user-auth` command.
+The module with CLI code that handles the `hopla get-user user-authenticate` command.
 """
 
 import logging
@@ -34,7 +34,7 @@ valid_auth_info_names = click.Choice([
 def auth_alias_to_official_habitica_name(auth_info_name: str):
     """
     Function that returns habitica official names for the CLI cmd:
-    hopla get_user user-auth [alias]
+    hopla get_user user-authenticate [alias]
     """
     if auth_info_name in ["e-mail", "mail"]:
         return "email"
@@ -66,7 +66,7 @@ def auth(user: HabiticaUser, auth_info_name: str):
 
 
     """
-    log.debug(f"hopla get_user user-auth auth={auth_info_name}")
+    log.debug(f"hopla get-user auth auth_name={auth_info_name}")
     auth_data: dict = user.get_auth()
 
     if auth_info_name == "profilename":

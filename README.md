@@ -38,7 +38,7 @@ these over at `https://habitica.com/user/settings/api`. Run the following comman
 automatically:
 
 ```bash
-$ hopla auth 
+$ hopla authenticate 
 Please enter your credentials
 You can find them over at <https://habitica.com/user/settings/api> 
 The user id can be found under 'User ID' and you need to click 'Show API Token'
@@ -46,7 +46,7 @@ Please paste your user id here: 7c551d98-31e9-42b4-b7fa-9d89b0944320
 Please paste your api token id here: *******-*******-*******-*******
 ```
 
-This will create a credentials file at `~/.config/hopla/auth.conf` that Hopla uses. If you want to
+This will create a credentials file at `~/.config/hopla/authenticate.conf` that Hopla uses. If you want to
 use a different file, you can set the `${HOPLA_AUTH_FILE}`
 environment variable to choose your own path.
 
@@ -85,18 +85,6 @@ Options:
   -h, --help  Show this message and exit.
 
 Commands:
-  add                  GROUP for adding things to Habitica.
-  api                  GROUP for requesting Habitica API metadata.
-  auth                 Authorize yourself to access the Habitica.com API.
-  buy                  GROUP to buy things.
-  complete             Print or enable shell autocompletion.
-  config               Get, set, or list config values.
-  feed                 Feed a pet.
-  get_user                  GROUP for getting information from Habitica.
-  request              Perform a HTTP request on the Habitica API.
-  set                  GROUP to set things in Habitica.
-  support-development  Support the development of Hopla.
-  version              Print the Hopla version string.
   # etcetera
 ```
 

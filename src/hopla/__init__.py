@@ -6,25 +6,24 @@ import sys
 
 import click
 
-from hopla.hoplalib.configuration import ConfigInitializer
-from hopla.hoplalib.configuration import ConfigurationFileParser
-from hopla.hoplalib.common import GlobalConstants
-from hopla.cli.auth import auth
 from hopla.cli.complete import complete
 from hopla.cli.config import config
 from hopla.cli.feed import feed
-from hopla.cli.version import version
-from hopla.cli.request import request
-from hopla.cli.support_development import support_development
-from hopla.cli.get_user.inventory import inventory
+from hopla.cli.authenticate import authenticate
 from hopla.cli.get_user.auth import auth
 from hopla.cli.get_user.info import info
+from hopla.cli.get_user.inventory import inventory
 from hopla.cli.get_user.stats import stats
 from hopla.cli.groupcmds.add import add
 from hopla.cli.groupcmds.api import api
 from hopla.cli.groupcmds.buy import buy
 from hopla.cli.groupcmds.get_user import get_user
 from hopla.cli.groupcmds.set import set  # pylint: disable=redefined-builtin
+from hopla.cli.request import request
+from hopla.cli.support_development import support_development
+from hopla.cli.version import version
+from hopla.hoplalib.common import GlobalConstants
+from hopla.hoplalib.configuration import ConfigInitializer, ConfigurationFileParser
 
 
 def setup_logging() -> logging.Logger:
@@ -84,6 +83,7 @@ def organize_cli():
     hopla.add_command(set)
     hopla.add_command(buy)
     hopla.add_command(get_user)
+    # get-user subgroup
     get_user.add_command(inventory)
     get_user.add_command(stats)
     get_user.add_command(info)
@@ -92,7 +92,7 @@ def organize_cli():
     hopla.add_command(config)
     hopla.add_command(complete)
     hopla.add_command(version)
-    hopla.add_command(auth)
+    hopla.add_command(authenticate)
     hopla.add_command(feed)
     hopla.add_command(support_development)
     hopla.add_command(request)

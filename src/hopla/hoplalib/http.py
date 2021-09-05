@@ -6,7 +6,6 @@ from hopla.hoplalib.authorization import AuthorizationHandler
 from hopla.hoplalib.common import GlobalConstants
 
 
-
 class RequestHeaders:
     """
     Helper class that takes care of HTTP request headers when interacting with

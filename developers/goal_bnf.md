@@ -16,7 +16,7 @@ hopla config --list                   -- lists all config params
 hopla config {key}                    -- prints specified config value in config file
 hopla config {key} {value}            -- sets specified config key to value in config file
 
-# hopla auth
+# hopla authenticate
 hopla auth                           -- authorize yourself by providing uuid and api token
 hopla auth --browser                 -- authorize yourself by loging in with a browser
 

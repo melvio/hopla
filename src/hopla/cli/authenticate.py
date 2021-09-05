@@ -1,5 +1,5 @@
 """
-The module with CLI code that handles the `hopla auth` command.
+The module with CLI code that handles the `hopla authenticate` command.
 """
 import logging
 from uuid import UUID
@@ -14,12 +14,12 @@ log = logging.getLogger()
 
 # TODO: --browser option
 @click.command()
-def auth():
+def authenticate():
     """Authorize yourself to access the Habitica.com API.
 
-    hopla auth allows you to interactively provide access credentials.
+    hopla authenticate allows you to interactively provide access credentials.
     """
-    log.debug("hopla auth")
+    log.debug("hopla authenticate")
 
     hopla_user_credentials: HoplaUserCredentials = request_user_for_credentials()
 

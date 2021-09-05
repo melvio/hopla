@@ -37,7 +37,7 @@ class HabiticaUser:
         return self["items"]
 
     def get_auth(self) -> dict:
-        """Index the user_dict for 'auth' and return the result"""
+        """Index the user_dict for 'authenticate' and return the result"""
         return self["auth"]
 
     def get_gems(self):
