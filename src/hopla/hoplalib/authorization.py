@@ -39,7 +39,7 @@ class HoplaAuthFile:
         if self.global_env_var_hopla_auth_file is not None:
             auth_file = Path(self.global_env_var_hopla_auth_file)
         else:
-            auth_file = get_configuration_dirpath() / "auth.conf"
+            auth_file = get_configuration_dirpath() / "authenticate.conf"
 
         return auth_file.resolve()
 
@@ -116,7 +116,7 @@ class AuthorizationHandler:
 
     def auth_file_is_valid(self) -> bool:
         """
-        Return True when the auth file exists, has a [credentials] section with
+        Return True when the authenticate file exists, has a [credentials] section with
         a user id and api token field in it.
         """
         if self.auth_file.exists() is False:
@@ -142,7 +142,7 @@ class AuthorizationHandler:
 
     def _auth_file_has_api_token(self) -> bool:
         """
-        Return true if the auth file has an api_token value inside the [credentials] section
+        Return true if the authenticate file has an api_token value inside the [credentials] section
         """
         return self.config_parser.has_option(
             section=AuthorizationFileConstants.CONFIG_SECTION_CREDENTIALS,
@@ -150,7 +150,7 @@ class AuthorizationHandler:
 
     def _auth_file_has_user_id(self) -> bool:
         """
-        Return true if the auth file has an user_id value inside the [credentials] section
+        Return true if the authenticate file has an user_id value inside the [credentials] section
         """
         return self.config_parser.has_option(
             section=AuthorizationFileConstants.CONFIG_SECTION_CREDENTIALS,
@@ -160,7 +160,8 @@ class AuthorizationHandler:
         if self.auth_file.exists():
             self.config_parser.read(self.auth_file.file_path)
         if self._auth_file_has_api_token() is False or self._auth_file_has_user_id() is False:
+            # TODO: handle this better:
             print("no credentials found")
             print("Please run:")
-            print("    hopla auth")
-            sys.exit(1)  # TODO: handle this better
+            print("    hopla authenticate")
+            sys.exit(1)

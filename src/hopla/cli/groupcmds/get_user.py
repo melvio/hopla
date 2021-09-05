@@ -9,32 +9,10 @@ from typing import List
 import click
 import requests
 
+from hopla.hoplalib.clickhelper import data_on_success_else_exit
 from hopla.hoplalib.http import RequestHeaders, UrlBuilder
 
 log = logging.getLogger()
-
-
-@click.group()
-def get():
-    """
-    GROUP for getting information from Habitica.
-    """
-
-
-# TODO: add jq back again https://pypi.org/project/jq/
-#       or https://pypi.org/project/pyjq/
-
-
-class HabiticaUserRequest:
-    """Class that requests a user model from the Habitica API"""
-
-    def __init__(self):
-        self.url = UrlBuilder(path_extension="/user").url
-        self.headers = RequestHeaders().get_default_request_headers()
-
-    def request_user(self) -> requests.Response:
-        """Perform the user get request and return the response"""
-        return requests.get(url=self.url, headers=self.headers)
 
 
 @dataclass(frozen=True)
@@ -47,17 +25,20 @@ class HabiticaUser:
     """
     user_dict: dict
 
+    def __getitem__(self, key):
+        return self.user_dict.__getitem__(key)
+
     def get_stats(self) -> dict:
         """Index the user_dict for 'stats' and return the result"""
-        return self.user_dict["stats"]
+        return self["stats"]
 
     def get_inventory(self) -> dict:
         """Index the user_dict for 'items' and return the result"""
-        return self.user_dict["items"]
+        return self["items"]
 
     def get_auth(self) -> dict:
         """Index the user_dict for 'auth' and return the result"""
-        return self.user_dict["auth"]
+        return self["auth"]
 
     def get_gems(self):
         """Get the number of gems of a user.
@@ -109,3 +90,40 @@ class HabiticaUser:
         return {filter_keys: start_dict}
 
 
+class HabiticaUserRequest:
+    """Class that requests a user model from the Habitica API"""
+
+    def __init__(self):
+        self.url = UrlBuilder(path_extension="/user").url
+        self.headers = RequestHeaders().get_default_request_headers()
+
+    def request_user(self) -> requests.Response:
+        """Perform the user get request and return the response"""
+        return requests.get(url=self.url, headers=self.headers)
+
+    def request_user_data_on_fail_exit(self) -> HabiticaUser:
+        """
+        Function that request the user from habitica and returns
+        a HabiticaUser if the request was successful. Else exits.
+        """
+        user_response: requests.Response = self.request_user()
+        user_data: dict = data_on_success_else_exit(user_response)
+        return HabiticaUser(user_dict=user_data)
+
+
+pass_user = click.make_pass_decorator(HabiticaUser)
+
+
+@click.group()
+@click.pass_context
+def get_user(ctx: click.Context) -> HabiticaUser:
+    """
+    GROUP for getting user information from Habitica.
+    """
+    log.debug("hopla get-user")
+    user: HabiticaUser = HabiticaUserRequest().request_user_data_on_fail_exit()
+    ctx.obj = user
+    return user
+
+# TODO: add jq back again https://pypi.org/project/jq/
+#       or https://pypi.org/project/pyjq/

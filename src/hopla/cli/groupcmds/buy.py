@@ -10,7 +10,7 @@ import requests
 from hopla.hoplalib.clickhelper import data_on_success_else_exit
 from hopla.hoplalib.http import RequestHeaders, UrlBuilder
 from hopla.hoplalib.outputformatter import JsonFormatter
-from hopla.cli.get import user_stats
+from hopla.cli.groupcmds.get_user import HabiticaUserRequest, HabiticaUser
 
 log = logging.getLogger()
 
@@ -30,7 +30,7 @@ def buy_from_enchanted_armoire_once():
     response = requests.post(url=url, headers=headers)
     buy_data = data_on_success_else_exit(response)
 
-    # by default we get way too much info in the json so filter on "armoire"
+    # By default, we get way too much JSON info, so filter on "armoire".
     enchanted_armoire_award = JsonFormatter(buy_data["armoire"]).format_with_double_quotes()
     click.echo(enchanted_armoire_award)
 
@@ -55,8 +55,7 @@ def times_until_poor(gp_budget: float) -> int:
 @click.option("--until-poor/--no-until-poor", "-u", "until_poor_flag",
               help="buy from enchanted-armoire until gp runs out",
               default=False, show_default=True)
-@click.pass_context
-def enchanted_armoire(ctx, requested_times: int, until_poor_flag: bool):
+def enchanted_armoire(requested_times: int, until_poor_flag: bool):
     """Buy from the enchanted armoire
 
     TIMES - the number of times to buy from the enchanted armoire. Must be at least 0.
@@ -88,14 +87,13 @@ def enchanted_armoire(ctx, requested_times: int, until_poor_flag: bool):
     # TODO: (contact:melvio) --until-poor and --times N should be mutually exclusive options:
     #  and I dont think this is the case right now.
     #  * if it is the case: this TODO is DONE
-    times = get_buy_times_within_budget(ctx,
-                                        until_poor_flag=until_poor_flag,
-                                        requested_times=requested_times)
+    times: int = get_buy_times_within_budget(until_poor_flag=until_poor_flag,
+                                             requested_times=requested_times)
 
     exceeds_throttle_threshold = exceeds_throttle_limit(times)
     throttle_seconds = 2.5
     if exceeds_throttle_threshold:
-        click.echo(f"Going to buy {times} times. To prevent overheating habitica, we'll "
+        click.echo(f"To prevent overheating Habitica, we'll "
                    f"buy once every {throttle_seconds} seconds")
 
     for _ in range(times):
@@ -107,16 +105,17 @@ def enchanted_armoire(ctx, requested_times: int, until_poor_flag: bool):
 
 def exceeds_throttle_limit(times: int) -> bool:
     """Return True if we need Hopla to go easy on the Habitica API."""
-    # TODO: when we need to throttle in multiple places, handle this globally, not
+    # Remark: When we need to throttle in multiple places, handle this globally, not
     #  here in `buy`.
     requests_throttle_limit = 25
     return times > requests_throttle_limit
 
 
-def get_buy_times_within_budget(ctx, *, until_poor_flag: bool, requested_times: int):
+def get_buy_times_within_budget(until_poor_flag: bool,
+                                requested_times: int) -> int:
     """Return how often we can buy, given the requested amount and our budget."""
-    click.echo("starting gp: ", nl=False)
-    budget = ctx.invoke(user_stats.user_stats, stat_name="gp")
+    user: HabiticaUser = HabiticaUserRequest().request_user_data_on_fail_exit()
+    budget: float = user["stats"]["gp"]
 
     max_times = times_until_poor(budget)
     if until_poor_flag:
@@ -125,5 +124,6 @@ def get_buy_times_within_budget(ctx, *, until_poor_flag: bool, requested_times: 
         requested_times = 1
 
     times = min(max_times, requested_times)
-    click.echo(f"given the current budget, buying: {times} times")
+    click.echo(f"The current budget is {int(budget)}gp.\n"
+               f"Buying: {times} times.")
     return times

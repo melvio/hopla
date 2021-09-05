@@ -10,7 +10,7 @@ log = logging.getLogger()
 
 MAJOR_VERSION = 0
 MINOR_VERSION = 0
-PATCH_VERSION = 9
+PATCH_VERSION = 10
 PRE_RELEASE = "alpha"
 
 

@@ -40,7 +40,7 @@ def request(method: str,
     \b
     Examples
     ----
-    # GET: get a your party information
+    # GET: get party information
     $ hopla request /api/v3/groups/party
 
     \b

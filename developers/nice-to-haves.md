@@ -22,7 +22,7 @@ Nice to haves:
 * [DONE] get gems
 * [DONE] hopla support-development cmd
 * [DONE] check uuid input format 
-* after auth: ask the API for user info
+* after authenticate: ask the API for user info
 * --background flag 
 * --json flag for json and CLI-user friendly output by default
    * get consistent output (e.g. double quoted & consistent 2-space indentation)

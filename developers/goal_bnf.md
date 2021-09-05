@@ -16,7 +16,7 @@ hopla config --list                   -- lists all config params
 hopla config {key}                    -- prints specified config value in config file
 hopla config {key} {value}            -- sets specified config key to value in config file
 
-# hopla auth
+# hopla authenticate
 hopla auth                           -- authorize yourself by providing uuid and api token
 hopla auth --browser                 -- authorize yourself by loging in with a browser
 
@@ -66,33 +66,33 @@ hopla complete {shell}            -- provide autocompletion for given shell (onl
 hopla support-development                   -- send 3 gems to development (used for testing hopla development)
 hopla support-development --gems N          -- send N gems to development 
 
-# hopla get
+# hopla get_user-user
 these should have a mutually exclusive --json vs. 'everyday' user output:
-    hopla get user-inventory                 -- get all user-items
-    hopla get user-inventory pets            -- list pets
-    hopla get user-inventory mounts          -- list mounts
-    hopla get user-inventory food            -- list food
-    hopla get user-stats --filter [FILTER]   -- filter yourself
+    hopla get-user inventory                 -- get all user-items
+    hopla get-user inventory pets            -- list pets
+    hopla get-user inventory mounts          -- list mounts
+    hopla get-user inventory food            -- list food
+    hopla get-user inventory --filter [FILTER]   -- filter yourself
 
 
 these should have a mutually exclusive --json vs. 'everyday' user output:
-    hopla get user-stats                     -- get all user-stats
-    hopla get user-stats lvl|level           -- get level
-    hopla get user-stats hp|health           -- get health
-    hopla get user-stats xp|exp|experience   -- get exp
-    hopla get user-stats mp|mana|manapoints  -- get mana
-    hopla get user-stats gp|gold             -- get gold
-    hopla get user-stats --filter [FILTER]   -- filter inventory yourself
+    hopla get-user stats                     -- get all user-stats
+    hopla get-user stats lvl|level           -- get level
+    hopla get-user stats hp|health           -- get health
+    hopla get-user stats xp|exp|experience   -- get exp
+    hopla get-user stats mp|mana|manapoints  -- get mana
+    hopla get-user stats gp|gold             -- get gold
+    hopla get-user stats --filter [FILTER]   -- filter inventory yourself
 
 these should have a mutually exclusive --json vs. 'everyday' user output:
-    hopla get user-auth                    -- get all auth info
-    hopla get user-auth user-id|userid     -- get user-id
-    hopla get user-auth mail|email|e-mail  -- get user email
-    hopla get user-auth name|username      -- get profile name
-    hopla get user-auth profilename        -- get profile name
-    hopla get user-auth --filter [FILTER]  -- filter auth yourself
+    hopla get-user auth                    -- get all auth info
+    hopla get-user auth user-id|userid     -- get user-id
+    hopla get-user auth mail|email|e-mail  -- get user email
+    hopla get-user auth name|username      -- get profile name
+    hopla get-user auth profilename        -- get profile name
+    hopla get-user auth --filter [FILTER]  -- filter auth yourself
 
 these should have a mutually exclusive --json vs. 'everyday' user output:
-    hopla get user-info --filter [FILTER]   -- filter on the core user information
+    hopla get-user info --filter [FILTER]   -- filter on the core user information
 
 ```

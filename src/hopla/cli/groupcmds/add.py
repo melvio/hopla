@@ -285,5 +285,3 @@ def get_checklist_with_editor(checklist_file) -> HabiticaChecklist:
         return HabiticaChecklist(checklist=checklist_str.split("\n"))
 
     sys.exit("editor exited")
-
-

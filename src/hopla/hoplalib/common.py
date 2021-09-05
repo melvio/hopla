@@ -35,7 +35,7 @@ class EnvironmentVariables:
     """Class with environment variables"""
     GLOBAL_ENV_VAR_HOPLA_AUTH_FILE = "HOPLA_AUTH_FILE"
     """ environment variable that a user can set to overwrite the
-        default auth file """
+        default authenticate file """
 
     HOPLA_AUTH_FILE = os.environ.get(GLOBAL_ENV_VAR_HOPLA_AUTH_FILE)
 
