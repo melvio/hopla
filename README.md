@@ -92,7 +92,7 @@ Commands:
   complete             Print or enable shell autocompletion.
   config               Get, set, or list config values.
   feed                 Feed a pet.
-  get                  GROUP for getting information from Habitica.
+  get_user                  GROUP for getting information from Habitica.
   request              Perform a HTTP request on the Habitica API.
   set                  GROUP to set things in Habitica.
   support-development  Support the development of Hopla.

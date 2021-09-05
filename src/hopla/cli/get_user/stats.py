@@ -1,5 +1,5 @@
 """
-The module with CLI code that handles the `hopla get user-stats` command.
+The module with CLI code that handles the `hopla get-user stats` command.
 """
 
 import logging
@@ -7,7 +7,7 @@ import logging
 import click
 
 from hopla.hoplalib.outputformatter import JsonFormatter
-from hopla.cli.groupcmds.get import pass_user, HabiticaUser
+from hopla.cli.groupcmds.get_user import pass_user, HabiticaUser
 
 log = logging.getLogger()
 
@@ -49,28 +49,30 @@ def stat_alias_to_official_habitica_name(stat_name: str) -> str:
     return stat_name
 
 
-@click.command(context_settings=dict(token_normalize_func=stat_alias_to_official_habitica_name))
+@click.command(
+    context_settings=dict(token_normalize_func=stat_alias_to_official_habitica_name)
+)
 @click.argument("stat_name", type=valid_stat_names, default="all")
 @pass_user
-def user_stats(user: HabiticaUser, stat_name: str):
+def stats(user: HabiticaUser, stat_name: str):
     """Get the stats of a user
 
 
     \b
     Examples
     ---
-    # get all user stats
-    hopla get user-stats
-    hopla get user-stats all
+    # get_user all user stats
+    hopla get_user user-stats
+    hopla get_user user-stats all
 
     \b
-    # get mana, health, level
-    hopla get user-stats mp
-    hopla get user-stats hp
-    hopla get user-stats lvl
+    # get_user mana, health, level
+    hopla get_user user-stats mp
+    hopla get_user user-stats hp
+    hopla get_user user-stats lvl
 
     """
-    log.debug(f"hopla get user-stats stat={stat_name}")
+    log.debug(f"hopla get_user user-stats stat={stat_name}")
 
     stats_data = user.get_stats()
     if stat_name == "all":

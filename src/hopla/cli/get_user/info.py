@@ -1,5 +1,5 @@
 """
-The module with CLI code that handles the `hopla get user-info` command.
+The module with CLI code that handles the `hopla get-user info` command.
 """
 
 import logging
@@ -7,7 +7,7 @@ import logging
 import click
 
 from hopla.hoplalib.outputformatter import JsonFormatter
-from hopla.cli.groupcmds.get import pass_user, HabiticaUser
+from hopla.cli.groupcmds.get_user import pass_user, HabiticaUser
 
 log = logging.getLogger()
 
@@ -30,12 +30,10 @@ def info_alias_to_official_habitica_name(user_info_name: str) -> str:
 @click.option("--filter", "-f", "filter_string", metavar="FILTER_STRING",
               help="a comma seperated list of keys")
 @pass_user
-def user_info(user: HabiticaUser,
-              user_info_name: str,
-              filter_string: str) -> dict:
+def info(user: HabiticaUser, user_info_name: str, filter_string: str) -> dict:
     """Return user information
 
-    If no FILTER_STRING is given, get all user info.
+    If no FILTER_STRING is given, get_user all user info.
     Otherwise, return the result of filtering the user's info with the
     specified FILTER_STRING.
 
@@ -54,45 +52,45 @@ def user_info(user: HabiticaUser,
     \b
     Examples:
     ---
-    # get all user info
-    $ hopla get user-info
+    # get-user all user info
+    $ hopla get-user info
 
     \b
-    # get number of gems
-    $ hopla get user-info gems
+    # get-user number of gems
+    $ hopla get-user info gems
 
     \b
-    # get user id
-    $ hopla get user-info id
+    # get-user user id
+    $ hopla get-user info id
 
     \b
-    # get number of times logged in
-    $ hopla get user-info loginIncentives
+    # get-user number of times logged in
+    $ hopla get-user info loginIncentives
 
     \b
-    # get all items of a user:
-    $ hopla get user-info --filter=items
+    # get-user all items of a user:
+    $ hopla get-user info --filter=items
 
     \b
-    # get all mounts
-    $ hopla get user-info --filter "items.mounts"
+    # get-user all mounts
+    $ hopla get-user info --filter "items.mounts"
 
     \b
-    # get all mounts+pets
-    $ hopla get user-info --filter "items.mounts,items.pets"
+    # get-user all mounts+pets
+    $ hopla get-user info --filter "items.mounts,items.pets"
 
     \b
-    # get streaks+completed quests
-    $ hopla get user-info -f "achievements.streak,achievements.quests"
+    # get-user streaks+completed quests
+    $ hopla get-user info -f "achievements.streak,achievements.quests"
 
     \b
-    # get contributor status, cron-count, profile description, and user id
-    $ hopla get user-info -f "contributor, flags.cronCount, profile.blurb, id"
+    # get-user contributor status, cron-count, profile description, and user id
+    $ hopla get-user info -f "contributor, flags.cronCount, profile.blurb, id"
 
     \b
-    # get last free rebirth, day start (in hours), timezone offset (in minutes), and
+    # get-user last free rebirth, day start (in hours), timezone offset (in minutes), and
     # account creation time
-    $ hopla get user-info -f 'flags.lastFreeRebirth, preferences.dayStart, preferences.timezoneOffset, auth.timestamps.created'   # pylint: disable=line-too-long
+    $ hopla get-user info -f 'flags.lastFreeRebirth, preferences.dayStart, preferences.timezoneOffset, auth.timestamps.created'   # pylint: disable=line-too-long
 
     \f
     [APIdocs](https://habitica.com/apidoc/#api-User-UserGet)
@@ -102,7 +100,7 @@ def user_info(user: HabiticaUser,
     :param filter_string: string to filter the user dict on (e.g. "achievements.streak,purchased.plan")
     :return
     """
-    log.debug(f"hopla get user-info user_info_name={user_info_name} filter={filter_string}")
+    log.debug(f"hopla get-user info user_info_name={user_info_name} filter={filter_string}")
 
     if filter_string:
         requested_user_data: dict = user.filter_user(filter_string)

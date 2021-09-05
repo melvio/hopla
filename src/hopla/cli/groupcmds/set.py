@@ -41,7 +41,7 @@ def day_start(day_start_hour, json_flag: bool):
     Your custom day start has changed.
 
     \b
-    # set the day start to 00:00 AM and get json output (e.g. for pipelines)
+    # set the day start to 00:00 AM and get_user json output (e.g. for pipelines)
     $ hopla set day-start --json
     { "message": "Your custom day start has changed." }
 

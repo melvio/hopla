@@ -13,7 +13,7 @@ source "${this_script_parent_dir}/developer.env"
 #  --header "x-api-key: ${api_token}" \
 #  --header "x-client: Testing" | jq .
 
-# get user info by userFields
+# get info by userFields
 #curl -XGET "https://habitica.com/api/v3/user?userFields=achievements.streak,purchased.plan" \
 #  --verbose \
 #  --header "Content-Type: application/json" \

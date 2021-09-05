@@ -69,39 +69,45 @@ hopla_api_version:
 	hopla api version
 
 
-# hopla get-user auth
+# hopla get_user-user auth
 hopla_get_user_auth:
-	hopla get user-auth \
-	&& hopla get user-auth all \
-	&& hopla get user-auth email \
-	&& hopla get user-auth username \
-	&& hopla get user-auth profilename
+	hopla get-user auth \
+	&& hopla get-user auth all \
+	&& hopla get-user auth email \
+	&& hopla get-user auth mail \
+	&& hopla get-user auth username \
+	&& hopla get-user auth profilename \
+	&& hopla get-user auth google \
+	&& hopla get-user auth facebook \
+	&& hopla get-user auth local \
 
-# hopla get-user stats
+# hopla get_user-user stats
 hopla_get_user_stats:
-	hopla get user-stats \
-	&& hopla get user-stats all  \
-    && hopla get user-stats --help \
-    && hopla get user-stats \
-    && hopla get user-stats manapoints \
-    && hopla get user-stats experience \
-    && hopla get user-stats gold \
-    && hopla get user-stats class
+	hopla get-user stats \
+	&& hopla get-user stats all  \
+    && hopla get-user stats --help \
+    && hopla get-user stats \
+    && hopla get-user stats manapoints \
+    && hopla get-user stats experience \
+    && hopla get-user stats gold \
+    && hopla get-user stats class \
+    && hopla get-user stats intelligence \
+    && hopla get-user stats per
 
 
 hopla_get_user_inventory:
-	hopla get user-inventory \
-	&& hopla get user-inventory --help \
-	&& hopla get user-inventory all \
-	&& hopla get user-inventory pets \
-	&& hopla get user-inventory mounts \
-	&& hopla get user-inventory food \
-	&& hopla get user-inventory lastDrop
+	hopla get-user inventory \
+	&& hopla get-user inventory --help \
+	&& hopla get-user inventory all \
+	&& hopla get-user inventory pets \
+	&& hopla get-user inventory mounts \
+	&& hopla get-user inventory food \
+	&& hopla get-user inventory lastDrop
 
 
 hopla_get_user_info:
-	hopla get user-info \
-	&& hopla get user-info --filter 'profile' \
-	&& hopla get user-info -f "achievements.streak,achievements.quests" \
-	&& hopla get user-info -f 'flags.lastFreeRebirth, preferences.dayStart, preferences.timezoneOffset, auth.timestamps.created'
+	hopla get-user info \
+	&& hopla get-user info --filter 'profile' \
+	&& hopla get-user info -f "achievements.streak,achievements.quests" \
+	&& hopla get-user info -f 'flags.lastFreeRebirth, preferences.dayStart, preferences.timezoneOffset, auth.timestamps.created'
 

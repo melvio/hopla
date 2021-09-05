@@ -10,7 +10,7 @@ import requests
 from hopla.hoplalib.clickhelper import data_on_success_else_exit
 from hopla.hoplalib.http import RequestHeaders, UrlBuilder
 from hopla.hoplalib.outputformatter import JsonFormatter
-from hopla.cli.groupcmds.get import HabiticaUserRequest, HabiticaUser
+from hopla.cli.groupcmds.get_user import HabiticaUserRequest, HabiticaUser
 
 log = logging.getLogger()
 
@@ -30,7 +30,7 @@ def buy_from_enchanted_armoire_once():
     response = requests.post(url=url, headers=headers)
     buy_data = data_on_success_else_exit(response)
 
-    # by default we get way too much info in the json so filter on "armoire"
+    # by default we get_user way too much info in the json so filter on "armoire"
     enchanted_armoire_award = JsonFormatter(buy_data["armoire"]).format_with_double_quotes()
     click.echo(enchanted_armoire_award)
 
@@ -115,7 +115,7 @@ def get_buy_times_within_budget(until_poor_flag: bool,
                                 requested_times: int) -> int:
     """Return how often we can buy, given the requested amount and our budget."""
     user: HabiticaUser = HabiticaUserRequest().request_user_data_on_fail_exit()
-    budget = user["stats"]["gp"]
+    budget: float = user["stats"]["gp"]
 
     max_times = times_until_poor(budget)
     if until_poor_flag:

@@ -16,14 +16,14 @@ from hopla.cli.feed import feed
 from hopla.cli.version import version
 from hopla.cli.request import request
 from hopla.cli.support_development import support_development
-from hopla.cli.get.user_inventory import user_inventory
-from hopla.cli.get.user_auth import user_auth
-from hopla.cli.get.user_info import user_info
-from hopla.cli.get.user_stats import user_stats
+from hopla.cli.get_user.inventory import inventory
+from hopla.cli.get_user.auth import auth
+from hopla.cli.get_user.info import info
+from hopla.cli.get_user.stats import stats
 from hopla.cli.groupcmds.add import add
 from hopla.cli.groupcmds.api import api
 from hopla.cli.groupcmds.buy import buy
-from hopla.cli.groupcmds.get import get
+from hopla.cli.groupcmds.get_user import get_user
 from hopla.cli.groupcmds.set import set  # pylint: disable=redefined-builtin
 
 
@@ -83,11 +83,11 @@ def organize_cli():
     hopla.add_command(api)
     hopla.add_command(set)
     hopla.add_command(buy)
-    hopla.add_command(get)
-    get.add_command(user_inventory)
-    get.add_command(user_stats)
-    get.add_command(user_info)
-    get.add_command(user_auth)
+    hopla.add_command(get_user)
+    get_user.add_command(inventory)
+    get_user.add_command(stats)
+    get_user.add_command(info)
+    get_user.add_command(auth)
     # subcommands
     hopla.add_command(config)
     hopla.add_command(complete)

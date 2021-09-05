@@ -116,11 +116,11 @@ pass_user = click.make_pass_decorator(HabiticaUser)
 
 @click.group()
 @click.pass_context
-def get(ctx: click.Context) -> HabiticaUser:
+def get_user(ctx: click.Context) -> HabiticaUser:
     """
-    GROUP for getting information from Habitica.
+    GROUP for getting user information from Habitica.
     """
-    log.debug("hopla get")
+    log.debug("hopla get-user")
     user: HabiticaUser = HabiticaUserRequest().request_user_data_on_fail_exit()
     ctx.obj = user
     return user
