@@ -53,32 +53,24 @@ def info(user: HabiticaUser,
     \b
     Examples:
     ---
-    # get-user all user info
-    $ hopla get-user info
+    $ hopla get-user info                  # get all user info
+    $ hopla get-user info gems             # get number of gems
+    $ hopla get-user info id               # get user id
+    $ hopla get-user info loginIncentives  # get number of times logged in
 
     \b
-    # get-user number of gems
-    $ hopla get-user info gems
+    # Examples with a jq filter:
+    $ hopla get-user info --jq-filter=.items            #  get all items of a user
+    $ hopla get-user info --jq-filter ".items.mounts"   # get-user all mounts
 
     \b
-    # get-user user id
-    $ hopla get-user info id
-
-    \b
-    # get-user number of times logged in
-    $ hopla get-user info loginIncentives
-
-    \b
-    # get-user all items of a user:
-    $ hopla get-user info --jq-filter=.items
-
-    \b
-    # get-user all mounts
-    $ hopla get-user info --jq-filter ".items.mounts"
-
-    \b
-    # first get the notifications and than use jq to filter the notications
+    # first get the notifications, then use jq to filter the notifications
     $ hopla get-user info notifications -j '.[].type'
+
+    # first get all tag objects and then only get the names of the tags
+    # HMM TODO: figure out the difference between:
+    hopla get-user info tags -j '.[].name'
+    hopla get-user info tags | jq '.[].name'
 
     \f
     [APIdocs](https://habitica.com/apidoc/#api-User-UserGet)
@@ -91,8 +83,10 @@ def info(user: HabiticaUser,
     log.debug(f"hopla get-user info \n"
               f"{user_info_name=} {jq_filter=}")
 
-    prefilter_user_dict: dict = prefilter(user, user_info_name)
-    requested_user_data = postfilter(prefilter_user_dict, jq_filter)
+    prefilter_user = prefilter_on_user_info_name(user, user_info_name)
+    log.debug(f"{prefilter_user}")
+
+    requested_user_data = postfilter(prefilter_user, jq_filter)
 
     user_str = JsonFormatter(requested_user_data).format_with_double_quotes()
     click.echo(user_str)
@@ -108,16 +102,16 @@ def postfilter(prefilter_user_dict: dict, jq_filter):
     return jq_filter(json_dict=prefilter_user_dict)
 
 
-def prefilter(user: HabiticaUser, user_info_name: str) -> dict:
-    """First time we filter the user"""
+def prefilter_on_user_info_name(user: HabiticaUser, user_info_name: str):
+    """First time we filter the user. """
     if user_info_name == "gems":
         gems = user.get_gems()
-        prefilter_user_dict: dict = {"gems": gems}
+        prefiltered_user: dict = {"gems": gems}
     elif user_info_name == "all":
         # warning: order of the predicate statements matter
-        prefilter_user_dict: dict = user.user_dict
+        prefiltered_user: dict = user.user_dict
     elif user_info_name is not None:
-        prefilter_user_dict: dict = user[user_info_name]
+        prefiltered_user: dict = user[user_info_name]
     else:
-        prefilter_user_dict: dict = user.user_dict
-    return prefilter_user_dict
+        prefiltered_user: dict = user.user_dict
+    return prefiltered_user
