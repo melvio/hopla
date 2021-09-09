@@ -93,25 +93,25 @@ def info(user: HabiticaUser,
     return requested_user_data
 
 
-def postfilter(prefilter_user_dict: dict, jq_filter):
+def postfilter(prefiltered_user, jq_filter: str):
     """Second time we filter the user"""
     if jq_filter is None:
-        return prefilter_user_dict
+        return prefiltered_user
 
     jq_filter = JqFilter(jq_filter_spec=jq_filter)
-    return jq_filter(json_dict=prefilter_user_dict)
+    return jq_filter(json_dict=prefiltered_user)
 
 
 def prefilter_on_user_info_name(user: HabiticaUser, user_info_name: str):
-    """First time we filter the user. """
+    """First time we filter the user.
+       Returns whatever the result of filtering """
     if user_info_name == "gems":
-        gems = user.get_gems()
-        prefiltered_user: dict = {"gems": gems}
-    elif user_info_name == "all":
-        # warning: order of the predicate statements matter
-        prefiltered_user: dict = user.user_dict
-    elif user_info_name is not None:
-        prefiltered_user: dict = user[user_info_name]
-    else:
-        prefiltered_user: dict = user.user_dict
-    return prefiltered_user
+        return {"gems": user.get_gems()}
+
+    if user_info_name == "all":
+        return user.user_dict
+
+    if user_info_name is not [None, "all"]:
+        return user[user_info_name]
+
+    return user.user_dict

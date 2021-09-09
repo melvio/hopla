@@ -4,14 +4,27 @@ from hopla.cli.groupcmds.get_user import HabiticaUser
 
 class TestPrefilterOnUserInfo:
     def test_all_returns_user_unchanged(self):
-        pass  # TODO
+        test_user: HabiticaUser = get_test_user()
+
+        filter_result = prefilter_on_user_info_name(test_user, "all")
+        assert filter_result == test_user.user_dict
 
     def test_gems_return_gems(self):
         balance = 2
         test_user = HabiticaUser({"balance": balance})
 
+        filter_result = prefilter_on_user_info_name(test_user, "gems")
+
         expected_gems = balance * 4
-        assert prefilter_on_user_info_name(test_user, "gems") == {"gems": expected_gems}
+        assert filter_result == {"gems": expected_gems}
+
+    def test_id_returns_id(self):
+        test_user = get_test_user()
+
+        filter_result = prefilter_on_user_info_name(test_user, "id")
+
+        expected_id = test_user["id"]
+        assert filter_result == expected_id
 
 
 def get_test_user() -> HabiticaUser:
@@ -20,7 +33,7 @@ def get_test_user() -> HabiticaUser:
     * All ids have been changed completely, only their syntax is intact
     * All dates have been changed (most to the future)
     * long lists have been cut down significantly to remove the duplication
-      of data that is largely similar in syntax (e.g. finished quests).
+      of data that is largely similar in syntax (.g. finished quests).
       The was to keep the original range of data intact (e.g. at least 
       keep a large value, negative value, and default value for feeding 
       status of pets. e.g. within 'history' dates came in multiple formats, 
@@ -29,7 +42,7 @@ def get_test_user() -> HabiticaUser:
       realisticness of the data. However, the data is note entirely valid
       because e.g. available eggs don't match finished quests. Sort order
       ids dont match actual ids or do not exist, etc.
-    * null's were replaced with "null"
+    * null from javascript were replaced with "null" strings
     * unicode chars were remove (\\u)
     """
     semi_realistic_user: dict = {
