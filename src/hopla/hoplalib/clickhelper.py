@@ -70,9 +70,7 @@ class FeedingData:
         "CottonCandyPink", "CottonCandyBlue", "Honey"
     ])
 
-    # the same can be done for pets. But there are way too many to fit nicely
-    # @see:
-    #      hopla api content | jq '[.petInfo[] | .key]'
+    # @see: hopla api content | jq '[.petInfo[] | .key]'
     VALID_PET_NAMES = click.Choice(choices=[
         "Wolf-Base", "Wolf-White", "Wolf-Desert", "Wolf-Red", "Wolf-Shade", "Wolf-Skeleton",
         "Wolf-Zombie", "Wolf-CottonCandyPink", "Wolf-CottonCandyBlue", "Wolf-Golden",

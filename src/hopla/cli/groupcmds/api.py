@@ -10,7 +10,6 @@ from hopla.hoplalib.clickhelper import data_on_success_else_exit
 from hopla.hoplalib.http import UrlBuilder
 from hopla.hoplalib.common import GlobalConstants
 from hopla.hoplalib.outputformatter import JsonFormatter
-from hopla.hoplalib.dict_filters import JqFilter, click_jq_filter_option
 
 log = logging.getLogger()
 
@@ -40,8 +39,7 @@ class ApiContentRequest:
 
 
 @api.command()
-@click_jq_filter_option()
-def content(jq_filter: str) -> dict:
+def content() -> dict:
     """Print detailed information about Habitica's API content.
 
     \b
@@ -54,19 +52,17 @@ def content(jq_filter: str) -> dict:
     \b
     # get content information about
     # the [Ruby Rapport quest](https://habitica.fandom.com/wiki/Ruby_Rapport)
-    $ hopla api content --jq-filter ".quests.ruby"
+    $ hopla api content | jq ".quests.ruby"
 
 
     [API-docs](https://habitica.com/apidoc/#api-Content-ContentGet)
     \f
     :return:
     """
-    log.debug(f"hopla api content {jq_filter=}")
+    log.debug("hopla api content")
 
     content_data: dict = ApiContentRequest().request_api_content_on_fail_exit()
-    jq_filter = JqFilter(jq_filter_spec=jq_filter)
-    user_requested_content = jq_filter(content_data)
-    content_as_json: str = JsonFormatter(user_requested_content).format_with_double_quotes()
+    content_as_json: str = JsonFormatter(content_data).format_with_double_quotes()
     click.echo(content_as_json)
     return content_data
 
