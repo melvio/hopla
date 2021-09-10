@@ -13,7 +13,7 @@ Nice to haves:
   + Environment data class 
   + Config data class 
   + Authorization data class
-* add project structure with proper imports
+* [DONE] add project structure with proper imports
 * [DONE] click autocomplete
 * Use click's context classes
 * get error checking for wrong commands
@@ -43,3 +43,39 @@ CI-CD:
   + increase coverage to 60%
   + increase coverage to 80%
   + increase coverage to 90%
+
+
+# TODO make goal list for hopla
+# personal goals:
+# -- full vim integration for todos, habits, and, tasks
+# -- cast spells automaticallyu
+# -- feed pets automatically (just one command to feed all favorite
+#                             available to all pets available, no unfavorable feeding though)
+#
+# user focused:
+# -- no 'dangerous' interactions  without confirmation (e.g. sending gems)
+# -- interactivity when info is missing
+# -- near complete autocompletion for all options arguments
+# -- pipy installation
+# -- password login
+# -- open up habitica to get apiToken
+# -- move userid to hopla.conf
+# --
+# -- easiest possible CLI setup
+# -- completely automate habitica chores
+#    * feed pets automatically
+#    * accept quests
+#    * buy enchanged armoire
+#      + get summary autoput
+# -- background infroamtion
+# -- vim integration in any habitica task that requires typing
+# -- CLI quest interactivity
+# -- TODO MORE
+# TODO
+# -- respond to chats with vim integration (incl. smiley support that is better than habitica self)
+# -- -- see if vim has smiley integration (wanted feature: type in :smiley: -> see actual smiley)
+
+# development focused
+# -- 95%+ test coverage
+# -- high code quality (both linting and design)
+# -- The above in a CI pipeline
