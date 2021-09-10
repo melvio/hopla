@@ -3,6 +3,5 @@ requests-mock
 pylint
 click
 build
-jq
 pytest
 pytest-cov

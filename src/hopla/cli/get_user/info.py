@@ -12,7 +12,8 @@ from hopla.cli.groupcmds.get_user import pass_user, HabiticaUser
 log = logging.getLogger()
 
 valid_info_names = click.Choice(["gems", "id", "notifications", "tags", "lastCron",
-                                 "loginIncentives", "all"])
+                                 "loginIncentives", "achievements",
+                                 "guilds", "all"])
 
 
 def info_alias_to_official_habitica_name(user_info_name: str) -> str:
@@ -25,93 +26,60 @@ def info_alias_to_official_habitica_name(user_info_name: str) -> str:
 
 
 @click.command(context_settings=dict(token_normalize_func=info_alias_to_official_habitica_name))
-# TODO: consider upgrading to full-blown jq and dont handle this yourself
 @click.argument("user_info_name", type=valid_info_names, default="all")
-@click.option("--filter", "-f", "filter_string", metavar="FILTER_STRING",
-              help="a comma seperated list of keys")
 @pass_user
-def info(user: HabiticaUser, user_info_name: str, filter_string: str) -> dict:
+def info(user: HabiticaUser,
+         user_info_name: str) -> dict:
     """Return user information
 
-    If no FILTER_STRING is given, get all the user's info.
-    Otherwise, return the result of filtering the user's info with the
-    specified FILTER_STRING.
-
-    USER_INFO_NAME the particular type of information that you want to return, by
+    USER_INFO_NAME is the particular type of information that you want to return, by
     default "all".
-
-
-    \b
-    [BNF](https://en.wikipedia.org/wiki/Backus-Naur-Form)
-    for the FILTER_STRING:
-
-    \b
-        filter_keys ::= [filter_keys]?[,filter_keys]*
-        filter_keys ::= filter_keys[.filter_keys]*
 
     \b
     Examples:
     ---
-    # get-user all user info
-    $ hopla get-user info
+    $ hopla get-user info                  # get all user info
+    $ hopla get-user info gems             # get number of gems
+    $ hopla get-user info id               # get user id
+    $ hopla get-user info loginIncentives  # get number of times logged in
 
     \b
-    # get-user number of gems
-    $ hopla get-user info gems
+    # Examples with a jq filter:
+    $ hopla get-user info | jq .items              # get all items of a user
+    $ hopla get-user info | jq ".items.mounts"     # get all mounts
+    $ hopla get-user info | jq ".inbox.messages"   # get personal messages
 
     \b
-    # get-user user id
-    $ hopla get-user info id
+    # first get the notifications, then use jq to filter the notifications
+    $ hopla get-user info notifications | jq '.[].type'
 
     \b
-    # get-user number of times logged in
-    $ hopla get-user info loginIncentives
-
-    \b
-    # get-user all items of a user:
-    $ hopla get-user info --filter=items
-
-    \b
-    # get-user all mounts
-    $ hopla get-user info --filter "items.mounts"
-
-    \b
-    # get-user all mounts+pets
-    $ hopla get-user info --filter "items.mounts,items.pets"
-
-    \b
-    # get-user streaks+completed quests
-    $ hopla get-user info -f "achievements.streak,achievements.quests"
-
-    \b
-    # get-user contributor status, cron-count, profile description, and user id
-    $ hopla get-user info -f "contributor, flags.cronCount, profile.blurb, id"
-
-    \b
-    # get-user last free rebirth, day start (in hours), timezone offset (in minutes), and
-    # account creation time
-    $ hopla get-user info -f 'flags.lastFreeRebirth, preferences.dayStart, preferences.timezoneOffset, auth.timestamps.created'   # pylint: disable=line-too-long
+    # first get all tag objects and then only get the names of the tags
+    $ hopla get-user info tags | jq '.[].name'
 
     \f
     [APIdocs](https://habitica.com/apidoc/#api-User-UserGet)
 
     :param user: HabiticaUser
     :param user_info_name:
-    :param filter_string: string to filter the user dict on (e.g. "achievements.streak,purchased.plan")
     :return
     """
-    log.debug(f"hopla get-user info user_info_name={user_info_name} filter={filter_string}")
+    log.debug(f"hopla get-user info {user_info_name=}")
 
-    if filter_string:
-        requested_user_data: dict = user.filter_user(filter_string)
-    elif user_info_name == "all":
-        requested_user_data: dict = user.user_dict
-    elif user_info_name == "gems":
-        gems = user.get_gems()
-        requested_user_data: dict = {"gems": gems}
-    else:
-        requested_user_data: dict = user.filter_user(user_info_name)
+    filtered_user = filter_on_user_info_name(user, user_info_name)
 
-    user_str = JsonFormatter(requested_user_data).format_with_double_quotes()
+    user_str = JsonFormatter(filtered_user).format_with_double_quotes()
     click.echo(user_str)
-    return requested_user_data
+    return filtered_user
+
+
+def filter_on_user_info_name(user: HabiticaUser, user_info_name: str):
+    """First time we filter the user.
+       Returns whatever the result of filtering """
+    if user_info_name == "gems":
+        return user.get_gems()
+
+    if user_info_name not in [None, "all"]:
+        return user[user_info_name]
+
+    return user.user_dict
