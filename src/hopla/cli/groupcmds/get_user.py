@@ -38,14 +38,14 @@ class HabiticaUser:
         """Index the user_dict for 'auth' and return the result"""
         return self["auth"]
 
-    def get_gems(self):
+    def get_gems(self) -> int:
         """Get the number of gems of a user.
 
         gems are stored in the 'balance' field. 1 'balance' equals 4 gems
         [see](https://habitica.fandom.com/wiki/Gems#Information_for_Developers)
         """
         balance = self["balance"]
-        return balance * 4
+        return int(balance * 4)
 
 
 class HabiticaUserRequest:

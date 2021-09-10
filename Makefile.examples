@@ -107,15 +107,24 @@ hopla_get_user_inventory:
 	&& hopla get-user inventory food \
 	&& hopla get-user inventory lastDrop
 
-
-# TODO: Test --jq-filter with different flags and params
-# hopla get-user info
-hopla_get_user_info:
+#
+hopla_get_user_info_filter_keywords:
 	hopla get-user info \
-	&& hopla get-user info --jq-filter '.achievements.streak' \
-	&& hopla get-user info -j '.flags.lastFreeRebirth' \
-	&& hopla get-user info -j '.preferences.timezoneOffset' \
-    && hopla get-user info -j '.items.mounts | keys | length'  # count number of unique mounts
+	&& hopla get-user info all \
+	&& hopla get-user info notifications \
+	&& hopla get-user info id \
+	&& hopla get-user info gems \
+	&& hopla get-user info tags
+
+
+# hopla get-user info with filters
+hopla_get_user_info:
+	hopla get-user info | jq '.achievements.streak' \
+	&& hopla get-user info | jq '.flags.lastFreeRebirth' \
+	&& hopla get-user info | jq '.preferences.timezoneOffset' \
+    && hopla get-user info | jq '.items.mounts | keys | length'
+      # ^count number of unique mounts
+
 
 
 

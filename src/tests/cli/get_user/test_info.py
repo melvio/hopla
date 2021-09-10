@@ -1,4 +1,6 @@
-from hopla.cli.get_user.info import prefilter_on_user_info_name
+from typing import List
+
+from hopla.cli.get_user.info import filter_on_user_info_name
 from hopla.cli.groupcmds.get_user import HabiticaUser
 
 
@@ -6,25 +8,47 @@ class TestPrefilterOnUserInfo:
     def test_all_returns_user_unchanged(self):
         test_user: HabiticaUser = get_test_user()
 
-        filter_result = prefilter_on_user_info_name(test_user, "all")
+        filter_result = filter_on_user_info_name(test_user, "all")
+
         assert filter_result == test_user.user_dict
 
     def test_gems_return_gems(self):
         balance = 2
         test_user = HabiticaUser({"balance": balance})
 
-        filter_result = prefilter_on_user_info_name(test_user, "gems")
+        filter_result = filter_on_user_info_name(test_user, "gems")
 
         expected_gems = balance * 4
-        assert filter_result == {"gems": expected_gems}
+        assert filter_result == expected_gems
+        assert type(expected_gems) is int
 
     def test_id_returns_id(self):
-        test_user = get_test_user()
+        test_user: HabiticaUser = get_test_user()
 
-        filter_result = prefilter_on_user_info_name(test_user, "id")
+        filter_result = filter_on_user_info_name(test_user, "id")
 
         expected_id = test_user["id"]
         assert filter_result == expected_id
+        assert type(filter_result) is str
+
+    def test_guilds_returns_list(self):
+        test_user: HabiticaUser = get_test_user()
+
+        filter_result = filter_on_user_info_name(test_user, "guilds")
+
+        expected_guilds = test_user["guilds"]
+        assert filter_result == expected_guilds
+        assert type(filter_result) == list
+
+    def test_tags_returns_list_of_objects(self):
+        test_user: HabiticaUser = get_test_user()
+
+        filter_result = filter_on_user_info_name(test_user, "tags")
+
+        expected_tags = test_user["tags"]
+        assert filter_result == expected_tags
+        assert type(filter_result) == list
+
 
 
 def get_test_user() -> HabiticaUser:
