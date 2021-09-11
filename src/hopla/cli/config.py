@@ -109,7 +109,6 @@ def config(config_name: str,
     """
     log.debug(f"hopla config name={config_name} value={value}")
     log.debug(f" options: --list={list_flag} --config_file_name={config_file_name_flag}")
-    # log.debug(f"          --file={alternative_file} ")
 
     if list_flag:
         print_config_file_content()
