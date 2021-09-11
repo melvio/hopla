@@ -77,7 +77,7 @@ class Pet:
             return 100  # The pet is now a mount
         return self.feeding_status * 2
 
-    def favorite_food(self, *, default_value_when_no_favorite_food: str = "any"):
+    def favorite_food(self, *, default_value_when_no_favorite_food: str = "Any"):
         """Return the favorite food of this pet."""
         return (PetData.hatching_potion_favorite_food_mapping
                 .get(self.hatching_potion, default_value_when_no_favorite_food))

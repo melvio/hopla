@@ -99,14 +99,14 @@ class TestPetFunctions:
 
         if pet.is_from_drop_hatching_potions():
             # These pets have a favorite food
-            assert pet.favorite_food() != "any"
+            assert pet.favorite_food() != "Any"
 
             alternative_food = "SomeFakeFood"
             result = pet.favorite_food(default_value_when_no_favorite_food=alternative_food)
             assert result != alternative_food
         else:
             # These pets like every food
-            assert pet.favorite_food() == "any"
+            assert pet.favorite_food() == "Any"
 
             alternative_food = "Meat"
             result = pet.favorite_food(default_value_when_no_favorite_food=alternative_food)
