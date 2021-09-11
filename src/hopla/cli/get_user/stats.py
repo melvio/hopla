@@ -23,7 +23,7 @@ def stat_alias_to_official_habitica_name(stat_name: str) -> str:
     :param stat_name:
     :return:
     """
-    # pylint: disable=too-many-return-statements
+    # pylint: disable=too-many-return-statements,too-many-branches
     if stat_name in ["mana", "mana-points", "manapoints"]:
         return "mp"
     if stat_name in ["maxMp", "maxmp"]:
