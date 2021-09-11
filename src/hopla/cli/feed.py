@@ -57,12 +57,12 @@ class PetFeedPostRequester:
         )
 
 
-# pets can eat up to 50 units of non-preferred foods
+# pets can eat up to 23 units of non-preferred foods
 # TODO: document clamp=True (which results
 #  in 100 automatically becomes max, -10 becomes min, instead of failing
 #   with an click validation error message)
 # * Look into other options first, such as; --until-mount
-valid_feeding_amount = click.IntRange(min=0, max=50, clamp=True)
+valid_feeding_amount = click.IntRange(min=0, max=23, clamp=True)
 
 
 def print_favorite_food_and_exit(pet_name: str):
@@ -79,7 +79,8 @@ def print_favorite_food_and_exit(pet_name: str):
                 metavar="[FOOD_NAME]", required=False)
 @click.option("--list-favorite-food/--no-list-favorite-food",
               default=False, show_default=True)
-@click.option("--amount", default=1, show_default=True,
+@click.option("--amount", "amount",
+              default=1, show_default=True,
               type=valid_feeding_amount,
               metavar="N_FOOD",
               help="number of FOOD_NAME fed to PET_NAME")
