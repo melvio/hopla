@@ -2,6 +2,7 @@
 The module with CLI code that handles the `hopla feed` command.
 """
 import logging
+import sys
 
 import click
 import requests
@@ -9,7 +10,7 @@ import requests
 from hopla.hoplalib.clickhelper import data_on_success_else_exit
 from hopla.hoplalib.http import RequestHeaders, UrlBuilder
 from hopla.hoplalib.outputformatter import JsonFormatter
-from hopla.hoplalib.clickhelper import FeedingData
+from hopla.hoplalib.pethelper import Pet, PetData
 
 log = logging.getLogger()
 
@@ -64,19 +65,32 @@ class PetFeedPostRequester:
 valid_feeding_amount = click.IntRange(min=0, max=50, clamp=True)
 
 
+def print_favorite_food_and_exit(pet_name: str):
+    """Get favorite food for a given pet"""
+    pet = Pet(pet_name)
+    click.echo(pet.favorite_food())
+    sys.exit(0)
+
+
 @click.command()
-@click.argument("pet_name", type=FeedingData.VALID_PET_NAMES, metavar="PET_NAME")
-@click.argument("food_name", type=FeedingData.VALID_FOOD_NAMES, metavar="FOOD_NAME")
+@click.argument("pet_name", type=click.Choice(PetData.pet_names),
+                metavar="PET_NAME")
+@click.argument("food_name", type=click.Choice(PetData.drop_food_names),
+                metavar="[FOOD_NAME]", required=False)
+@click.option("--list-favorite-food/--no-list-favorite-food",
+              default=False, show_default=True)
 @click.option("--amount", default=1, show_default=True,
               type=valid_feeding_amount,
               metavar="N_FOOD",
               help="number of FOOD_NAME fed to PET_NAME")
-def feed(pet_name: str, food_name: str, amount: int):
+def feed(pet_name: str, food_name: str,
+         list_favorite_food: bool,
+         amount: int):
     """Feed a pet.
 
      \b
      PET_NAME   name of the pet (e.g. "Wolf-Golden")
-     FOOD_NAME  name of the food (e.g. "Honey")
+     FOOD_NAME  name of the food (e.g. "Honey").
 
      \b
      Examples:
@@ -91,6 +105,11 @@ def feed(pet_name: str, food_name: str, amount: int):
      $ hopla feed --amount=5 Snail-Desert Potatoe
 
      \b
+     # List a pet's favorite food
+     $ hopla feed Axolotl-Base --list-favorite-food
+     Meat
+
+     \b
      # Tip: You can use the <Tab> key to show the pet and food keys
      $ hopla feed <Tab><Tab>
      $ hopla feed Axolotl-White <Tab><Tab>
@@ -102,7 +121,12 @@ def feed(pet_name: str, food_name: str, amount: int):
     Note: this API endpoint expect 'amount' as a query params (?amount=N) instead
     of a request body (even though it is a HTTP POST).
     """
-    log.debug(f"hopla feed pet={pet_name}, food={food_name}, amount={amount}")
+    log.debug(f"hopla feed {pet_name=}, {food_name=}"
+              f" {amount=}  {list_favorite_food=}")
+
+    if list_favorite_food:
+        print_favorite_food_and_exit(pet_name=pet_name)
+
     pet_feed_request = PetFeedPostRequester(
         pet_name=pet_name,
         food_name=food_name,

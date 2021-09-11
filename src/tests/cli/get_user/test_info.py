@@ -1,5 +1,3 @@
-from typing import List
-
 from hopla.cli.get_user.info import filter_on_user_info_name
 from hopla.cli.groupcmds.get_user import HabiticaUser
 
@@ -48,7 +46,6 @@ class TestPrefilterOnUserInfo:
         expected_tags = test_user["tags"]
         assert filter_result == expected_tags
         assert type(filter_result) == list
-
 
 
 def get_test_user() -> HabiticaUser:

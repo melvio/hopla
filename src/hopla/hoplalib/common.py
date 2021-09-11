@@ -30,6 +30,12 @@ class GlobalConstants:
     the habitica API <https://habitica.fandom.com/wiki/Guidance_for_Comrades>
     """
 
+    SOURCE_CODE_REPOSITORY_URL = "https://github.com/melvio/hopla"
+    """Repository for Hopla code"""
+
+    NEW_ISSUE_URL = f"{SOURCE_CODE_REPOSITORY_URL}/issues/new"
+    """Link which enables you to raise a new issue/ suggest features etc."""
+
 
 class EnvironmentVariables:
     """Class with environment variables"""
