@@ -35,7 +35,10 @@ class Pet:
 
         # This logic might break, but seems to be solid for past few years due to
         # stabling naming convention by the Habitica API developers.
-        _, self.__potion = self.pet_name.split("-")
+        if pet_name in PetData.rare_pet_names:
+            self.__potion = None
+        else:
+            _, self.__potion = self.pet_name.split("-")
 
     @property
     def hatching_potion(self):
@@ -384,17 +387,27 @@ class PetData:
         "Cactus-Veggie", "Cactus-Dessert", "BearCub-Veggie", "BearCub-Dessert"
     ]
 
-    remainder_pet_names = [
-        "Wolf-Veteran", "Wolf-Cerberus", "Dragon-Hydra", "Turkey-Base", "BearCub-Polar",
-        "MantisShrimp-Base", "JackOLantern-Base", "Mammoth-Base", "Tiger-Veteran", "Phoenix-Base",
-        "Turkey-Gilded", "MagicalBee-Base", "Lion-Veteran", "Gryphon-RoyalPurple",
-        "JackOLantern-Ghost", "Jackalope-RoyalPurple", "Orca-Base", "Bear-Veteran",
-        "Hippogriff-Hopeful", "Fox-Veteran", "JackOLantern-Glow", "Gryphon-Gryphatrice",
-        "JackOLantern-RoyalPurple"
+    world_boss_reward_pet_names = [
+        "Hippogriff-Hopeful", "MagicalBee-Base", "Phoenix-Base", "Mammoth-Base",
+        "MantisShrimp-Base"
     ]
 
-    pet_names = (generation1_pet_names + magic_potion_pet_names
-                 + wacky_pet_names
+    event_item_sequence_pet_names = [
+        "Wolf-Veteran", "Turkey-Base", "JackOLantern-Base", "Tiger-Veteran", "Turkey-Gilded",
+        "Lion-Veteran", "Gryphon-RoyalPurple", "JackOLantern-Ghost", "Orca-Base", "Bear-Veteran",
+        "Fox-Veteran", "JackOLantern-Glow", "JackOLantern-RoyalPurple"
+    ]
+
+    other_pet_names = [
+        "Jackalope-RoyalPurple", "BearCub-Polar", "Dragon-Hydra", "Wolf-Cerberus",
+        "Gryphon-Gryphatrice",
+    ]
+
+    rare_pet_names = world_boss_reward_pet_names + event_item_sequence_pet_names + other_pet_names
+
+    pet_names = (generation1_pet_names
+                 + magic_potion_pet_names
                  + quest_pet_names
-                 + remainder_pet_names)
+                 + wacky_pet_names
+                 + rare_pet_names)
     """ @see: hopla api content | jq '[.petInfo[] | .key]' """
