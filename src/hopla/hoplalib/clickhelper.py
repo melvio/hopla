@@ -58,8 +58,6 @@ def case_insensitive_aliases(argument: str, choices: List[str], *,
     return argument
 
 
-
-
 class EnhancedDate(click.DateTime):
     """EnhancedDate adds 'today' and 'tomorrow' keywords to the click.DateTime type."""
     name = "enhanceddate"
