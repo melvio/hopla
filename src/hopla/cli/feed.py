@@ -9,7 +9,7 @@ import requests
 from hopla.hoplalib.clickhelper import data_on_success_else_exit
 from hopla.hoplalib.http import RequestHeaders, UrlBuilder
 from hopla.hoplalib.outputformatter import JsonFormatter
-from hopla.hoplalib.pethelper import FeedingData
+from hopla.hoplalib.pethelper import PetData
 
 log = logging.getLogger()
 
@@ -70,8 +70,8 @@ def print_favorite_food_and_exit(pet_name: str):
 
 
 @click.command()
-@click.argument("pet_name", type=click.Choice(FeedingData.pet_names), metavar="PET_NAME")
-@click.argument("food_name", type=click.Choice(FeedingData.normal_food_names), metavar="FOOD_NAME")
+@click.argument("pet_name", type=click.Choice(PetData.pet_names), metavar="PET_NAME")
+@click.argument("food_name", type=click.Choice(PetData.drop_food_names), metavar="FOOD_NAME")
 @click.option("--list-favorite-food/--no-list-favorite-food",
               default=False, show_default=True)
 @click.option("--amount", default=1, show_default=True,

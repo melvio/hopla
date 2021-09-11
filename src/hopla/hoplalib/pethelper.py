@@ -18,7 +18,7 @@ class Pet:
     """A habitica pet"""
 
     def __init__(self, pet_name: str, *, feeding_status: int = 0):
-        if pet_name not in FeedingData.pet_names:
+        if pet_name not in PetData.pet_names:
             raise InvalidPet(f"{pet_name=} is not recognized by hopla.\n"
                              "Potential causes: \n"
                              "* did you spell it correctly?\n"
@@ -32,6 +32,15 @@ class Pet:
 
         self.pet_name = pet_name
         self.feeding_status = feeding_status
+
+        # This logic might break, but seems to be solid for past few years due to
+        # stabling naming convention by the Habitica API developers.
+        _, self.__potion = self.pet_name.split("-")
+
+    @property
+    def hatching_potion(self):
+        """The hatching potion used to hatch the egg this pet came from."""
+        return self.__potion
 
     def feeding_status_explanation(self) -> str:
         """Explain the feeding status of a pet"""
@@ -53,9 +62,9 @@ class Pet:
 
         raise InvalidPet(f"Did not expect {self.feeding_status=}. \n"
                          f"Looks like we failed to validate the Pet properly.",
-                         pet=self)
+                         pet=self)  # pragma: no cover
 
-    def feeding_status_to_percentage(self):
+    def feeding_status_to_percentage(self) -> int:
         """
         Turn feeding status into percentage understandable by the
         website user.
@@ -67,24 +76,30 @@ class Pet:
 
     def favorite_food(self, *, default_value_when_no_favorite_food: str = "any"):
         """Return the favorite food of this pet."""
-        # This logic might break, but seems to be solid for past few years due to
-        # stabling naming convention by the Habitica API developers.
-        _, potion = self.pet_name.split("-")
-        return (FeedingData.hatching_potion_favorite_food_mapping
-                .get(potion, default=default_value_when_no_favorite_food))
+        return (PetData.hatching_potion_favorite_food_mapping
+                .get(self.hatching_potion, default_value_when_no_favorite_food))
+
+    def has_only1_type_of_favorite_food(self) -> bool:
+        """Return True if pet likes only 1 type of food"""
+        return self.is_from_drop_hatching_potions()  # same impl
+
+    def is_generation1_pet(self) -> bool:
+        """Return True if this pet is from the generation 1 pet"""
+        return self.pet_name in PetData.generation1_pet_names
+
+    def is_from_drop_hatching_potions(self) -> bool:
+        """
+        Return True if the pet was hatched from one of the 'ordinary'
+        potions. (Such as: Base, Desert, ...)
+        """
+        return self.hatching_potion in PetData.drop_hatching_potions
 
 
-class FeedingData:
-    """Class with valid food and pet names"""
-    # Didn't include cakes because those are rare collectibles
-    # for more info @see:
-    #    hopla api content | jq .food
-    #    hopla api content | jq '.food[] | select(.canDrop==true)'
-    #    hopla api content | jq '[.food[] | select(.canDrop==true) | .key]'
-    normal_food_names = [
-        "Meat", "Milk", "Potatoe", "Strawberry", "Chocolate", "Fish", "RottenMeat",
-        "CottonCandyPink", "CottonCandyBlue", "Honey"
-    ]
+class PetData:
+    """
+    Helper class with valid foods, pets, hatchingPotions and the relationships
+    between these things.
+    """
 
     hatching_potion_favorite_food_mapping = {
         "Base": "Meat",
@@ -108,8 +123,18 @@ class FeedingData:
     * hopla api content | jq .dropHatchingPotions
     """
 
-    # @see: hopla api content | jq '[.petInfo[] | .key]'
-    pet_names = [
+    drop_hatching_potions = list(hatching_potion_favorite_food_mapping.keys())
+    """A list of the non magic, non special hatching potions"""
+
+    drop_food_names = list(hatching_potion_favorite_food_mapping.values())
+    """A list of food that can be dropped by doing tasks"""
+    # We dont consider cakes etc. because those are rare collectibles
+    # for more info @see:
+    #    hopla api content | jq .food
+    #    hopla api content | jq '.food[] | select(.canDrop==true)'
+    #    hopla api content | jq '[.food[] | select(.canDrop==true) | .key]'
+
+    generation1_pet_names = [
         "Wolf-Base", "Wolf-White", "Wolf-Desert", "Wolf-Red", "Wolf-Shade", "Wolf-Skeleton",
         "Wolf-Zombie", "Wolf-CottonCandyPink", "Wolf-CottonCandyBlue", "Wolf-Golden",
         "TigerCub-Base", "TigerCub-White", "TigerCub-Desert", "TigerCub-Red", "TigerCub-Shade",
@@ -130,22 +155,29 @@ class FeedingData:
         "Cactus-Red", "Cactus-Shade", "Cactus-Skeleton", "Cactus-Zombie", "Cactus-CottonCandyPink",
         "Cactus-CottonCandyBlue", "Cactus-Golden", "BearCub-Base", "BearCub-White",
         "BearCub-Desert", "BearCub-Red", "BearCub-Shade", "BearCub-Skeleton", "BearCub-Zombie",
-        "BearCub-CottonCandyPink", "BearCub-CottonCandyBlue", "BearCub-Golden", "Wolf-RoyalPurple",
-        "Wolf-Cupid", "Wolf-Shimmer", "Wolf-Fairy", "Wolf-Floral", "Wolf-Aquatic", "Wolf-Ember",
-        "Wolf-Thunderstorm", "Wolf-Spooky", "Wolf-Ghost", "Wolf-Holly", "Wolf-Peppermint",
-        "Wolf-StarryNight", "Wolf-Rainbow", "Wolf-Glass", "Wolf-Glow", "Wolf-Frost",
-        "Wolf-IcySnow", "Wolf-RoseQuartz", "Wolf-Celestial", "Wolf-Sunshine", "Wolf-Bronze",
-        "Wolf-Watery", "Wolf-Silver", "Wolf-Shadow", "Wolf-Amber", "Wolf-Aurora", "Wolf-Ruby",
-        "Wolf-BirchBark", "Wolf-Fluorite", "Wolf-SandSculpture", "Wolf-Windup", "Wolf-Turquoise",
-        "Wolf-Vampire", "Wolf-AutumnLeaf", "Wolf-BlackPearl", "Wolf-StainedGlass", "Wolf-PolkaDot",
-        "Wolf-MossyStone", "Wolf-Sunset", "Wolf-Moonglow", "Wolf-SolarSystem",
-        "TigerCub-RoyalPurple", "TigerCub-Cupid", "TigerCub-Shimmer", "TigerCub-Fairy",
-        "TigerCub-Floral", "TigerCub-Aquatic", "TigerCub-Ember", "TigerCub-Thunderstorm",
-        "TigerCub-Spooky", "TigerCub-Ghost", "TigerCub-Holly", "TigerCub-Peppermint",
-        "TigerCub-StarryNight", "TigerCub-Rainbow", "TigerCub-Glass", "TigerCub-Glow",
-        "TigerCub-Frost", "TigerCub-IcySnow", "TigerCub-RoseQuartz", "TigerCub-Celestial",
-        "TigerCub-Sunshine", "TigerCub-Bronze", "TigerCub-Watery", "TigerCub-Silver",
-        "TigerCub-Shadow", "TigerCub-Amber", "TigerCub-Aurora", "TigerCub-Ruby",
+        "BearCub-CottonCandyPink", "BearCub-CottonCandyBlue", "BearCub-Golden",
+    ]
+    """ https://habitica.fandom.com/wiki/Pets#Generation_1_Pets """
+
+    # The Magic potion pets are known as "premium" by the API
+    # <https://habitica.fandom.com/wiki/Pets#Magic_Potion_Pets>
+    # hopla api content | jq '[.petInfo[] | select(.type=="premium")]'
+    magic_potion_pet_names = [
+        "Wolf-RoyalPurple", "Wolf-Cupid", "Wolf-Shimmer", "Wolf-Fairy", "Wolf-Floral",
+        "Wolf-Aquatic", "Wolf-Ember", "Wolf-Thunderstorm", "Wolf-Spooky", "Wolf-Ghost",
+        "Wolf-Holly", "Wolf-Peppermint", "Wolf-StarryNight", "Wolf-Rainbow", "Wolf-Glass",
+        "Wolf-Glow", "Wolf-Frost", "Wolf-IcySnow", "Wolf-RoseQuartz", "Wolf-Celestial",
+        "Wolf-Sunshine", "Wolf-Bronze", "Wolf-Watery", "Wolf-Silver", "Wolf-Shadow", "Wolf-Amber",
+        "Wolf-Aurora", "Wolf-Ruby", "Wolf-BirchBark", "Wolf-Fluorite", "Wolf-SandSculpture",
+        "Wolf-Windup", "Wolf-Turquoise", "Wolf-Vampire", "Wolf-AutumnLeaf", "Wolf-BlackPearl",
+        "Wolf-StainedGlass", "Wolf-PolkaDot", "Wolf-MossyStone", "Wolf-Sunset", "Wolf-Moonglow",
+        "Wolf-SolarSystem", "TigerCub-RoyalPurple", "TigerCub-Cupid", "TigerCub-Shimmer",
+        "TigerCub-Fairy", "TigerCub-Floral", "TigerCub-Aquatic", "TigerCub-Ember",
+        "TigerCub-Thunderstorm", "TigerCub-Spooky", "TigerCub-Ghost", "TigerCub-Holly",
+        "TigerCub-Peppermint", "TigerCub-StarryNight", "TigerCub-Rainbow", "TigerCub-Glass",
+        "TigerCub-Glow", "TigerCub-Frost", "TigerCub-IcySnow", "TigerCub-RoseQuartz",
+        "TigerCub-Celestial", "TigerCub-Sunshine", "TigerCub-Bronze", "TigerCub-Watery",
+        "TigerCub-Silver", "TigerCub-Shadow", "TigerCub-Amber", "TigerCub-Aurora", "TigerCub-Ruby",
         "TigerCub-BirchBark", "TigerCub-Fluorite", "TigerCub-SandSculpture", "TigerCub-Windup",
         "TigerCub-Turquoise", "TigerCub-Vampire", "TigerCub-AutumnLeaf", "TigerCub-BlackPearl",
         "TigerCub-StainedGlass", "TigerCub-PolkaDot", "TigerCub-MossyStone", "TigerCub-Sunset",
@@ -217,21 +249,28 @@ class FeedingData:
         "BearCub-BirchBark", "BearCub-Fluorite", "BearCub-SandSculpture", "BearCub-Windup",
         "BearCub-Turquoise", "BearCub-Vampire", "BearCub-AutumnLeaf", "BearCub-BlackPearl",
         "BearCub-StainedGlass", "BearCub-PolkaDot", "BearCub-MossyStone", "BearCub-Sunset",
-        "BearCub-Moonglow", "BearCub-SolarSystem", "Gryphon-Base", "Gryphon-White",
-        "Gryphon-Desert", "Gryphon-Red", "Gryphon-Shade", "Gryphon-Skeleton", "Gryphon-Zombie",
-        "Gryphon-CottonCandyPink", "Gryphon-CottonCandyBlue", "Gryphon-Golden", "Hedgehog-Base",
-        "Hedgehog-White", "Hedgehog-Desert", "Hedgehog-Red", "Hedgehog-Shade", "Hedgehog-Skeleton",
-        "Hedgehog-Zombie", "Hedgehog-CottonCandyPink", "Hedgehog-CottonCandyBlue",
-        "Hedgehog-Golden", "Deer-Base", "Deer-White", "Deer-Desert", "Deer-Red", "Deer-Shade",
-        "Deer-Skeleton", "Deer-Zombie", "Deer-CottonCandyPink", "Deer-CottonCandyBlue",
-        "Deer-Golden", "Egg-Base", "Egg-White", "Egg-Desert", "Egg-Red", "Egg-Shade",
-        "Egg-Skeleton", "Egg-Zombie", "Egg-CottonCandyPink", "Egg-CottonCandyBlue", "Egg-Golden",
-        "Rat-Base", "Rat-White", "Rat-Desert", "Rat-Red", "Rat-Shade", "Rat-Skeleton",
-        "Rat-Zombie", "Rat-CottonCandyPink", "Rat-CottonCandyBlue", "Rat-Golden", "Octopus-Base",
-        "Octopus-White", "Octopus-Desert", "Octopus-Red", "Octopus-Shade", "Octopus-Skeleton",
-        "Octopus-Zombie", "Octopus-CottonCandyPink", "Octopus-CottonCandyBlue", "Octopus-Golden",
-        "Seahorse-Base", "Seahorse-White", "Seahorse-Desert", "Seahorse-Red", "Seahorse-Shade",
-        "Seahorse-Skeleton", "Seahorse-Zombie", "Seahorse-CottonCandyPink",
+        "BearCub-Moonglow", "BearCub-SolarSystem",
+    ]
+
+    # Quest pets: @see:
+    # <https://habitica.fandom.com/wiki/Pets#Quest_Pets>
+    # <https://habitica.fandom.com/wiki/Pets#Magic_Potion_Pets>
+    # hopla api content | jq '[.petInfo[] | select(.type=="quest")]'
+    quest_pet_names = [
+        "Gryphon-Base", "Gryphon-White", "Gryphon-Desert", "Gryphon-Red", "Gryphon-Shade",
+        "Gryphon-Skeleton", "Gryphon-Zombie", "Gryphon-CottonCandyPink", "Gryphon-CottonCandyBlue",
+        "Gryphon-Golden", "Hedgehog-Base", "Hedgehog-White", "Hedgehog-Desert", "Hedgehog-Red",
+        "Hedgehog-Shade", "Hedgehog-Skeleton", "Hedgehog-Zombie", "Hedgehog-CottonCandyPink",
+        "Hedgehog-CottonCandyBlue", "Hedgehog-Golden", "Deer-Base", "Deer-White", "Deer-Desert",
+        "Deer-Red", "Deer-Shade", "Deer-Skeleton", "Deer-Zombie", "Deer-CottonCandyPink",
+        "Deer-CottonCandyBlue", "Deer-Golden", "Egg-Base", "Egg-White", "Egg-Desert", "Egg-Red",
+        "Egg-Shade", "Egg-Skeleton", "Egg-Zombie", "Egg-CottonCandyPink", "Egg-CottonCandyBlue",
+        "Egg-Golden", "Rat-Base", "Rat-White", "Rat-Desert", "Rat-Red", "Rat-Shade",
+        "Rat-Skeleton", "Rat-Zombie", "Rat-CottonCandyPink", "Rat-CottonCandyBlue", "Rat-Golden",
+        "Octopus-Base", "Octopus-White", "Octopus-Desert", "Octopus-Red", "Octopus-Shade",
+        "Octopus-Skeleton", "Octopus-Zombie", "Octopus-CottonCandyPink", "Octopus-CottonCandyBlue",
+        "Octopus-Golden", "Seahorse-Base", "Seahorse-White", "Seahorse-Desert", "Seahorse-Red",
+        "Seahorse-Shade", "Seahorse-Skeleton", "Seahorse-Zombie", "Seahorse-CottonCandyPink",
         "Seahorse-CottonCandyBlue", "Seahorse-Golden", "Parrot-Base", "Parrot-White",
         "Parrot-Desert", "Parrot-Red", "Parrot-Shade", "Parrot-Skeleton", "Parrot-Zombie",
         "Parrot-CottonCandyPink", "Parrot-CottonCandyBlue", "Parrot-Golden", "Rooster-Base",
@@ -335,13 +374,27 @@ class FeedingData:
         "Dolphin-Skeleton", "Dolphin-Zombie", "Dolphin-CottonCandyPink", "Dolphin-CottonCandyBlue",
         "Dolphin-Golden", "Robot-Base", "Robot-White", "Robot-Desert", "Robot-Red", "Robot-Shade",
         "Robot-Skeleton", "Robot-Zombie", "Robot-CottonCandyPink", "Robot-CottonCandyBlue",
-        "Robot-Golden", "Wolf-Veggie", "Wolf-Dessert", "TigerCub-Veggie", "TigerCub-Dessert",
-        "PandaCub-Veggie", "PandaCub-Dessert", "LionCub-Veggie", "LionCub-Dessert", "Fox-Veggie",
-        "Fox-Dessert", "FlyingPig-Veggie", "FlyingPig-Dessert", "Dragon-Veggie", "Dragon-Dessert",
-        "Cactus-Veggie", "Cactus-Dessert", "BearCub-Veggie", "BearCub-Dessert", "Wolf-Veteran",
-        "Wolf-Cerberus", "Dragon-Hydra", "Turkey-Base", "BearCub-Polar", "MantisShrimp-Base",
-        "JackOLantern-Base", "Mammoth-Base", "Tiger-Veteran", "Phoenix-Base", "Turkey-Gilded",
-        "MagicalBee-Base", "Lion-Veteran", "Gryphon-RoyalPurple", "JackOLantern-Ghost",
-        "Jackalope-RoyalPurple", "Orca-Base", "Bear-Veteran", "Hippogriff-Hopeful", "Fox-Veteran",
-        "JackOLantern-Glow", "Gryphon-Gryphatrice", "JackOLantern-RoyalPurple"
+        "Robot-Golden"
     ]
+
+    wacky_pet_names = [
+        "Wolf-Veggie", "Wolf-Dessert", "TigerCub-Veggie", "TigerCub-Dessert", "PandaCub-Veggie",
+        "PandaCub-Dessert", "LionCub-Veggie", "LionCub-Dessert", "Fox-Veggie", "Fox-Dessert",
+        "FlyingPig-Veggie", "FlyingPig-Dessert", "Dragon-Veggie", "Dragon-Dessert",
+        "Cactus-Veggie", "Cactus-Dessert", "BearCub-Veggie", "BearCub-Dessert"
+    ]
+
+    remainder_pet_names = [
+        "Wolf-Veteran", "Wolf-Cerberus", "Dragon-Hydra", "Turkey-Base", "BearCub-Polar",
+        "MantisShrimp-Base", "JackOLantern-Base", "Mammoth-Base", "Tiger-Veteran", "Phoenix-Base",
+        "Turkey-Gilded", "MagicalBee-Base", "Lion-Veteran", "Gryphon-RoyalPurple",
+        "JackOLantern-Ghost", "Jackalope-RoyalPurple", "Orca-Base", "Bear-Veteran",
+        "Hippogriff-Hopeful", "Fox-Veteran", "JackOLantern-Glow", "Gryphon-Gryphatrice",
+        "JackOLantern-RoyalPurple"
+    ]
+
+    pet_names = (generation1_pet_names + magic_potion_pet_names
+                 + wacky_pet_names
+                 + quest_pet_names
+                 + remainder_pet_names)
+    """ @see: hopla api content | jq '[.petInfo[] | .key]' """
