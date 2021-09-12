@@ -9,7 +9,7 @@ from typing import Dict, List, Optional
 import click
 import requests
 
-from hopla.hoplalib.clickhelper import data_on_success_else_exit
+from hopla.hoplalib.requests_helper import get_data_or_exit
 from hopla.hoplalib.clickhelper import EnhancedDate
 from hopla.hoplalib.http import RequestHeaders, UrlBuilder
 from hopla.hoplalib.outputformatter import JsonFormatter
@@ -19,9 +19,7 @@ log = logging.getLogger()
 
 @click.group()
 def add():
-    """
-    GROUP for adding things to Habitica.
-    """
+    """GROUP for adding things to Habitica."""
 
 
 DIFFICULTIES_SCORE_MAPPING = {"hard": "2", "medium": "1.5", "easy": "1", "trivial": "0.1"}
@@ -127,7 +125,7 @@ class AddTodoRequest:
             headers=self.headers,
             json=self.habitica_todo.to_json_dict()
         )
-        return data_on_success_else_exit(response)
+        return get_data_or_exit(response)
 
 
 # @see https://habitica.com/apidoc/#api-Task-CreateUserTasks

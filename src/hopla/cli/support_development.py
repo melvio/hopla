@@ -8,7 +8,7 @@ import requests
 
 from hopla.hoplalib.common import GlobalConstants
 from hopla.hoplalib.http import UrlBuilder, RequestHeaders
-from hopla.hoplalib.clickhelper import data_on_success_else_exit
+from hopla.hoplalib.requests_helper import get_data_or_exit
 
 log = logging.getLogger()
 
@@ -56,7 +56,7 @@ def support_development(gems: int):
         method="POST", url=url, headers=headers, json=params
     )
     response: requests.Response = requests.session().send(support_development_request.prepare())
-    response_data = data_on_success_else_exit(response)
+    response_data = get_data_or_exit(response)
 
     click.echo(response_data)
     click.echo()
