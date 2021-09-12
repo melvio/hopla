@@ -17,7 +17,7 @@ class InvalidPet(PrintableException):
 class Pet:
     """A habitica pet"""
 
-    def __init__(self, pet_name: str, *, feeding_status: int = 0):
+    def __init__(self, pet_name: str, *, feeding_status: int = 5):
         if pet_name not in PetData.pet_names:
             raise InvalidPet(f"{pet_name=} is not recognized by hopla.\n"
                              "Potential causes: \n"
@@ -25,19 +25,23 @@ class Pet:
                              "* Is your pet relatively new? If so, please raise\n"
                              f" an issue at {GlobalConstants.NEW_ISSUE_URL}")
 
-        if (feeding_status < -1
-                or feeding_status in [1, 2, 3, 4]  # every pet starts at 5
-                or feeding_status >= 50):  # 50 would turn the pet into a mount
+        # every pet starts at 5
+        # 50 would turn the pet into a mount
+        # The feeding status of 0 is documented but never returned anno Sept 2021
+        valid_status = (feeding_status < -1
+                        or feeding_status in [1, 2, 3, 4]
+                        or feeding_status >= 50)
+        if valid_status:
             raise InvalidPet(f"{feeding_status=} is invalid")
 
         self.pet_name = pet_name
         self.feeding_status = feeding_status
 
-        # This logic might break, but seems to be solid for past few years due to
-        # stabling naming convention by the Habitica API developers.
         if pet_name in PetData.rare_pet_names:
             self.__potion = None
         else:
+            # This logic might break, but seems to be solid for past few years due to
+            # stabling naming convention by the Habitica API developers.
             _, self.__potion = self.pet_name.split("-")
 
     @property
@@ -45,8 +49,14 @@ class Pet:
         """The hatching potion used to hatch the egg this pet came from."""
         return self.__potion
 
+    def is_feedable(self) -> bool:
+        """Return True if a pet cannot be fed at all."""
+        return self.pet_name not in PetData.unfeedable_pet_names
+
     def feeding_status_explanation(self) -> str:
         """Explain the feeding status of a pet"""
+        if not self.is_feedable():
+            return f"{self.pet_name=} can't be fed because it is special."
         if self.feeding_status == -1:
             return f"You can't feed {self.pet_name=} you only have the mount"
 
@@ -77,14 +87,26 @@ class Pet:
             return 100  # The pet is now a mount
         return self.feeding_status * 2
 
-    def favorite_food(self, *, default_value_when_no_favorite_food: str = "Any"):
+    def favorite_food(self, *,
+                      default_value_for_unfeedable: str = "Unfeedable",
+                      default_value_for_all_favorite_food: str = "Any"):
         """Return the favorite food of this pet."""
-        return (PetData.hatching_potion_favorite_food_mapping
-                .get(self.hatching_potion, default_value_when_no_favorite_food))
+        if not self.is_feedable():
+            return default_value_for_unfeedable
+
+        if self.pet_name in PetData.magic_potion_pet_names:
+            return default_value_for_all_favorite_food
+
+        if self.has_only1_type_of_favorite_food():
+            return (PetData.hatching_potion_favorite_food_mapping
+                    .get(self.hatching_potion))
+
+        raise InvalidPet(f"Could not find the feeding habits of this {self.pet_name=}",
+                         pet=self)
 
     def has_only1_type_of_favorite_food(self) -> bool:
         """Return True if pet likes only 1 type of food"""
-        return self.is_from_drop_hatching_potions()  # same impl
+        return self.pet_name in PetData.only_1favorite_food_pet_names
 
     def is_generation1_pet(self) -> bool:
         """Return True if this pet is from the generation 1 pet"""
@@ -380,6 +402,7 @@ class PetData:
         "Robot-Golden"
     ]
 
+    # hopla api content | jq '[.petInfo[] | select(.type=="wacky")]'
     wacky_pet_names = [
         "Wolf-Veggie", "Wolf-Dessert", "TigerCub-Veggie", "TigerCub-Dessert", "PandaCub-Veggie",
         "PandaCub-Dessert", "LionCub-Veggie", "LionCub-Dessert", "Fox-Veggie", "Fox-Dessert",
@@ -391,19 +414,31 @@ class PetData:
         "Hippogriff-Hopeful", "MagicalBee-Base", "Phoenix-Base", "Mammoth-Base",
         "MantisShrimp-Base"
     ]
+    # Strictly speaking: these are mounts only, consider refactoring this entire class to contain
+    # more semantic information when important
 
     event_item_sequence_pet_names = [
         "Wolf-Veteran", "Turkey-Base", "JackOLantern-Base", "Tiger-Veteran", "Turkey-Gilded",
         "Lion-Veteran", "Gryphon-RoyalPurple", "JackOLantern-Ghost", "Orca-Base", "Bear-Veteran",
         "Fox-Veteran", "JackOLantern-Glow", "JackOLantern-RoyalPurple"
     ]
+    # Strictly speaking: these are mounts only, consider refactoring this entire class to contain
+    # more semantic information when important
 
     other_pet_names = [
         "Jackalope-RoyalPurple", "BearCub-Polar", "Dragon-Hydra", "Wolf-Cerberus",
         "Gryphon-Gryphatrice",
     ]
+    # These are pets without mounts!
 
     rare_pet_names = world_boss_reward_pet_names + event_item_sequence_pet_names + other_pet_names
+    """Rare pets: <https://habitica.fandom.com/wiki/Pets#Rare_Pets>"""
+
+    only_1favorite_food_pet_names = generation1_pet_names + quest_pet_names
+    """Only quest pets and gen1 pets have only 1 favorite food (anno Sept. 2021)"""
+
+    unfeedable_pet_names = rare_pet_names + wacky_pet_names
+    """Only wacky pets and rare pets cannot be fed anno Sept. 2021."""
 
     pet_names = (generation1_pet_names
                  + magic_potion_pet_names

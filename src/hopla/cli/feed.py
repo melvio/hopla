@@ -15,9 +15,9 @@ from hopla.hoplalib.pethelper import Pet, PetData
 log = logging.getLogger()
 
 
-class PetFeedPostRequester:
+class FeedPostRequester:
     """
-    The PetFeedPostRequester sends a post request to feed a pet.
+    The FeedPostRequester sends a post request to feed a pet.
 
     Note: this API endpoint expects query params instead
     of a request body (even though it is a HTTP POST).
@@ -69,7 +69,7 @@ def print_favorite_food_and_exit(pet_name: str):
     """Get favorite food for a given pet"""
     pet = Pet(pet_name)
     click.echo(pet.favorite_food())
-    sys.exit(0)
+    sys.exit()
 
 
 @click.command()
@@ -78,11 +78,12 @@ def print_favorite_food_and_exit(pet_name: str):
 @click.argument("food_name", type=click.Choice(PetData.drop_food_names),
                 metavar="[FOOD_NAME]", required=False)
 @click.option("--list-favorite-food/--no-list-favorite-food",
-              default=False, show_default=True)
+              default=False, show_default=True,
+              help="Print favorite food for PET_NAME and exit.")
 @click.option("--amount", "amount",
-              default=1, show_default=True,
               type=valid_feeding_amount,
               metavar="N_FOOD",
+              default=1, show_default=True,
               help="number of FOOD_NAME fed to PET_NAME")
 def feed(pet_name: str, food_name: str,
          list_favorite_food: bool,
@@ -128,7 +129,7 @@ def feed(pet_name: str, food_name: str,
     if list_favorite_food:
         print_favorite_food_and_exit(pet_name=pet_name)
 
-    pet_feed_request = PetFeedPostRequester(
+    pet_feed_request = FeedPostRequester(
         pet_name=pet_name,
         food_name=food_name,
         food_amount=amount
