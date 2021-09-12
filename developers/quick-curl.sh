@@ -29,12 +29,21 @@ source "${this_script_parent_dir}/developer.env"
 #  --verbose \
 #  --header "Content-Type: application/json" | jq .
 
-curl -XGET "https://habitica.com/api/v3/groups/party" \
-  --verbose \
-  --header "Content-Type: application/json" \
-  --header "x-api-user: ${user_id}" \
-  --header "x-api-key: ${api_token}" \
-  --header "x-client: Testing" | jq .
+#curl -XGET "https://habitica.com/api/v3/groups/party" \
+#  --verbose \
+#  --header "Content-Type: application/json" \
+#  --header "x-api-user: ${user_id}" \
+#  --header "x-api-key: ${api_token}" \
+#  --header "x-client: Testing" | jq .
+
+#curl -XPUT https://habitica.com/api/v3/user \
+#  --verbose \
+#  --data '{ "preferences.dateFormat" : "dd/MM/YYYY", "achievements.habitBirthdays" : 0, "achievements.rebirths" : 1 }' \
+#  --header "Content-Type: application/json" \
+#  --header "x-api-user: ${user_id}" \
+#  --header "x-api-key: ${api_token}" \
+#  --header "x-client: Testing" | jq .
+
 
 # [docs](https://habitica.com/apidoc/#api-User-UserFeed)
 # [API PATH](https://habitica.com/api/v3/user/feed/:pet/:food)

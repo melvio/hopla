@@ -15,8 +15,8 @@ Nice to haves:
   + Authorization data class
 * [DONE] add project structure with proper imports
 * [DONE] click autocomplete
-* Use click's context classes
-* get error checking for wrong commands
+* [DONE] Use click's context classes
+* [DONE] get error checking for wrong commands
 * get quest info
 * get next free rebirth
 * [DONE] get gems
