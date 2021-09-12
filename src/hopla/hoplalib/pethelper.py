@@ -53,6 +53,14 @@ class Pet:
         """Return True if a pet cannot be fed at all."""
         return self.pet_name not in PetData.unfeedable_pet_names
 
+    def has_just_1_favorite_food(self) -> bool:
+        """Return True if pet likes only 1 type of food"""
+        return self.pet_name in PetData.only_1favorite_food_pet_names
+
+    def likes_all_food(self) -> bool:
+        """Return True if this prefers all food."""
+        return self.pet_name in PetData.magic_potion_pet_names
+
     def feeding_status_explanation(self) -> str:
         """Explain the feeding status of a pet"""
         if not self.is_feedable():
@@ -97,16 +105,12 @@ class Pet:
         if self.pet_name in PetData.magic_potion_pet_names:
             return default_value_for_all_favorite_food
 
-        if self.has_only1_type_of_favorite_food():
+        if self.has_just_1_favorite_food():
             return (PetData.hatching_potion_favorite_food_mapping
                     .get(self.hatching_potion))
 
         raise InvalidPet(f"Could not find the feeding habits of this {self.pet_name=}",
                          pet=self)
-
-    def has_only1_type_of_favorite_food(self) -> bool:
-        """Return True if pet likes only 1 type of food"""
-        return self.pet_name in PetData.only_1favorite_food_pet_names
 
     def is_generation1_pet(self) -> bool:
         """Return True if this pet is from the generation 1 pet"""
@@ -436,6 +440,11 @@ class PetData:
 
     only_1favorite_food_pet_names = generation1_pet_names + quest_pet_names
     """Only quest pets and gen1 pets have only 1 favorite food (anno Sept. 2021)"""
+
+    feedable_pet_names = only_1favorite_food_pet_names + magic_potion_pet_names
+    """
+    Pets that can be fed are the gen1 pets, quest pets, and magic potion pets. (anno Sept. 2021).
+    """
 
     unfeedable_pet_names = rare_pet_names + wacky_pet_names
     """Only wacky pets and rare pets cannot be fed anno Sept. 2021."""

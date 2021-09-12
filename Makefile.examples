@@ -71,6 +71,15 @@ hopla_api_version:
 	hopla api version
 
 
+hopla_feed_list_examples:
+	hopla feed Wolf-Base --list-favorite-food \
+	&& hopla feed Dragon-Bronze --list-favorite-food \
+
+hopla_feed_examples:
+	hopla feed Wolf-Base Meat \
+	&& hopla feed Parrot-Golden Honey --times 5
+
+
 # hopla get-user auth
 hopla_get_user_auth:
 	hopla get-user auth \
