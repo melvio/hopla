@@ -6,7 +6,7 @@ import logging
 import click
 import requests
 
-from hopla.hoplalib.clickhelper import data_on_success_else_exit
+from hopla.hoplalib.requests_helper import get_data_or_exit
 from hopla.hoplalib.http import UrlBuilder
 from hopla.hoplalib.common import GlobalConstants
 from hopla.hoplalib.outputformatter import JsonFormatter
@@ -35,7 +35,7 @@ class ApiContentRequest:
         If the request was successful return the content, else exits.
         """
         api_response: requests.Response = self.request_api_content()
-        return data_on_success_else_exit(api_response)
+        return get_data_or_exit(api_response)
 
 
 @api.command()
@@ -94,7 +94,7 @@ def model(model_name: str) -> dict:
 
     url_builder = UrlBuilder(path_extension=f"/models/{model_name}/paths")
     response = requests.get(url=url_builder.url)
-    model_data = data_on_success_else_exit(response)
+    model_data = get_data_or_exit(response)
 
     click.echo(JsonFormatter(model_data).format_with_double_quotes())
     return model_data
@@ -125,7 +125,7 @@ def status() -> dict:
 
     url_builder = UrlBuilder(path_extension="/status")
     response = requests.get(url=url_builder.url)
-    status_data = data_on_success_else_exit(response)
+    status_data = get_data_or_exit(response)
 
     click.echo(JsonFormatter(status_data).format_with_double_quotes())
     return status_data

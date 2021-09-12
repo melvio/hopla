@@ -7,7 +7,7 @@ import sys
 import click
 import requests
 
-from hopla.hoplalib.clickhelper import data_on_success_else_exit
+from hopla.hoplalib.requests_helper import get_data_or_exit
 from hopla.hoplalib.http import RequestHeaders, UrlBuilder
 from hopla.hoplalib.outputformatter import JsonFormatter
 from hopla.hoplalib.pethelper import Pet, PetData
@@ -136,7 +136,7 @@ def feed(pet_name: str, food_name: str,
     )
 
     response = pet_feed_request.post_feed_pet_food_request()
-    feed_data = data_on_success_else_exit(response)
+    feed_data = get_data_or_exit(response)
 
     click.echo(JsonFormatter(feed_data).format_with_double_quotes())
     return feed_data

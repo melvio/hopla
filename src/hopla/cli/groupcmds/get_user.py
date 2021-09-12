@@ -7,7 +7,7 @@ from dataclasses import dataclass
 import click
 import requests
 
-from hopla.hoplalib.clickhelper import data_on_success_else_exit
+from hopla.hoplalib.requests_helper import get_data_or_exit
 from hopla.hoplalib.http import RequestHeaders, UrlBuilder
 
 log = logging.getLogger()
@@ -59,13 +59,13 @@ class HabiticaUserRequest:
         """Perform the user get request and return the response"""
         return requests.get(url=self.url, headers=self.headers)
 
-    def request_user_data_on_fail_exit(self) -> HabiticaUser:
+    def request_user_data_or_exit_on_fail(self) -> HabiticaUser:
         """
         Function that request the user from habitica and returns
         a HabiticaUser if the request was successful. Else exits.
         """
         user_response: requests.Response = self.request_user()
-        user_data: dict = data_on_success_else_exit(user_response)
+        user_data: dict = get_data_or_exit(user_response)
         return HabiticaUser(user_dict=user_data)
 
 
@@ -79,6 +79,6 @@ def get_user(ctx: click.Context) -> HabiticaUser:
     GROUP for getting user information from Habitica.
     """
     log.debug("hopla get-user")
-    user: HabiticaUser = HabiticaUserRequest().request_user_data_on_fail_exit()
+    user: HabiticaUser = HabiticaUserRequest().request_user_data_or_exit_on_fail()
     ctx.obj = user
     return user
