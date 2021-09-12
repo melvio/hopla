@@ -9,7 +9,7 @@ hopla - a command line interface (CLI) for [habitica.com](https://habitica.com)
 Hopla is a XDG-compliant CLI which uses `python3` to interact with
 the [Habitica API](https://habitica.com/apidoc/).
 
-Hopla is currently under active development so new features are added rapidely.
+Hopla is currently under active development so new features are added rapidly.
 
 ## How to Use Hopla
 
@@ -28,7 +28,7 @@ gh repo clone melvio/hopla
 Now `cd` into the repository and install hopla:
 
 ```bash
-cd ./hopla && pip install --upgrade -e .
+cd ./hopla && pip install --upgrade --editable .
 ```
 
 ### First Time Usage
@@ -46,9 +46,9 @@ Please paste your user id here: 7c551d98-31e9-42b4-b7fa-9d89b0944320
 Please paste your api token id here: *******-*******-*******-*******
 ```
 
-This will create a credentials file at `~/.config/hopla/authenticate.conf` that Hopla uses. If you want to
-use a different file, you can set the `${HOPLA_AUTH_FILE}`
-environment variable to choose your own path.
+This will create a credentials file at `~/.config/hopla/authenticate.conf` that Hopla uses. 
+If you want to use a different file, you can set the `${HOPLA_AUTH_FILE}` environment 
+variable to choose your own file.
 
 ##### Autocompletion
 
@@ -85,6 +85,11 @@ Options:
   -h, --help  Show this message and exit.
 
 Commands:
+  add                  GROUP for adding things to Habitica.
+  api                  GROUP for requesting Habitica API metadata.
+  authenticate         Authorize yourself to access the Habitica.com API.
+  buy                  GROUP to buy things.
+  complete             Print or enable shell autocompletion.
   # etcetera
 ```
 
@@ -144,7 +149,7 @@ CLI supported the creation of To-Dos with both a due date and a checklist. Hopla
 following command to create these with the following command:
 
 ```bash
-# add a hard todo with every line in the specified file being added as
+# Add a hard To-Do. Every line in the specified file will being added as
 #  an item of this To-Do's checklist.
 hopla add todo --difficulty hard \
                --due-date 2027-12-07 \
