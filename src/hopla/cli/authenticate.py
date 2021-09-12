@@ -12,7 +12,6 @@ from hopla.hoplalib.authorization import AuthorizationHandler
 log = logging.getLogger()
 
 
-# TODO: --browser option
 @click.command()
 def authenticate():
     """Authorize yourself to access the Habitica.com API.
