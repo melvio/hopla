@@ -7,54 +7,10 @@ import sys
 import click
 import requests
 
-from hopla.hoplalib.http import RequestHeaders, UrlBuilder
 from hopla.hoplalib.outputformatter import JsonFormatter
-from hopla.hoplalib.pethelper import InvalidPet, Pet, PetData
+from hopla.hoplalib.pethelper import FeedPostRequester, InvalidPet, Pet, PetData
 
 log = logging.getLogger()
-
-
-class FeedPostRequester:
-    """
-    The FeedPostRequester sends a post request to feed a pet.
-
-    Note: this API endpoint expects query params instead
-    of a request body (even though it is a HTTP POST).
-
-    [APIDOCS](https://habitica.com/apidoc/#api-User-UserFeed)
-    """
-
-    def __init__(self, *,
-                 pet_name: str,
-                 food_name: str,
-                 food_amount: int = 1):
-        self.pet_name = pet_name
-        self.food_name = food_name
-        self.query_params = {"amount": food_amount}
-
-    @property
-    def request_headers(self) -> dict:
-        """Return the required headers for a feed-pet post request."""
-        return RequestHeaders().get_default_request_headers()
-
-    @property
-    def path(self) -> str:
-        """Return the URL used to feed a pet"""
-        return f"/user/feed/{self.pet_name}/{self.food_name}"
-
-    @property
-    def feed_pet_food_url(self) -> str:
-        """Return the url to feed a pet"""
-        return UrlBuilder(path_extension=self.path).url
-
-    def post_feed_request(self) -> requests.Response:
-        """Performs the feed pet post requests and return the response"""
-        return requests.post(
-            url=self.feed_pet_food_url,
-            headers=self.request_headers,
-            params=self.query_params
-        )
-
 
 valid_feed_amount_range = click.IntRange(min=0, max=23, clamp=True)
 """pets can eat up to 23 units of non-preferred foods"""
@@ -73,9 +29,9 @@ def get_favorite_food_or_exit(pet_name: str):
         pet = Pet(pet_name=pet_name)
         favorite_food = pet.favorite_food()
     except (InvalidPet, ValueError) as ex:
-        click.echo(f"could not create {pet_name}. Received the following exception:")
+        click.echo(f"We could not create {pet_name}. Received the following exception:")
         click.echo(ex)
-        sys.exit(0)
+        sys.exit(1)
 
     __exit_if_pet_has_no_favorite_food(pet_name, favorite_food)
 
@@ -93,7 +49,7 @@ def __exit_if_pet_has_no_favorite_food(pet_name: str, favorite_food: str):
         sys.exit(1)
 
 
-def get_feed_data_or_exit(feed_response: requests.Response):
+def __get_feed_data_or_exit(feed_response: requests.Response):
     """
     Given a feed response, if the API request was successful, return interesting
     feeding information. On failure, exit with an error message.
@@ -188,4 +144,4 @@ def feed(pet_name: str, food_name: str,
     )
 
     response: requests.Response = pet_feed_request.post_feed_request()
-    return get_feed_data_or_exit(feed_response=response)
+    return __get_feed_data_or_exit(feed_response=response)
