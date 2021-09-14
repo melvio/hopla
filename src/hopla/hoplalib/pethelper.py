@@ -1,9 +1,50 @@
 """
 A helper module for Pet logic.
 """
+import requests
 from hopla.hoplalib.clickhelper import PrintableException
+from hopla.hoplalib.http import RequestHeaders, UrlBuilder
 
 from hopla.hoplalib.common import GlobalConstants
+
+
+class FeedPostRequester:
+    """
+    The FeedPostRequester sends a post request to feed a pet.
+
+    Note: this API endpoint expects query params instead
+    of a request body (even though it is a HTTP POST).
+
+    [APIDOCS](https://habitica.com/apidoc/#api-User-UserFeed)
+    """
+
+    def __init__(self, *,
+                 pet_name: str,
+                 food_name: str,
+                 food_amount: int = 1):
+        self.pet_name = pet_name
+        self.food_name = food_name
+        self.query_params = {"amount": food_amount}
+
+    @property
+    def request_headers(self) -> dict:
+        """Return the required headers for a feed-pet post request."""
+        return RequestHeaders().get_default_request_headers()
+
+    @property
+    def path(self) -> str:
+        """Return the URL used to feed a pet"""
+        return f"/user/feed/{self.pet_name}/{self.food_name}"
+
+    @property
+    def feed_pet_food_url(self) -> str:
+        """Return the url to feed a pet"""
+        return UrlBuilder(path_extension=self.path).url
+
+    def post_feed_request(self) -> requests.Response:
+        """Performs the feed pet post requests and return the response"""
+        return requests.post(url=self.feed_pet_food_url, headers=self.request_headers,
+                             params=self.query_params)
 
 
 class InvalidPet(PrintableException):
@@ -53,6 +94,14 @@ class Pet:
         """Return True if a pet cannot be fed at all."""
         return self.pet_name not in PetData.unfeedable_pet_names
 
+    def has_just_1_favorite_food(self) -> bool:
+        """Return True if pet likes only 1 type of food"""
+        return self.pet_name in PetData.only_1favorite_food_pet_names
+
+    def likes_all_food(self) -> bool:
+        """Return True if this prefers all food."""
+        return self.pet_name in PetData.magic_potion_pet_names
+
     def feeding_status_explanation(self) -> str:
         """Explain the feeding status of a pet"""
         if not self.is_feedable():
@@ -97,16 +146,12 @@ class Pet:
         if self.pet_name in PetData.magic_potion_pet_names:
             return default_value_for_all_favorite_food
 
-        if self.has_only1_type_of_favorite_food():
+        if self.has_just_1_favorite_food():
             return (PetData.hatching_potion_favorite_food_mapping
                     .get(self.hatching_potion))
 
         raise InvalidPet(f"Could not find the feeding habits of this {self.pet_name=}",
                          pet=self)
-
-    def has_only1_type_of_favorite_food(self) -> bool:
-        """Return True if pet likes only 1 type of food"""
-        return self.pet_name in PetData.only_1favorite_food_pet_names
 
     def is_generation1_pet(self) -> bool:
         """Return True if this pet is from the generation 1 pet"""
@@ -436,6 +481,11 @@ class PetData:
 
     only_1favorite_food_pet_names = generation1_pet_names + quest_pet_names
     """Only quest pets and gen1 pets have only 1 favorite food (anno Sept. 2021)"""
+
+    feedable_pet_names = only_1favorite_food_pet_names + magic_potion_pet_names
+    """
+    Pets that can be fed are the gen1 pets, quest pets, and magic potion pets. (anno Sept. 2021).
+    """
 
     unfeedable_pet_names = rare_pet_names + wacky_pet_names
     """Only wacky pets and rare pets cannot be fed anno Sept. 2021."""

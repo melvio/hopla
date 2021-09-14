@@ -4,11 +4,35 @@ import random
 
 from hopla.hoplalib.common import GlobalConstants
 from hopla.hoplalib.pethelper import Pet, InvalidPet, PetData
+from hopla.hoplalib.pethelper import FeedPostRequester
 
-_SAMPLE_SIZE = 200
+_SAMPLE_SIZE = 50
 """
 Sample size to use for pytest.mark.parameterize when unittests become slow
 """
+
+
+class TestFeedPostRequester:
+    def test_path_is_ok(self):
+        pet = "Wolf-Golden"
+        food = "Honey"
+
+        feed_requester = FeedPostRequester(pet_name=pet,
+                                           food_name=food)
+
+        assert feed_requester.path == f"/user/feed/{pet}/{food}"
+
+    def test_url_is_okay(self):
+        pet = "Wolf-Shimmer"
+        food = "Meat"
+
+        feed_requester = FeedPostRequester(pet_name=pet,
+                                           food_name=food)
+
+        result_url = feed_requester.feed_pet_food_url
+
+        expected_url = f"https://habitica.com/api/v3/user/feed/{pet}/{food}"
+        assert result_url == expected_url
 
 
 class TestPetInit:
@@ -182,14 +206,14 @@ class TestOtherPetFunctions:
         random.sample(PetData.generation1_pet_names + PetData.quest_pet_names,
                       k=_SAMPLE_SIZE)
     )
-    def test_has_only1_favorite_food_true(self, pet_name):
+    def test_has_just_1_favorite_food_true(self, pet_name):
         pet = Pet(pet_name=pet_name)
-        assert pet.has_only1_type_of_favorite_food()
+        assert pet.has_just_1_favorite_food()
 
     @pytest.mark.parametrize(
         "pet_name",
         random.sample(PetData.magic_potion_pet_names, k=_SAMPLE_SIZE)
     )
-    def test_has_only1_favorite_food_false(self, pet_name):
+    def test_has_just_1_favorite_food_false(self, pet_name):
         pet = Pet(pet_name=pet_name)
-        assert pet.has_only1_type_of_favorite_food() is False
+        assert pet.has_just_1_favorite_food() is False
