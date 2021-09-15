@@ -216,6 +216,22 @@ class Pet:
         return self.hatching_potion in PetData.drop_hatching_potions
 
 
+class PetMountPair:
+    """A pair of a pet and its corresponding mount information"""
+
+    def __init__(self, pet: Pet, mount_available: bool):
+        """Create a Pet-Mount pair"""
+        if pet.feeding_status is None:
+            raise InvalidPet(f"PetMountPair requires that {pet=} has a feeding status")
+
+        self.pet = pet
+        self.mount_available = mount_available
+
+    def can_feed_pet(self) -> True:
+        """Return true if the pet itself is feedable and there is no mount yet."""
+        return self.mount_available is False and self.pet.is_feedable()
+
+
 class PetData:
     """
     Helper class with valid foods, pets, hatchingPotions and the relationships
@@ -511,7 +527,8 @@ class PetData:
         "MantisShrimp-Base"
     ]
     # Strictly speaking: these are mounts only, consider refactoring this entire class to contain
-    # more semantic information when important
+    # more semantic information when important. Except for the Phoenix-Base, but that one
+    # is unfeedable too.
 
     event_item_sequence_pet_names = [
         "Wolf-Veteran", "Turkey-Base", "JackOLantern-Base", "Tiger-Veteran", "Turkey-Gilded",
