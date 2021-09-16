@@ -2,6 +2,9 @@
 A helper module for Pet logic.
 """
 import math
+from typing import Dict
+
+from hopla.cli.groupcmds.get_user import HabiticaUser
 from hopla.hoplalib.clickhelper import PrintableException
 
 from hopla.hoplalib.common import GlobalConstants
@@ -41,17 +44,23 @@ class FeedingStatus:
         if valid_status:
             raise InvalidFeedingStatus(f"{feeding_status=} is invalid")
 
-        self.feeding_status = feeding_status
+        self.__feeding_status = feeding_status
 
     def __repr__(self) -> str:
-        return self.__class__.__name__ + f"({self.feeding_status})"
+        return self.__class__.__name__ + f"({self.__feeding_status})"
+
+    def __eq__(self, other):
+        return isinstance(other, FeedingStatus) and int(other) == int(self)
+
+    def __hash__(self):
+        return hash(self.__feeding_status)
 
     def __int__(self) -> int:
-        return self.feeding_status
+        return self.__feeding_status
 
     def required_food_items_to_become_mount(self, is_favorite_food: bool) -> int:
         """Return how many items of food we need to give to turn a pet into a mount."""
-        target = FeedingStatus.FULLY_FED_STATE - self.feeding_status
+        target = FeedingStatus.FULLY_FED_STATE - self.__feeding_status
         if is_favorite_food:
             required_food = math.ceil(target / FeedingStatus.FAVORITE_INCREMENT)
         else:
@@ -64,9 +73,9 @@ class FeedingStatus:
         website user.
         <https://habitica.fandom.com/wiki/Food_Preferences>
         """
-        if self.feeding_status == -1:
+        if self.__feeding_status == -1:
             return 100  # The pet is now a mount
-        return self.feeding_status * 2
+        return self.__feeding_status * 2
 
 
 class Pet:
@@ -115,10 +124,10 @@ class Pet:
         """Explain the feeding status of a pet"""
         if self.is_feedable() is False:
             return f"{self.pet_name=} can't be fed because it is special."
-        if self.feeding_status.feeding_status == -1:
+        if int(self.feeding_status) == -1:
             return f"You can't feed {self.pet_name=} you only have the mount"
 
-        if self.feeding_status.feeding_status == 5:
+        if int(self.feeding_status) == 5:
             # remark: if we really want to know more, we can query the
             #         API to check if we have the self.pet_name in the
             #         Users: jq .data.items.mounts
@@ -128,10 +137,10 @@ class Pet:
                     "2. a pet that hasn't been fed but you don't have \n"
                     "   the mount: You can feed your pet")
 
-        if self.feeding_status.feeding_status < 50:
+        if int(self.feeding_status) < 50:
             return f"{self.pet_name=} can be fed"
 
-        raise InvalidPet(f"Did not expect {self.feeding_status.feeding_status=}. \n"
+        raise InvalidPet(f"Did not expect {self.feeding_status=}. \n"
                          f"Looks like we failed to validate the Pet properly.",
                          pet=self)  # pragma: no cover
 
@@ -179,14 +188,73 @@ class Pet:
 class PetMountPair:
     """A pair of a pet and its corresponding mount information"""
 
-    def __init__(self, pet: Pet, mount_available: bool):
+    def __init__(self, pet: Pet, *,
+                 pet_available: bool,
+                 mount_available: bool):
         """Create a Pet-Mount pair"""
         if pet.feeding_status is None:
             raise InvalidPet(f"PetMountPair requires that {pet=} has a feeding status")
 
         self.pet = pet
+        self.pet_available = pet_available
         self.mount_available = mount_available
+
+    def __repr__(self):
+        return self.__class__.__name__ + f"({self.__dict__})"
 
     def can_feed_pet(self) -> True:
         """Return true if the pet itself is feedable and there is no mount yet."""
-        return self.mount_available is False and self.pet.is_feedable()
+        return (
+                self.mount_available is False
+                and self.pet.is_feedable()
+                and int(self.pet.feeding_status) != -1
+        )
+
+
+Zoo = Dict[str, PetMountPair]
+"""
+Zoo is dictionary with key pet names for O(1) access to the
+PetMountPair.
+"""
+
+
+class ZooBuilder:
+    """
+    Class that creates a Zoo from a HabiticaUser using the
+    builder design pattern.
+    """
+
+    def __init__(self, user: HabiticaUser):
+        self.pets: dict = user.get_pets()
+        self.mounts: dict = user.get_mounts()
+        self.__zoo: Zoo = {}  # empty until build() is called
+
+    def build(self) -> Zoo:
+        """Create the Zoo. Return the Zoo in case of success"""
+
+        for pet_name in self.pets:
+            feed_status = self.pets[pet_name]
+            if self.mounts.get(pet_name) is None:
+                mount_available = False
+            else:
+                mount_available = True
+                del self.mounts[pet_name]  # found the mount!
+
+            pet_available = feed_status != -1
+            pet = Pet(pet_name, feeding_status=FeedingStatus(feed_status))
+            pair = PetMountPair(pet,
+                                pet_available=pet_available,
+                                mount_available=mount_available)
+
+            self.__zoo[pet_name] = pair
+
+        for mount_name in self.mounts:
+            # Watch out: we are abusing the Pet object for mount only animals here
+            pet = Pet(mount_name)
+
+            pair = PetMountPair(pet,
+                                pet_available=False,
+                                mount_available=True)
+            self.__zoo[mount_name] = pair
+
+        return self.__zoo

@@ -2,16 +2,17 @@
 import pytest
 import random
 
+from hopla.cli.groupcmds.get_user import HabiticaUser
 from hopla.hoplalib.common import GlobalConstants
-from hopla.hoplalib.zoo.petmodels import FeedingStatus, InvalidFeedingStatus, Pet, InvalidPet
+from hopla.hoplalib.zoo.petmodels import FeedingStatus, InvalidFeedingStatus
+from hopla.hoplalib.zoo.petmodels import Pet, InvalidPet
+from hopla.hoplalib.zoo.petmodels import Zoo, ZooBuilder
 from hopla.hoplalib.zoo.petdata import PetData
 
 _SAMPLE_SIZE = 50
 """
 Sample size to use for pytest.mark.parameterize when unittests become slow
 """
-
-
 
 
 class TestPetInit:
@@ -339,3 +340,24 @@ class TestOtherPetFunctions:
 
         expected = f"Pet(self.pet_name='{pet_name}', self.feeding_status={feeding_status})"
         assert result == expected
+
+
+class TestZooBuilder:
+
+    def test_build_no_pet_yes_mount(self):
+        animal_name = "BearCub-Shadow"
+        feed_status = -1  # i.e. No pet, just mount
+        user = HabiticaUser({"items": {"pets": {animal_name: feed_status},
+                                       "mounts": {animal_name: True}}})
+        builder = ZooBuilder(user)
+
+        zoo: Zoo = builder.build()
+
+        assert len(zoo) == 1
+
+        result_pair = zoo[animal_name]
+        expected_pet = Pet(animal_name, feeding_status=FeedingStatus(feed_status))
+        assert result_pair.pet.pet_name == animal_name
+        assert result_pair.pet.feeding_status == FeedingStatus(feed_status)
+        assert result_pair.mount_available
+        assert result_pair.pet_available is False

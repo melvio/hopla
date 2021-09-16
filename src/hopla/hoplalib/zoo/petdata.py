@@ -312,14 +312,11 @@ class PetData:
         "Lion-Veteran", "Gryphon-RoyalPurple", "JackOLantern-Ghost", "Orca-Base", "Bear-Veteran",
         "Fox-Veteran", "JackOLantern-Glow", "JackOLantern-RoyalPurple"
     ]
-    # Strictly speaking: these are mounts only, consider refactoring this entire class to contain
-    # more semantic information when important
 
     other_pet_names = [
         "Jackalope-RoyalPurple", "BearCub-Polar", "Dragon-Hydra", "Wolf-Cerberus",
-        "Gryphon-Gryphatrice",
+        "Gryphon-Gryphatrice", "Aether-Invisible"
     ]
-    # These are pets without mounts!
 
     rare_pet_names = world_boss_reward_pet_names + event_item_sequence_pet_names + other_pet_names
     """Rare pets: <https://habitica.fandom.com/wiki/Pets#Rare_Pets>"""
