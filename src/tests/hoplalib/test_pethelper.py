@@ -3,7 +3,7 @@ import pytest
 import random
 
 from hopla.hoplalib.common import GlobalConstants
-from hopla.hoplalib.pethelper import Pet, InvalidPet, PetData
+from hopla.hoplalib.pethelper import FeedingStatus, InvalidFeedingStatus, Pet, InvalidPet, PetData
 from hopla.hoplalib.pethelper import FeedPostRequester
 
 _SAMPLE_SIZE = 50
@@ -59,20 +59,76 @@ class TestPetInit:
         [-10, -2, 1, 3, 51, 100]
     )
     def test_init_raises_invalid_feeding_status_fail(self, invalid_feed_status: int):
-        with pytest.raises(InvalidPet) as execinfo:
-            Pet("PandaCub-IcySnow", feeding_status=invalid_feed_status)
+        with pytest.raises(InvalidFeedingStatus) as execinfo:
+            feeding_status = FeedingStatus(invalid_feed_status)
+            Pet("PandaCub-IcySnow", feeding_status=feeding_status)
 
         err_msg = str(execinfo.value)
-        assert f"feeding_status={invalid_feed_status}" in err_msg
+        assert f"feeding_status={int(invalid_feed_status)}" in err_msg
 
     @pytest.mark.parametrize(
         "valid_feed_status",
         [5, 10, 20, -1, 49]
     )
     def test_init_sets_valid_feeding_status_ok(self, valid_feed_status: int):
-        pet = Pet("LionCub-Sunset", feeding_status=valid_feed_status)
+        feeding_status = FeedingStatus(valid_feed_status)
+        pet = Pet("LionCub-Sunset", feeding_status=feeding_status)
 
-        assert valid_feed_status == pet.feeding_status
+        assert valid_feed_status == int(pet.feeding_status)
+
+
+class TestFeedingStatus:
+    @pytest.mark.parametrize(
+        "feeding_status,expected_percentage",
+        [(-1, 100), (5, 10), (7, 14), (48, 96)]
+    )
+    def test_to_percentage_ok(self, feeding_status: int,
+                              expected_percentage: int):
+        feeding_status = FeedingStatus(feeding_status)
+
+        result_percentage = feeding_status.to_percentage()
+
+        assert result_percentage == expected_percentage
+
+    @pytest.mark.parametrize(
+        "start_status,expected_food_items", [
+            (45, 1),
+            (44, 2),
+            (40, 2),
+            (39, 3),
+            (5, 9),
+        ]
+    )
+    def test_required_food_items_to_become_mount_favorite(self,
+                                                          start_status: int,
+                                                          expected_food_items: int):
+        feeding_status = FeedingStatus(start_status)
+
+        is_favorite = True
+        result = feeding_status.required_food_items_to_become_mount(is_favorite)
+
+        assert result == expected_food_items
+
+    @pytest.mark.parametrize(
+        "start_status,expected_food_items", [
+            (49, 1),
+            (45, 3),
+            (44, 3),
+            (40, 5),
+            (39, 6),
+            (6, 22),
+            (5, 23),
+        ]
+    )
+    def test_required_food_items_to_become_mount_not_favorite(self,
+                                                              start_status: int,
+                                                              expected_food_items: int):
+        feeding_status = FeedingStatus(start_status)
+
+        is_favorite = False
+        result = feeding_status.required_food_items_to_become_mount(is_favorite)
+
+        assert result == expected_food_items
 
 
 class TestFavoriteFood:
@@ -142,31 +198,67 @@ class TestFavoriteFood:
         assert default_value_for_unfeedable_pets == pet.favorite_food()
 
 
+class TestIsFavoriteFood:
+    @pytest.mark.parametrize(
+        "pet_name,food_name",
+        # we use choices here because both groups are smaller than
+        # the specified k
+        zip(random.choices(PetData.unfeedable_pet_names, k=_SAMPLE_SIZE),
+            random.choices(PetData.drop_food_names, k=_SAMPLE_SIZE))
+    )
+    def test_is_favorite_food_false_because_unfeedable(self, pet_name: str,
+                                                       food_name: str):
+        pet = Pet(pet_name)
+        assert pet.is_favorite_food(food_name) is False
+
+    @pytest.mark.parametrize(
+        "pet_name,food_name",
+        zip(random.sample(PetData.magic_potion_pet_names, k=_SAMPLE_SIZE),
+            random.choices(PetData.drop_food_names, k=_SAMPLE_SIZE))
+    )
+    def test_is_favorite_food_true_because_likes_all_food(self,
+                                                          pet_name: str,
+                                                          food_name: str):
+        assert Pet(pet_name).is_favorite_food(food_name)
+
+    @pytest.mark.parametrize(
+        "pet_name,food_name,expected_result", [
+            ("Fox-Red", "Strawberry", True),
+            ("Fox-Red", "Milk", False),
+            ("Parrot-Desert", "Potatoe", True),
+            ("Parrot-Base", "Potatoe", False),
+            ("Hippo-Golden", "Honey", True),
+            ("Hippo-Golden", "CottonCandyBlue", False),
+        ]
+    )
+    def test_is_favorite_food_for_hatching_pets(self,
+                                                pet_name: str,
+                                                food_name: str,
+                                                expected_result: bool):
+        pet = Pet(pet_name)
+        result = pet.is_favorite_food(food_name)
+        assert result is expected_result
+
+
 class TestOtherPetFunctions:
     """ Test class for Pet functions that aren't covered elsewhere """
     PET_NAME = "Fox-Ember"
 
     @pytest.mark.parametrize(
-        "feeding_status,expected_percentage",
-        [(-1, 100), (5, 10), (7, 14), (48, 96)]
-    )
-    def test_feeding_status_to_percentage_ok(self, feeding_status: int,
-                                             expected_percentage: int):
-        pet = Pet("LionCub-AutumnLeaf", feeding_status=feeding_status)
-        assert pet.feeding_status_to_percentage() == expected_percentage
-
-    @pytest.mark.parametrize(
         "feeding_status,partial_expected_message", [
-            (-1, f"can't feed self.pet_name='{PET_NAME}'"),
-            (5, f"Cannot determine if self.pet_name='{PET_NAME}"),
+            (-1, f"can't feed self.pet_name='{PET_NAME}' you only have the mount"),
+            (5, f"Cannot determine if self.pet_name='{PET_NAME}' can be fed"),
             (20, f"pet_name='{PET_NAME}' can be fed")
         ]
     )
     def test_feeding_status_explanation_ok(self, feeding_status: int,
                                            partial_expected_message: str):
+        feeding_status = FeedingStatus(feeding_status)
         pet = Pet(TestOtherPetFunctions.PET_NAME, feeding_status=feeding_status)
 
-        assert partial_expected_message in pet.feeding_status_explanation()
+        result_explanation = pet.feeding_status_explanation()
+
+        assert partial_expected_message in result_explanation
 
     @pytest.mark.parametrize(
         "unfeedable_pet_name", [
@@ -176,7 +268,7 @@ class TestOtherPetFunctions:
         ]
     )
     def test_feeding_status_unfeedable_pet(self, unfeedable_pet_name: str):
-        pet = Pet(unfeedable_pet_name, feeding_status=5)
+        pet = Pet(unfeedable_pet_name)
 
         result_explanation = pet.feeding_status_explanation()
 
@@ -217,3 +309,54 @@ class TestOtherPetFunctions:
     def test_has_just_1_favorite_food_false(self, pet_name):
         pet = Pet(pet_name=pet_name)
         assert pet.has_just_1_favorite_food() is False
+
+    @pytest.mark.parametrize(
+        "pet_name,likes_all_food_expected", [
+            ("Fox-Golden", False),
+            ("LionCub-Holly", True),
+            ("PandaCub-Cupid", True),
+            ("Octopus-Red", False),
+            ("Seahorse-CottonCandyBlue", False)
+        ]
+    )
+    def test_likes_all_food(self, pet_name: str,
+                            likes_all_food_expected: bool):
+        pet = Pet(pet_name)
+
+        result = pet.likes_all_food()
+
+        assert result is likes_all_food_expected
+
+    @pytest.mark.parametrize(
+        "pet_name,expected_from_drop_hatching_potion", [
+            ("Fox-Golden", True),
+            ("Dragon-Shade", True),
+            ("LionCub-Holly", False),
+            ("PandaCub-Cupid", False),
+            ("Octopus-Red", True),
+            ("Cheetah-CottonCandyPink", True),
+            ("Seahorse-CottonCandyBlue", True),
+            ("Unicorn-Skeleton", True),
+            ("MagicalBee-Base", False),  # although -Base postfix, this is a world boss reward
+            ("Phoenix-Base", False),  # although -Base postfix, this is a world boss reward
+            ("Turkey-Base", False),  # although -Base postfix, this is a event sequence reward
+            ("Gryphon-Gryphatrice", False),
+        ]
+    )
+    def test_is_from_drop_hatching_potion(self, pet_name: str,
+                                          expected_from_drop_hatching_potion: bool):
+        pet = Pet(pet_name)
+
+        result = pet.is_from_drop_hatching_potions()
+
+        assert result is expected_from_drop_hatching_potion
+
+    def test___repr__(self):
+        pet_name = "Fox-Shadow"
+        feeding_status = FeedingStatus(10)
+        pet = Pet(pet_name, feeding_status=feeding_status)
+
+        result = str(pet)
+
+        expected = f"Pet(self.pet_name='{pet_name}', self.feeding_status={feeding_status})"
+        assert result == expected
