@@ -8,7 +8,9 @@ import click
 import requests
 
 from hopla.hoplalib.outputformatter import JsonFormatter
-from hopla.hoplalib.pethelper import FeedPostRequester, InvalidPet, Pet, PetData
+from hopla.hoplalib.zoo.petmodels import InvalidPet, Pet
+from hopla.hoplalib.zoo.petcontroller import FeedPostRequester
+from hopla.hoplalib.zoo.petdata import PetData
 
 log = logging.getLogger()
 

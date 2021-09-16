@@ -3,8 +3,9 @@ import pytest
 import random
 
 from hopla.hoplalib.common import GlobalConstants
-from hopla.hoplalib.pethelper import FeedingStatus, InvalidFeedingStatus, Pet, InvalidPet, PetData
-from hopla.hoplalib.pethelper import FeedPostRequester
+from hopla.hoplalib.zoo.petmodels import FeedingStatus, InvalidFeedingStatus, Pet, InvalidPet
+from hopla.hoplalib.zoo.petdata import PetData
+from hopla.hoplalib.zoo.petcontroller import FeedPostRequester
 
 _SAMPLE_SIZE = 50
 """

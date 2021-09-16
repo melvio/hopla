@@ -6,7 +6,7 @@ from click.testing import CliRunner
 from unittest.mock import patch, MagicMock
 
 from hopla.cli.feed import feed
-from hopla.hoplalib.pethelper import PetData
+from hopla.hoplalib.zoo.petmodels import PetData
 
 
 class MockFeedResponse:
