@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 import pytest
 import random
+from typing import Optional
 
 from hopla.cli.groupcmds.get_user import HabiticaUser
 from hopla.hoplalib.common import GlobalConstants
-from hopla.hoplalib.zoo.petmodels import FeedingStatus, InvalidFeedingStatus
+from hopla.hoplalib.zoo.petmodels import FeedingStatus, InvalidFeedingStatus, PetMountPair
 from hopla.hoplalib.zoo.petmodels import Pet, InvalidPet
 from hopla.hoplalib.zoo.petmodels import Zoo, ZooBuilder
 from hopla.hoplalib.zoo.petdata import PetData
@@ -342,22 +343,157 @@ class TestOtherPetFunctions:
         assert result == expected
 
 
-class TestZooBuilder:
+class TestPetMountPair:
+    def test_feed_status_fail(self):
+        pet = Pet("LionCub-Watery", feeding_status=None)
 
-    def test_build_no_pet_yes_mount(self):
-        animal_name = "BearCub-Shadow"
-        feed_status = -1  # i.e. No pet, just mount
-        user = HabiticaUser({"items": {"pets": {animal_name: feed_status},
-                                       "mounts": {animal_name: True}}})
+        with pytest.raises(InvalidFeedingStatus) as execinfo:
+            PetMountPair(pet,
+                         pet_available=True,
+                         mount_available=False)
+
+        err_msg = str(execinfo.value)
+        assert f"PetMountPair requires that pet={pet} has a feeding status" in err_msg
+
+    def test___repr__(self):
+        feed_status = FeedingStatus(20)
+        pet = Pet("Monkey-Skeleton", feeding_status=feed_status)
+        pet_available = True
+        mount_available = True
+
+        pair = PetMountPair(pet,
+                            pet_available=pet_available,
+                            mount_available=mount_available)
+        result = str(pair)
+
+        expected = ("PetMountPair({"
+                    "'pet': Pet(self.pet_name='Monkey-Skeleton', "
+                    "self.feeding_status=FeedingStatus(20)), "
+                    "'pet_available': True, ""'mount_available': True})")
+        assert result == expected
+
+    def test_can_feed_pet_mount_available(self):
+        # pet itself is feedable, but mount is available,
+        # so cant feed pet should return False
+        pet = Pet("Wolf-Base", feeding_status=FeedingStatus(5))
+        pair = PetMountPair(pet, pet_available=True, mount_available=True)
+
+        result = pair.can_feed_pet()
+
+        assert result is False
+
+    def test_can_feed_pet_pet_unavailable(self):
+        # pet itself is feedable, but pet is unavailable,
+        # so cant feed pet should return False
+        pet = Pet("Dragon-SolarSystem", feeding_status=FeedingStatus(-1))
+        pair = PetMountPair(pet, pet_available=False, mount_available=True)
+
+        result = pair.can_feed_pet()
+
+        assert result is False
+
+    @pytest.mark.parametrize(
+        "unfeedable_pet_name",
+        random.sample(PetData.unfeedable_pet_names, k=15)
+        # Remark: The data is not entirely realistic, this includes some
+        # mount-only animals too. However, they should also
+        # return False when can_feed_pet is called.
+    )
+    def test_can_feed_pet_pet_is_unfeedable(self, unfeedable_pet_name: str):
+        # pet itself is not feedable, so cant feed pet should return False
+        pet = Pet(unfeedable_pet_name, feeding_status=FeedingStatus(-1))
+        pair = PetMountPair(pet, pet_available=True, mount_available=False)
+
+        result = pair.can_feed_pet()
+
+        assert result is False
+
+
+class TestZooBuilder:
+    def test__init__(self):
+        animal_name = "Wolf-Zombie"
+        feeding_status = 5
+        animal_name2 = "Deer-Base"
+        feeding_status2 = 10
+
+        pets_dict = {animal_name: feeding_status, animal_name2: feeding_status2}
+        mounts_dict = {animal_name: True}
+        user: HabiticaUser = self.create_user(pets=pets_dict, mounts=mounts_dict)
+
         builder = ZooBuilder(user)
 
-        zoo: Zoo = builder.build()
+        assert builder.pets == pets_dict
+        assert builder.mounts == mounts_dict
+
+    def test__repr__(self):
+        animal_name = "Wolf-CottonCandyBlue"
+        feeding_status = 5
+        pets_dict = {animal_name: feeding_status}
+        mounts_dict = {animal_name: True}
+        user: HabiticaUser = self.create_user(pets=pets_dict, mounts=mounts_dict)
+
+        builder_str = str(ZooBuilder(user))
+
+        assert "'pets': " + str(pets_dict) in builder_str
+        assert "'mounts': " + str(mounts_dict) in builder_str
+
+    def test_build_empty_zoo(self):
+        empty_zoo = {"pets": {}, "mounts": {}}
+        user = HabiticaUser({"items": empty_zoo})
+
+        zoo: Zoo = ZooBuilder(user).build()
+
+        assert zoo == {}
+
+    def test_build_raised_pet(self):
+        animal_name = "BearCub-Shadow"
+        feed_status = -1  # i.e. No pet, just mount
+        user: HabiticaUser = self.create_user(pets={animal_name: feed_status},
+                                              mounts={animal_name: True})
+
+        zoo: Zoo = ZooBuilder(user).build()
 
         assert len(zoo) == 1
 
         result_pair = zoo[animal_name]
-        expected_pet = Pet(animal_name, feeding_status=FeedingStatus(feed_status))
         assert result_pair.pet.pet_name == animal_name
         assert result_pair.pet.feeding_status == FeedingStatus(feed_status)
         assert result_pair.mount_available
         assert result_pair.pet_available is False
+
+    def test_build_no_pet_yes_mount(self):
+        animal_name = "Aether-Invisible"
+        user: HabiticaUser = self.create_user(mounts={animal_name: True})
+
+        zoo: Zoo = ZooBuilder(user).build()
+
+        assert len(zoo) == 1
+        result_pair = zoo[animal_name]
+        assert result_pair.pet.pet_name == animal_name
+        assert result_pair.mount_available
+        assert result_pair.pet_available is False
+
+    def test_build_yes_pet_no_mount(self):
+        animal_name = "Dragon-Skeleton"
+        feeding_status = 27
+        user = self.create_user(pets={animal_name: feeding_status})
+
+        zoo: Zoo = ZooBuilder(user).build()
+
+        assert len(zoo) == 1
+        result_pair = zoo[animal_name]
+        assert result_pair.pet.pet_name == animal_name
+        assert result_pair.pet.feeding_status == FeedingStatus(feeding_status)
+        assert result_pair.mount_available is False
+        assert result_pair.pet_available
+
+    def create_user(self, *,
+                    pets: Optional[dict] = None,
+                    mounts: Optional[dict] = None):
+        """Create a simple user to test pet and mount logic"""
+        if pets is None:
+            pets = {}
+        if mounts is None:
+            mounts = {}
+
+        return HabiticaUser({"items": {"pets": pets, "mounts": mounts}})

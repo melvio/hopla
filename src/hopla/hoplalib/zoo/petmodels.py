@@ -2,7 +2,7 @@
 A helper module for Pet logic.
 """
 import math
-from typing import Dict
+from typing import Dict, NoReturn
 
 from hopla.cli.groupcmds.get_user import HabiticaUser
 from hopla.hoplalib.clickhelper import PrintableException
@@ -37,11 +37,13 @@ class FeedingStatus:
     def __init__(self, feeding_status: int = START_FEEDING_STATE):
         # every pet starts at 5
         # 50 would turn the pet into a mount
-        # The feeding status of 0 is documented but never returned anno Sept 2021
-        valid_status = (feeding_status < -1
-                        or feeding_status in [1, 2, 3, 4]
-                        or feeding_status >= 50)
-        if valid_status:
+        # The feeding status of 0 is documented but never returned anno Sept 2021 to
+        #  my understanding and according to a comment made by @Alys on github
+        #  in 2020.
+        invalid_status = (feeding_status < -1
+                          or feeding_status in [0, 1, 2, 3, 4]
+                          or feeding_status >= 50)
+        if invalid_status:
             raise InvalidFeedingStatus(f"{feeding_status=} is invalid")
 
         self.__feeding_status = feeding_status
@@ -133,9 +135,10 @@ class Pet:
             #         Users: jq .data.items.mounts
             return (f"Cannot determine if {self.pet_name=} can be fed. \n"
                     "You either have:\n"
-                    "1. both the pet and mount: You cannot feed the pet \n"
-                    "2. a pet that hasn't been fed but you don't have \n"
-                    "   the mount: You can feed your pet")
+                    "1. Both the pet and mount. In this case, you"
+                    "   cannot feed the pet \n"
+                    "2. A pet that hasn't been fed but you don't have \n"
+                    "   the mount. In this case, you can feed your pet")
 
         if int(self.feeding_status) < 50:
             return f"{self.pet_name=} can be fed"
@@ -193,7 +196,8 @@ class PetMountPair:
                  mount_available: bool):
         """Create a Pet-Mount pair"""
         if pet.feeding_status is None:
-            raise InvalidPet(f"PetMountPair requires that {pet=} has a feeding status")
+            msg = f"PetMountPair requires that {pet=} has a feeding status"
+            raise InvalidFeedingStatus(msg)
 
         self.pet = pet
         self.pet_available = pet_available
@@ -229,9 +233,19 @@ class ZooBuilder:
         self.mounts: dict = user.get_mounts()
         self.__zoo: Zoo = {}  # empty until build() is called
 
+    def __repr__(self):
+        return self.__class__.__name__ + f"({self.__dict__})"
+
     def build(self) -> Zoo:
         """Create the Zoo. Return the Zoo in case of success"""
+        self.__build()
+        return self.__zoo
 
+    def __build(self) -> NoReturn:
+        self.__add_pets_to_zoo()
+        self.__add_remaining_mounts_to_zoo()
+
+    def __add_pets_to_zoo(self) -> NoReturn:
         for pet_name in self.pets:
             feed_status = self.pets[pet_name]
             if self.mounts.get(pet_name) is None:
@@ -248,6 +262,7 @@ class ZooBuilder:
 
             self.__zoo[pet_name] = pair
 
+    def __add_remaining_mounts_to_zoo(self) -> NoReturn:
         for mount_name in self.mounts:
             # Watch out: we are abusing the Pet object for mount only animals here
             pet = Pet(mount_name)
@@ -256,5 +271,3 @@ class ZooBuilder:
                                 pet_available=False,
                                 mount_available=True)
             self.__zoo[mount_name] = pair
-
-        return self.__zoo
