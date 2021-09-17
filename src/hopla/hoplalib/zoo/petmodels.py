@@ -176,6 +176,14 @@ class Pet:
         raise InvalidPet(f"Unable to determine if {food_name=} is {self.pet_name=}'s favorite.",
                          pet=self)  # pragma: no cover
 
+    def required_food_items_until_mount(self, food_name: str) -> int:
+        """
+        Return the number of times food_name needs to be fed
+        for this pet to turn into a mount
+        """
+        is_favorite: bool = self.is_favorite_food(food_name)
+        return self.feeding_status.required_food_items_to_become_mount(is_favorite)
+
     def is_generation1_pet(self) -> bool:
         """Return True if this pet is from the generation 1 pet"""
         return self.pet_name in PetData.generation1_pet_names
