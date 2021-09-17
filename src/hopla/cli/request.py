@@ -48,6 +48,10 @@ def request(method: str,
     $ hopla request --method=POST /api/v3/user/open-mystery-item
 
     \b
+    # POST: send a quest invite for Recidivate pt. 3 to your party
+    $ hopla request -XPOST /api/v3/groups/party/quests/invite/moonstone3
+
+    \b
     # POST: set your custom day start to 1 AM
     $ hopla request -XPOST --body-param dayStart 1 /api/v3/user/custom-day-start
 
