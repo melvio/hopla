@@ -34,6 +34,14 @@ class HabiticaUser:
         """Index the user_dict for 'items' and return the result"""
         return self["items"]
 
+    def get_pets(self) -> dict:
+        """Return the pets of a user."""
+        return self.get_inventory()["pets"]
+
+    def get_mounts(self) -> dict:
+        """Return the mounts of a user."""
+        return self.get_inventory()["mounts"]
+
     def get_auth(self) -> dict:
         """Index the user_dict for 'auth' and return the result"""
         return self["auth"]
