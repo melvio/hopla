@@ -141,9 +141,26 @@ def feed(pet_name: str, food_name: str,
      $ hopla feed Beetle-Skeleton Fish
 
      \b
-     # Feed a Snail-Desert 5 Potatoes
-     # This commands fails to feed anything if less than 5 Potatoes are
-     # required for a pet to become a mount.
+     # Feed a pet its favorite food once. This only works if a pet
+     # pet is feedable and has one favorite food.
+     $ hopla feed Rock-White
+
+     \b
+     # Feed a pet its favorite food until it is a mount. This
+     # only works if a pet is feedable and has one favorite food.
+     $ hopla feed TRex-Red --until-mount
+
+     \b
+     # Feed a pet a specific type of food until it is a mount. Note that
+     # this does work with pets that like all foods. (i.e. pets hatched with
+     # magic hatching potions.)
+     $ hopla feed --until-mount Wolf-SandSculpture RottenMeat
+
+     \b
+     # Feed a Snail-Desert 5 Potatoes. Note that this commands fails
+     # to feed anything if fewer than 5 Potatoes are required
+     # for a pet to become a mount. It also fails if you don't have
+     # this pet, or not enough potatoes.
      $ hopla feed --times=5 Snail-Desert Potatoe
 
      \b
