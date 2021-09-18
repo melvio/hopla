@@ -3,18 +3,25 @@ The module with CLI code that handles the `hopla feed` command.
 """
 import logging
 import sys
+from typing import NoReturn, Optional, Union
 
 import click
 import requests
 
+from hopla.cli.groupcmds.get_user import HabiticaUser, HabiticaUserRequest
 from hopla.hoplalib.outputformatter import JsonFormatter
 from hopla.hoplalib.zoo.petmodels import InvalidPet, Pet
+from hopla.hoplalib.zoo.petmodels import PetMountPair, Zoo, ZooBuilder
 from hopla.hoplalib.zoo.petcontroller import FeedPostRequester
 from hopla.hoplalib.zoo.petdata import PetData
 
 log = logging.getLogger()
 
-valid_feed_amount_range = click.IntRange(min=0, max=23, clamp=True)
+MIN_FEED_TIMES = 0
+MAX_FEED_TIMES = 23
+valid_feed_amount_range = click.IntRange(min=MIN_FEED_TIMES,
+                                         max=MAX_FEED_TIMES,
+                                         clamp=True)
 """pets can eat up to 23 units of non-preferred foods"""
 
 
@@ -67,6 +74,34 @@ def __get_feed_data_or_exit(feed_response: requests.Response):
     sys.exit(feed_response.status_code)
 
 
+__TIMES_OPTION = "--times"
+__UNTIL_MOUNT_OPTION = "--until-mount"
+
+
+def get_feed_times_until_mount(pet_name: str, food_name: str) -> Union[int, NoReturn]:
+    """
+    Return how often a pet needs to be fed until it turns into a mount.
+
+    :param pet_name: the pet to be fed
+    :param food_name: the food to give the pet
+    :return: times to feed, or exit if feeding this pet is not possible.
+    """
+    user: HabiticaUser = HabiticaUserRequest().request_user_data_or_exit()
+    zoo: Zoo = ZooBuilder(user).build()
+    pair: PetMountPair = zoo.get(pet_name)
+    if pair is None:
+        sys.exit(f"Can't feed pet {pet_name}. You don't have this pet.")
+    if pair.mount_available:
+        sys.exit(f"Can't feed pet {pet_name}. You have the mount.")
+
+    pet: Pet = pair.pet
+    if pair.can_feed_pet() is False:
+        sys.exit(f"Can't feed pet {pet_name}. "
+                 + pet.feeding_status_explanation())
+
+    return pet.required_food_items_until_mount(food_name)
+
+
 @click.command()
 @click.argument(
     "pet_name", type=click.Choice(PetData.feedable_pet_names),
@@ -77,22 +112,24 @@ def __get_feed_data_or_exit(feed_response: requests.Response):
     metavar="[FOOD_NAME]", required=False
 )
 @click.option(
+    __TIMES_OPTION, type=valid_feed_amount_range,
+    metavar="N_FOOD",
+    help="Number of FOOD_NAME to feed to PET_NAME.\n "
+         f"Values under {MIN_FEED_TIMES} are clamped to {MIN_FEED_TIMES}. "
+         f"Values over {MAX_FEED_TIMES} are clamped to {MAX_FEED_TIMES}."
+)
+@click.option(
+    f"{__UNTIL_MOUNT_OPTION}/--no-until-mount",
+    default=False, show_default=True,
+    help="Keep feeding this pet until it is a mount.")
+@click.option(
     "--list-favorite-food/--no-list-favorite-food",
     default=False, show_default=True,
     help="Print favorite food for PET_NAME and exit."
 )
-@click.option(
-    "--times", type=valid_feed_amount_range,
-    metavar="N_FOOD",
-    default=1, show_default=True,
-    help=
-    "Number of FOOD_NAME to feed to PET_NAME.\n "
-    f"Values under {valid_feed_amount_range.min} are clamped to {valid_feed_amount_range.min}. "
-    f"Values over {valid_feed_amount_range.max} are clamped to {valid_feed_amount_range.max}."
-)
 def feed(pet_name: str, food_name: str,
-         list_favorite_food: bool,
-         times: int):
+         times: int, until_mount: bool,
+         list_favorite_food: bool):
     """Feed a pet.
 
      \b
@@ -106,9 +143,26 @@ def feed(pet_name: str, food_name: str,
      $ hopla feed Beetle-Skeleton Fish
 
      \b
-     # Feed a Snail-Desert 5 Potatoes
-     # This commands fails to feed anything if less than 5 Potatoes are
-     # required for a pet to become a mount.
+     # Feed a pet its favorite food once. This only works if a pet
+     # pet is feedable and has one favorite food.
+     $ hopla feed Rock-White
+
+     \b
+     # Feed a pet its favorite food until it is a mount. This
+     # only works if a pet is feedable and has one favorite food.
+     $ hopla feed TRex-Red --until-mount
+
+     \b
+     # Feed a pet a specific type of food until it is a mount. This
+     # commands also work with pets that like all foods. (e.g. pets
+     # hatched with magic hatching potions.)
+     $ hopla feed --until-mount Wolf-SandSculpture RottenMeat
+
+     \b
+     # Feed a Snail-Desert 5 Potatoes. Note that this commands fails
+     # to feed anything if fewer than 5 Potatoes are required
+     # for a pet to become a mount. It also fails if you don't have
+     # this pet, or not enough potatoes.
      $ hopla feed --times=5 Snail-Desert Potatoe
 
      \b
@@ -129,8 +183,10 @@ def feed(pet_name: str, food_name: str,
     of a request body (even though it is a HTTP POST).
     """
     log.debug(f"hopla feed {pet_name=}, {food_name=}"
-              f" {times=} "
+              f" {times=} {until_mount=}"
               f" {list_favorite_food=}")
+
+    __raise_if_conflicting(times=times, until_mount=until_mount)
 
     if list_favorite_food:
         print_favorite_food_and_exit(pet_name=pet_name)
@@ -138,6 +194,10 @@ def feed(pet_name: str, food_name: str,
     if food_name is None:
         food_name = get_favorite_food_or_exit(pet_name=pet_name)
         log.debug(f"Favorite food is automatically selected to be {food_name=}.")
+
+    if until_mount:
+        times: int = get_feed_times_until_mount(pet_name=pet_name,
+                                                food_name=food_name)
 
     pet_feed_request = FeedPostRequester(
         pet_name=pet_name,
@@ -147,3 +207,11 @@ def feed(pet_name: str, food_name: str,
 
     response: requests.Response = pet_feed_request.post_feed_request()
     return __get_feed_data_or_exit(feed_response=response)
+
+
+def __raise_if_conflicting(*, times: Optional[int], until_mount: bool):
+    if until_mount and times is not None:
+        raise click.UsageError(
+            "Conflicting options: "
+            f"Cannot specify both {__TIMES_OPTION} and {__UNTIL_MOUNT_OPTION}."
+        )

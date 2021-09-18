@@ -23,6 +23,9 @@ class FeedPostRequester:
         self.food_name = food_name
         self.query_params = {"amount": food_amount}
 
+    def __repr__(self) -> str:
+        return self.__class__.__name__ + f"({self.__dict__})"
+
     @property
     def request_headers(self) -> dict:
         """Return the required headers for a feed-pet post request."""

@@ -112,6 +112,33 @@ class TestFeedingStatus:
         assert result == expected_food_items
 
 
+class TestFeedingStatusHash:
+    _feeding_statuses = [
+        FeedingStatus(-1), FeedingStatus(), FeedingStatus(5),
+        FeedingStatus(20), FeedingStatus(35), FeedingStatus(49)
+    ]
+
+    @pytest.mark.parametrize(
+        "feeding_status", _feeding_statuses
+    )
+    def test___hash__(self, feeding_status: FeedingStatus):
+        # A minimal requirement for __hash__ is that if 2 FeedingStatus objects are
+        # identical, they MUST have the same hash.
+        assert hash(feeding_status) == hash(feeding_status)
+
+    @pytest.mark.parametrize(
+        "feeding_status,equal_feeding_status",
+        list(zip(_feeding_statuses + [FeedingStatus()],
+                 _feeding_statuses + [FeedingStatus(5)]))
+    )
+    def test___hash__(self,
+                      feeding_status: FeedingStatus,
+                      equal_feeding_status: FeedingStatus):
+        # A minimal requirement for __hash__ if 2 FeedingStatus objects
+        # are equal (__eq__) , they MUST have the same hash.
+        assert hash(feeding_status) == hash(feeding_status)
+
+
 class TestFavoriteFood:
     @pytest.mark.parametrize(
         "pet_name,expected_favorite_food", [
@@ -180,6 +207,7 @@ class TestFavoriteFood:
 
 
 class TestIsFavoriteFood:
+
     @pytest.mark.parametrize(
         "pet_name,food_name",
         # we use choices here because both groups are smaller than
@@ -224,6 +252,16 @@ class TestIsFavoriteFood:
 class TestOtherPetFunctions:
     """ Test class for Pet functions that aren't covered elsewhere """
     PET_NAME = "Fox-Ember"
+
+    def test___repr__(self):
+        pet_name = "Fox-Shadow"
+        feeding_status = FeedingStatus(10)
+        pet = Pet(pet_name, feeding_status=feeding_status)
+
+        result = str(pet)
+
+        expected = f"Pet(self.pet_name='{pet_name}', self.feeding_status={feeding_status})"
+        assert result == expected
 
     @pytest.mark.parametrize(
         "feeding_status,partial_expected_message", [
@@ -332,15 +370,23 @@ class TestOtherPetFunctions:
 
         assert result is expected_from_drop_hatching_potion
 
-    def test___repr__(self):
-        pet_name = "Fox-Shadow"
-        feeding_status = FeedingStatus(10)
-        pet = Pet(pet_name, feeding_status=feeding_status)
+    @pytest.mark.parametrize(
+        "pet,food_name,expected_times", [
+            (Pet("Hedgehog-Shade", feeding_status=FeedingStatus(10)), "Chocolate", 8),
+            (Pet("Hedgehog-Shade", feeding_status=FeedingStatus(10)), "Milk", 20),
+            (Pet("Egg-Base"), "Meat", 9),
+            (Pet("Egg-Zombie"), "CottonCandyPink", 23),
+            (Pet("Egg-Base", feeding_status=FeedingStatus(40)), "Meat", 2),
+            (Pet("Egg-Base", feeding_status=FeedingStatus(44)), "Meat", 2),
+            (Pet("Egg-Golden", feeding_status=FeedingStatus(47)), "Fish", 2),
+        ]
+    )
+    def test_required_food_items_until_mount(self, pet: Pet,
+                                             food_name: str,
+                                             expected_times: int):
+        times_result: int = pet.required_food_items_until_mount(food_name)
 
-        result = str(pet)
-
-        expected = f"Pet(self.pet_name='{pet_name}', self.feeding_status={feeding_status})"
-        assert result == expected
+        assert times_result == expected_times
 
 
 class TestPetMountPair:
