@@ -95,7 +95,7 @@ def get_feed_times_until_mount(pet_name: str, food_name: str) -> Union[int, NoRe
 
     pet: Pet = pair.pet
     if pair.can_feed_pet() is False:
-        sys.exit(f"Can't feed pet {pet_name}\n"
+        sys.exit(f"Can't feed pet {pet_name}. "
                  + pet.feeding_status_explanation())
 
     return pet.required_food_items_until_mount(food_name)
@@ -117,9 +117,10 @@ def get_feed_times_until_mount(pet_name: str, food_name: str) -> Union[int, NoRe
          f"Values under {MIN_FEED_TIMES} are clamped to {MIN_FEED_TIMES}. "
          f"Values over {MAX_FEED_TIMES} are clamped to {MAX_FEED_TIMES}."
 )
-@click.option(f"{__UNTIL_MOUNT_OPTION}/--no-until-mount",
-              default=False, show_default=True,
-              help="Keep feeding this pet until it is a mount.")
+@click.option(
+    f"{__UNTIL_MOUNT_OPTION}/--no-until-mount",
+    default=False, show_default=True,
+    help="Keep feeding this pet until it is a mount.")
 @click.option(
     "--list-favorite-food/--no-list-favorite-food",
     default=False, show_default=True,
@@ -151,9 +152,9 @@ def feed(pet_name: str, food_name: str,
      $ hopla feed TRex-Red --until-mount
 
      \b
-     # Feed a pet a specific type of food until it is a mount. Note that
-     # this does work with pets that like all foods. (i.e. pets hatched with
-     # magic hatching potions.)
+     # Feed a pet a specific type of food until it is a mount. This
+     # commands also work with pets that like all foods. (e.g. pets
+     # hatched with magic hatching potions.)
      $ hopla feed --until-mount Wolf-SandSculpture RottenMeat
 
      \b

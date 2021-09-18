@@ -2,10 +2,11 @@ import random
 
 import pytest
 from requests.status_codes import codes
-from click.testing import CliRunner
+from click.testing import CliRunner, Result
 from unittest.mock import patch, MagicMock
 
-from hopla.cli.feed import feed
+from hopla.cli.feed import feed, get_feed_times_until_mount
+from hopla.cli.groupcmds.get_user import HabiticaUser
 from hopla.hoplalib.zoo.petmodels import PetData
 
 
@@ -119,8 +120,119 @@ class TestFeedCliCommand:
         mock_feed_api_call.return_value = MockFeedResponse(json=response_content,
                                                            status_code=codes.unauthorized)
         runner = CliRunner()
-        result = runner.invoke(feed, [pet_name, food_name])
+        result: Result = runner.invoke(feed, [pet_name, food_name])
 
         mock_feed_api_call.assert_called_with()  # no args
         assert result.exit_code == codes.unauthorized
         assert result.stdout == f"{expected_errmsg}\n"
+
+    def test_cannot_specify_times_and_until_mount(self):
+        runner = CliRunner()
+        result = runner.invoke(feed, ["Rat-Red", "--until-mount", "--times", 2])
+
+        expected_errmsg = "Conflicting options: Cannot specify both --times and --until-mount"
+        assert expected_errmsg in result.stdout
+        assert result.exit_code == 2
+
+    @patch("hopla.cli.feed.HabiticaUserRequest.request_user_data_or_exit_on_fail")
+    def test_get_feed_data_until_mount_ok(self, mock_user_request: MagicMock):
+        pet_name = "Rat-Red"
+        food_name = "Strawberry"
+        feed_status = 21
+        mock_user_request.return_value = HabiticaUser({"items": {"pets": {pet_name: feed_status},
+                                                                 "mounts": {}}})
+
+        result: int = get_feed_times_until_mount(pet_name, food_name)
+
+        expected_strawberries = 6
+        assert result == expected_strawberries
+
+    @patch("hopla.cli.feed.HabiticaUserRequest.request_user_data_or_exit_on_fail")
+    def test_get_feed_data_until_mount_no_pet_fail(self,
+                                                   mock_user_request: MagicMock):
+        pet_name = "Rat-Red"
+        food_name = "Strawberry"
+        mock_user_request.return_value = HabiticaUser({"items": {"pets": {},
+                                                                 "mounts": {}}})
+
+        with pytest.raises(SystemExit) as execinfo:
+            get_feed_times_until_mount(pet_name, food_name)
+
+        err_msg = str(execinfo.value)
+        assert err_msg == f"Can't feed pet {pet_name}. You don't have this pet."
+
+    @patch("hopla.cli.feed.HabiticaUserRequest.request_user_data_or_exit_on_fail")
+    def test_get_feed_data_until_mount_have_mount_fail(self,
+                                                       mock_user_request: MagicMock):
+        pet_name = "Rat-Red"
+        food_name = "Strawberry"
+        feed_status = -1
+        mock_user_request.return_value = HabiticaUser(
+            {"items": {"pets": {pet_name: feed_status},
+                       "mounts": {pet_name: True}}}
+        )
+
+        with pytest.raises(SystemExit) as execinfo:
+            get_feed_times_until_mount(pet_name, food_name)
+
+        err_msg = str(execinfo.value)
+        assert err_msg == f"Can't feed pet {pet_name}. You have the mount."
+
+    @patch("hopla.cli.feed.HabiticaUserRequest.request_user_data_or_exit_on_fail")
+    def test_get_feed_data_until_mount_pet_unfeedable_data(self,
+                                                           mock_user_request: MagicMock):
+        pet_name = "Phoenix-Base"  # unfeedable
+        food_name = "Strawberry"
+        feed_status = 5
+        mock_user_request.return_value = HabiticaUser(
+            {"items": {"pets": {pet_name: feed_status},
+                       "mounts": {}}}
+        )
+
+        with pytest.raises(SystemExit) as execinfo:
+            get_feed_times_until_mount(pet_name, food_name)
+
+        err_msg = str(execinfo.value)
+        assert f"Can't feed pet {pet_name}." in err_msg
+
+    @patch("hopla.cli.feed.FeedPostRequester")
+    @patch("hopla.cli.feed.HabiticaUserRequest.request_user_data_or_exit_on_fail")
+    def test_feed_until_mount(self,
+                              mock_user_request: MagicMock,
+                              mock_feed_requester: MagicMock):
+        pet_name = "Egg-Shade"
+        food_name = "Strawberry"
+        feed_status = 47
+        mock_user_request.return_value = HabiticaUser(
+            {"items": {"pets": {pet_name: feed_status},
+                       "mounts": {}}}
+        )
+
+        response_msg = f"You have tamed {pet_name}, let's go for a ride!"
+        response_data = -1
+
+        # This is not the prettiest ways of solving this. Feel free
+        # to refactor this mocking logic.
+        class MockRequester:
+            class MockResponse:
+                def json(self):
+                    return {"success": True, "data": response_data,
+                            "message": response_msg}
+
+            def post_feed_request(self):
+                return MockRequester.MockResponse()
+
+        mock_feed_requester.return_value = MockRequester()
+
+        runner = CliRunner()
+        result: Result = runner.invoke(feed, [pet_name, food_name, "--until-mount"])
+
+        expected_feed_times = 2
+        mock_feed_requester.assert_called_with(
+            pet_name=pet_name,
+            food_name=food_name,
+            food_amount=expected_feed_times
+        )
+        assert result.exit_code == 0
+        assert response_msg in result.stdout
+        assert f'"feeding_status": {response_data}' in result.stdout
