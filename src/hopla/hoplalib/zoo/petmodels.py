@@ -1,83 +1,22 @@
 """
 A helper module for Pet logic.
 """
-import math
-from typing import Dict, NoReturn
+from typing import Dict, NoReturn, Optional
 
 from hopla.cli.groupcmds.get_user import HabiticaUser
 from hopla.hoplalib.clickhelper import PrintableException
-
 from hopla.hoplalib.common import GlobalConstants
+from hopla.hoplalib.zoo.foodmodels import FeedingStatus, InvalidFeedingStatus
+from hopla.hoplalib.zoo.fooddata import FoodData
 from hopla.hoplalib.zoo.petdata import PetData
 
 
 class InvalidPet(PrintableException):
     """Exception raised when a pet is invalid."""
 
-    def __init__(self, msg: str, *, pet=None):
+    def __init__(self, msg: str, *, pet: Optional["Pet"] = None):
         super().__init__(msg)
         self.pet = pet
-
-
-class InvalidFeedingStatus(PrintableException):
-    """Exception raised when a pet is invalid."""
-
-    def __init__(self, msg: str, *, pet=None):
-        super().__init__(msg)
-        self.pet = pet
-
-
-class FeedingStatus:
-    """A class implementing feeding status logic for pets"""
-    START_FEEDING_STATE = 5
-    FULLY_FED_STATE = 50
-    FAVORITE_INCREMENT = 5
-    NON_FAVORITE_INCREMENT = 2
-
-    def __init__(self, feeding_status: int = START_FEEDING_STATE):
-        # every pet starts at 5
-        # 50 would turn the pet into a mount
-        # The feeding status of 0 is documented but never returned anno Sept 2021 to
-        #  my understanding and according to a comment made by @Alys on github
-        #  in 2020.
-        invalid_status = (feeding_status < -1
-                          or feeding_status in [0, 1, 2, 3, 4]
-                          or feeding_status >= 50)
-        if invalid_status:
-            raise InvalidFeedingStatus(f"{feeding_status=} is invalid")
-
-        self.__feeding_status = feeding_status
-
-    def __repr__(self) -> str:
-        return self.__class__.__name__ + f"({self.__feeding_status})"
-
-    def __eq__(self, other):
-        return isinstance(other, FeedingStatus) and int(other) == int(self)
-
-    def __hash__(self):
-        return hash(self.__feeding_status)
-
-    def __int__(self) -> int:
-        return self.__feeding_status
-
-    def required_food_items_to_become_mount(self, is_favorite_food: bool) -> int:
-        """Return how many items of food we need to give to turn a pet into a mount."""
-        target = FeedingStatus.FULLY_FED_STATE - self.__feeding_status
-        if is_favorite_food:
-            required_food = math.ceil(target / FeedingStatus.FAVORITE_INCREMENT)
-        else:
-            required_food = math.ceil(target / FeedingStatus.NON_FAVORITE_INCREMENT)
-        return required_food
-
-    def to_percentage(self) -> int:
-        """
-        Turn feeding status into percentage understandable by the
-        website user.
-        <https://habitica.fandom.com/wiki/Food_Preferences>
-        """
-        if self.__feeding_status == -1:
-            return 100  # The pet is now a mount
-        return self.__feeding_status * 2
 
 
 class Pet:
@@ -115,15 +54,15 @@ class Pet:
         return self.pet_name not in PetData.unfeedable_pet_names
 
     def has_just_1_favorite_food(self) -> bool:
-        """Return True if pet likes only 1 type of food"""
+        """Return True if this pet likes only 1 type of food."""
         return self.pet_name in PetData.only_1favorite_food_pet_names
 
     def likes_all_food(self) -> bool:
-        """Return True if this prefers all food."""
+        """Return True if this pet prefers all food."""
         return self.pet_name in PetData.magic_potion_pet_names
 
     def feeding_status_explanation(self) -> str:
-        """Explain the feeding status of a pet"""
+        """Explain the feeding status of a pet."""
         if self.is_feedable() is False:
             return f"{self.pet_name=} can't be fed because it is special."
         if int(self.feeding_status) == -1:
@@ -149,7 +88,7 @@ class Pet:
 
     def favorite_food(self, *,
                       default_value_for_unfeedable: str = "Unfeedable",
-                      default_value_for_all_favorite_food: str = "Any"):
+                      default_value_for_all_favorite_food: str = "Any") -> str:
         """Return the favorite food of this pet."""
         if self.is_feedable() is False:
             return default_value_for_unfeedable
@@ -158,14 +97,14 @@ class Pet:
             return default_value_for_all_favorite_food
 
         if self.has_just_1_favorite_food():
-            return (PetData.hatching_potion_favorite_food_mapping
+            return (FoodData.hatching_potion_favorite_food_mapping
                     .get(self.hatching_potion))
 
         raise InvalidPet(f"Could not find the feeding habits of this {self.pet_name=}",
                          pet=self)  # pragma: no cover
 
     def is_favorite_food(self, food_name: str) -> bool:
-        """Return true if 'food_name' is this Pets favorite food. """
+        """Return true if 'food_name' is this Pets favorite food."""
         if self.is_feedable() is False:
             return False
         if self.likes_all_food():
@@ -193,7 +132,7 @@ class Pet:
         Return True if the pet was hatched from one of the 'ordinary'
         potions. (Such as: Base, Desert, ...).
         """
-        return self.hatching_potion in PetData.drop_hatching_potions
+        return self.hatching_potion in FoodData.drop_hatching_potions
 
 
 class PetMountPair:
@@ -225,7 +164,7 @@ class PetMountPair:
 
 Zoo = Dict[str, PetMountPair]
 """
-Zoo is dictionary with key pet names for O(1) access to the
+Zoo is dictionary with key pet name keys for O(1) access to the
 PetMountPair.
 """
 

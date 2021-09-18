@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-import pytest
 import random
 from typing import Optional
 
+import pytest
+
 from hopla.cli.groupcmds.get_user import HabiticaUser
 from hopla.hoplalib.common import GlobalConstants
-from hopla.hoplalib.zoo.petmodels import FeedingStatus, InvalidFeedingStatus, PetMountPair
-from hopla.hoplalib.zoo.petmodels import Pet, InvalidPet
-from hopla.hoplalib.zoo.petmodels import Zoo, ZooBuilder
+from hopla.hoplalib.zoo.fooddata import FoodData
 from hopla.hoplalib.zoo.petdata import PetData
+from hopla.hoplalib.zoo.petmodels import FeedingStatus, InvalidFeedingStatus, \
+    InvalidPet, Pet, PetMountPair, Zoo, ZooBuilder
 
 _SAMPLE_SIZE = 50
 """
@@ -56,87 +57,6 @@ class TestPetInit:
         pet = Pet("LionCub-Sunset", feeding_status=feeding_status)
 
         assert valid_feed_status == int(pet.feeding_status)
-
-
-class TestFeedingStatus:
-    @pytest.mark.parametrize(
-        "feeding_status,expected_percentage",
-        [(-1, 100), (5, 10), (7, 14), (48, 96)]
-    )
-    def test_to_percentage_ok(self, feeding_status: int,
-                              expected_percentage: int):
-        feeding_status = FeedingStatus(feeding_status)
-
-        result_percentage = feeding_status.to_percentage()
-
-        assert result_percentage == expected_percentage
-
-    @pytest.mark.parametrize(
-        "start_status,expected_food_items", [
-            (45, 1),
-            (44, 2),
-            (40, 2),
-            (39, 3),
-            (5, 9),
-        ]
-    )
-    def test_required_food_items_to_become_mount_favorite(self,
-                                                          start_status: int,
-                                                          expected_food_items: int):
-        feeding_status = FeedingStatus(start_status)
-
-        is_favorite = True
-        result = feeding_status.required_food_items_to_become_mount(is_favorite)
-
-        assert result == expected_food_items
-
-    @pytest.mark.parametrize(
-        "start_status,expected_food_items", [
-            (49, 1),
-            (45, 3),
-            (44, 3),
-            (40, 5),
-            (39, 6),
-            (6, 22),
-            (5, 23),
-        ]
-    )
-    def test_required_food_items_to_become_mount_not_favorite(self,
-                                                              start_status: int,
-                                                              expected_food_items: int):
-        feeding_status = FeedingStatus(start_status)
-
-        is_favorite = False
-        result = feeding_status.required_food_items_to_become_mount(is_favorite)
-
-        assert result == expected_food_items
-
-
-class TestFeedingStatusHash:
-    _feeding_statuses = [
-        FeedingStatus(-1), FeedingStatus(), FeedingStatus(5),
-        FeedingStatus(20), FeedingStatus(35), FeedingStatus(49)
-    ]
-
-    @pytest.mark.parametrize(
-        "feeding_status", _feeding_statuses
-    )
-    def test___hash__(self, feeding_status: FeedingStatus):
-        # A minimal requirement for __hash__ is that if 2 FeedingStatus objects are
-        # identical, they MUST have the same hash.
-        assert hash(feeding_status) == hash(feeding_status)
-
-    @pytest.mark.parametrize(
-        "feeding_status,equal_feeding_status",
-        list(zip(_feeding_statuses + [FeedingStatus()],
-                 _feeding_statuses + [FeedingStatus(5)]))
-    )
-    def test___hash__(self,
-                      feeding_status: FeedingStatus,
-                      equal_feeding_status: FeedingStatus):
-        # A minimal requirement for __hash__ if 2 FeedingStatus objects
-        # are equal (__eq__) , they MUST have the same hash.
-        assert hash(feeding_status) == hash(feeding_status)
 
 
 class TestFavoriteFood:
@@ -213,7 +133,7 @@ class TestIsFavoriteFood:
         # we use choices here because both groups are smaller than
         # the specified k
         zip(random.choices(PetData.unfeedable_pet_names, k=_SAMPLE_SIZE),
-            random.choices(PetData.drop_food_names, k=_SAMPLE_SIZE))
+            random.choices(FoodData.drop_food_names, k=_SAMPLE_SIZE))
     )
     def test_is_favorite_food_false_because_unfeedable(self, pet_name: str,
                                                        food_name: str):
@@ -223,7 +143,7 @@ class TestIsFavoriteFood:
     @pytest.mark.parametrize(
         "pet_name,food_name",
         zip(random.sample(PetData.magic_potion_pet_names, k=_SAMPLE_SIZE),
-            random.choices(PetData.drop_food_names, k=_SAMPLE_SIZE))
+            random.choices(FoodData.drop_food_names, k=_SAMPLE_SIZE))
     )
     def test_is_favorite_food_true_because_likes_all_food(self,
                                                           pet_name: str,

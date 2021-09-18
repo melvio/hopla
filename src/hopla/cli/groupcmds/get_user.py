@@ -3,6 +3,7 @@ The module with CLI code that handles the `hopla get` group command.
 """
 import logging
 from dataclasses import dataclass
+from typing import Dict
 
 import click
 import requests
@@ -42,6 +43,10 @@ class HabiticaUser:
         """Return the mounts of a user."""
         return self.get_inventory()["mounts"]
 
+    def get_food(self) -> Dict[str, int]:
+        """Return the _stockpile that the user has"""
+        return self.get_inventory()["food"]
+
     def get_auth(self) -> dict:
         """Index the user_dict for 'auth' and return the result"""
         return self["auth"]
@@ -64,10 +69,7 @@ class HabiticaUserRequest(HabiticaRequest):
 
     def request_user(self) -> requests.Response:
         """Perform the user get request and return the response"""
-        return requests.get(
-            url=self.url,
-            headers=self.default_headers
-        )
+        return requests.get(url=self.url, headers=self.default_headers)
 
     def request_user_data_or_exit(self) -> HabiticaUser:
         """

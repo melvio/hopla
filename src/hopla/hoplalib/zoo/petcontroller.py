@@ -23,7 +23,6 @@ class FeedPostRequester(HabiticaRequest):
         self.food_name = food_name
         self.query_params = {"amount": food_amount}
 
-
     @property
     def path(self) -> str:
         """Return the URL used to feed a pet"""
