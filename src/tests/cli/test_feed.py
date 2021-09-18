@@ -134,7 +134,7 @@ class TestFeedCliCommand:
         assert expected_errmsg in result.stdout
         assert result.exit_code == 2
 
-    @patch("hopla.cli.feed.HabiticaUserRequest.request_user_data_or_exit_on_fail")
+    @patch("hopla.cli.feed.HabiticaUserRequest.request_user_data_or_exit")
     def test_get_feed_data_until_mount_ok(self, mock_user_request: MagicMock):
         pet_name = "Rat-Red"
         food_name = "Strawberry"
@@ -147,7 +147,7 @@ class TestFeedCliCommand:
         expected_strawberries = 6
         assert result == expected_strawberries
 
-    @patch("hopla.cli.feed.HabiticaUserRequest.request_user_data_or_exit_on_fail")
+    @patch("hopla.cli.feed.HabiticaUserRequest.request_user_data_or_exit")
     def test_get_feed_data_until_mount_no_pet_fail(self,
                                                    mock_user_request: MagicMock):
         pet_name = "Rat-Red"
@@ -161,7 +161,7 @@ class TestFeedCliCommand:
         err_msg = str(execinfo.value)
         assert err_msg == f"Can't feed pet {pet_name}. You don't have this pet."
 
-    @patch("hopla.cli.feed.HabiticaUserRequest.request_user_data_or_exit_on_fail")
+    @patch("hopla.cli.feed.HabiticaUserRequest.request_user_data_or_exit")
     def test_get_feed_data_until_mount_have_mount_fail(self,
                                                        mock_user_request: MagicMock):
         pet_name = "Rat-Red"
@@ -178,7 +178,7 @@ class TestFeedCliCommand:
         err_msg = str(execinfo.value)
         assert err_msg == f"Can't feed pet {pet_name}. You have the mount."
 
-    @patch("hopla.cli.feed.HabiticaUserRequest.request_user_data_or_exit_on_fail")
+    @patch("hopla.cli.feed.HabiticaUserRequest.request_user_data_or_exit")
     def test_get_feed_data_until_mount_pet_unfeedable_data(self,
                                                            mock_user_request: MagicMock):
         pet_name = "Phoenix-Base"  # unfeedable
@@ -196,7 +196,7 @@ class TestFeedCliCommand:
         assert f"Can't feed pet {pet_name}." in err_msg
 
     @patch("hopla.cli.feed.FeedPostRequester")
-    @patch("hopla.cli.feed.HabiticaUserRequest.request_user_data_or_exit_on_fail")
+    @patch("hopla.cli.feed.HabiticaUserRequest.request_user_data_or_exit")
     def test_feed_until_mount(self,
                               mock_user_request: MagicMock,
                               mock_feed_requester: MagicMock):

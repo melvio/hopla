@@ -10,7 +10,8 @@ import requests
 
 from hopla.cli.groupcmds.get_user import HabiticaUser, HabiticaUserRequest
 from hopla.hoplalib.outputformatter import JsonFormatter
-from hopla.hoplalib.zoo.petmodels import InvalidPet, Pet, PetMountPair, Zoo, ZooBuilder
+from hopla.hoplalib.zoo.petmodels import InvalidPet, Pet
+from hopla.hoplalib.zoo.petmodels import PetMountPair, Zoo, ZooBuilder
 from hopla.hoplalib.zoo.petcontroller import FeedPostRequester
 from hopla.hoplalib.zoo.petdata import PetData
 
@@ -85,7 +86,7 @@ def get_feed_times_until_mount(pet_name: str, food_name: str) -> Union[int, NoRe
     :param food_name: the food to give the pet
     :return: times to feed, or exit if feeding this pet is not possible.
     """
-    user: HabiticaUser = HabiticaUserRequest().request_user_data_or_exit_on_fail()
+    user: HabiticaUser = HabiticaUserRequest().request_user_data_or_exit()
     zoo: Zoo = ZooBuilder(user).build()
     pair: PetMountPair = zoo.get(pet_name)
     if pair is None:

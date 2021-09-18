@@ -114,7 +114,7 @@ def exceeds_throttle_limit(times: int) -> bool:
 def get_buy_times_within_budget(until_poor_flag: bool,
                                 requested_times: int) -> int:
     """Return how often we can buy, given the requested amount and our budget."""
-    user: HabiticaUser = HabiticaUserRequest().request_user_data_or_exit_on_fail()
+    user: HabiticaUser = HabiticaUserRequest().request_user_data_or_exit()
     budget: float = user["stats"]["gp"]
 
     max_times = times_until_poor(budget)

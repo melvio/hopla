@@ -111,13 +111,15 @@ class TestFeedingStatus:
 
         assert result == expected_food_items
 
-    feeding_statuses = [
+
+class TestFeedingStatusHash:
+    _feeding_statuses = [
         FeedingStatus(-1), FeedingStatus(), FeedingStatus(5),
         FeedingStatus(20), FeedingStatus(35), FeedingStatus(49)
     ]
 
     @pytest.mark.parametrize(
-        "feeding_status", feeding_statuses
+        "feeding_status", _feeding_statuses
     )
     def test___hash__(self, feeding_status: FeedingStatus):
         # A minimal requirement for __hash__ is that if 2 FeedingStatus objects are
@@ -126,7 +128,8 @@ class TestFeedingStatus:
 
     @pytest.mark.parametrize(
         "feeding_status,equal_feeding_status",
-        list(zip(feeding_statuses, feeding_statuses)) + [(FeedingStatus(), FeedingStatus(5))]
+        list(zip(_feeding_statuses + [FeedingStatus()],
+                 _feeding_statuses + [FeedingStatus(5)]))
     )
     def test___hash__(self,
                       feeding_status: FeedingStatus,
