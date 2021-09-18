@@ -142,7 +142,8 @@ class AuthorizationHandler:
 
     def _auth_file_has_api_token(self) -> bool:
         """
-        Return true if the authenticate file has an api_token value inside the [credentials] section
+        Return true if the authenticate file has an api_token value
+        inside the [credentials] section.
         """
         return self.config_parser.has_option(
             section=AuthorizationFileConstants.CONFIG_SECTION_CREDENTIALS,
@@ -150,7 +151,8 @@ class AuthorizationHandler:
 
     def _auth_file_has_user_id(self) -> bool:
         """
-        Return true if the authenticate file has an user_id value inside the [credentials] section
+        Return true if the authenticate file has an user_id
+        value inside the [credentials] section.
         """
         return self.config_parser.has_option(
             section=AuthorizationFileConstants.CONFIG_SECTION_CREDENTIALS,
