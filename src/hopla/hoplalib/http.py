@@ -11,7 +11,7 @@ class RequestHeaders:
     Helper class that takes care of HTTP request headers when interacting with
     the habitica API.
 
-    For more information see <https://habitica.fandom.com/wiki/Guidance_for_Comrades>
+    For more information, see <https://habitica.fandom.com/wiki/Guidance_for_Comrades>
     """
     CONTENT_TYPE_HEADER_NAME = "Content-Type"
     CONTENT_TYPE_HEADER_VALUE_APPLICATION_JSON = "application/json"
@@ -60,3 +60,21 @@ class UrlBuilder:
     def url(self) -> str:
         """Get the build URL"""
         return f"{self._get_base_url()}{self.path_extension}"
+
+
+class HabiticaRequest:
+    """
+    A generic API request class with inheritable logic for specific
+    request classes.
+    """
+
+    def __repr__(self) -> str:
+        """Represent this request"""
+        return self.__class__.__name__ + f"({self.__dict__})"
+
+    @property
+    def default_headers(self):
+        """
+        Return the default headers with the user's credentials and the x-client header.
+        """
+        return RequestHeaders().get_default_request_headers()
