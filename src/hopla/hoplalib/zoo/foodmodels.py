@@ -1,6 +1,7 @@
 """
 A helper module for feeding logic.
 """
+import copy
 import math
 from dataclasses import dataclass
 from typing import Dict, Optional
@@ -98,20 +99,20 @@ class Food:
 class FoodStockpile:
     """The food of a user."""
 
-    def __init__(self, _stockpile: Dict[str, int]):
-        self.__stockpile = _stockpile
+    def __init__(self, __stockpile: Dict[str, int]):
+        self.__stockpile = __stockpile
 
     def __repr__(self):
-        return self.__class__.__name__ + f"({self.__dict__})"
+        return self.__class__.__name__ + f"({self.__stockpile})"
 
-    def modify_stockpile(self, food_name: str, *, amount: int) -> None:
+    def modify_stockpile(self, food_name: str, *, n: int) -> None:
         """
         Change the number of specified food in the stockpile.
 
         :param food_name: the food to modify
-        :param amount: when positive add this number of food, when negative subtract
-                it from the stockpile
-        :return:
+        :param n: When n is positive, add this number of food.
+                  When negative, subtract n from this food from the stockpile.
+        :return: None
         """
         food = Food(food_name)
         if food.is_rare_food_item():
@@ -120,25 +121,33 @@ class FoodStockpile:
 
         cur_quantity = self.__stockpile[food_name]
 
-        if cur_quantity + amount < 0:
-            msg = (f"Insufficient food: Cannot remove {amount=} of food from the stockpile\n"
-                   f"The current quantity of {food_name=} is {cur_quantity=}.")
+        if cur_quantity + n < 0:
+            msg = (f"Insufficient food: Cannot remove {n=} of food from the stockpile\n"
+                   f"The current quantity of {food_name} is {cur_quantity}.")
             raise FoodException(msg, food=Food(food_name))
 
-        self.__stockpile[food_name] += amount
+        self.__stockpile[food_name] += n
 
     def get_most_abundant_food(self) -> str:
-        """Return the most abundant food in the stockpile."""
+        """
+        Return the most abundant food in the stockpile. If multiple food items
+        occur equally most frequent, return one of them. This function makes
+        no guarantee which is returned in that case.
+        """
         return max(self.__stockpile, key=self.__stockpile.get)
 
-    def has_eq_or_more_of_food(self, food_name: str, *, n: int) -> bool:
+    def has_sufficient(self, food_name: str, *, n: int) -> bool:
         """Return True if the stockpile has >=n of the specified food item."""
         return self.__stockpile[food_name] >= n
 
-    def has_eq_or_more_of_most_abundant_food(self, *, n: int):
+    def has_sufficient_abundant_food(self, *, n: int):
         """Return True if the stockpile has >=n of the most abundant food item."""
         food_name: str = self.get_most_abundant_food()
-        return self.has_eq_or_more_of_food(food_name, n=n)
+        return self.has_sufficient(food_name, n=n)
+
+    def as_dict(self) -> Dict[str, int]:
+        """Return a deep copy of the underlying data."""
+        return copy.deepcopy(self.__stockpile)
 
 
 class FoodStockpileBuilder:
@@ -151,7 +160,7 @@ class FoodStockpileBuilder:
         self.__stockpile: Dict[str, int] = self.__empty_stockpile()
 
     def __repr__(self):
-        return self.__class__.__name__ + f"({self.__dict__})"
+        return self.__class__.__name__ + f"({self.__stockpile})"
 
     def user(self, habitica_user: HabiticaUser):
         """

@@ -279,9 +279,7 @@ class PetData:
         "Hippogriff-Hopeful", "MagicalBee-Base", "Phoenix-Base", "Mammoth-Base",
         "MantisShrimp-Base"
     ]
-    # Strictly speaking: these are mounts only, consider refactoring this entire class to contain
-    # more semantic information when important. Except for the Phoenix-Base, but that one
-    # is unfeedable too.
+    # Consider refactoring this entire class to contain more semantic information when important.
 
     event_item_sequence_pet_names = [
         "Wolf-Veteran", "Turkey-Base", "JackOLantern-Base", "Tiger-Veteran", "Turkey-Gilded",
