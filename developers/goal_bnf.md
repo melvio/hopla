@@ -1,6 +1,5 @@
-
-
 Goal structure for stable release:
+
 ```bash
 hopla                     -- gets help
 hopla --help              -- gets help
@@ -66,13 +65,12 @@ hopla complete {shell}            -- provide autocompletion for given shell (onl
 hopla support-development                   -- send 3 gems to development (used for testing hopla development)
 hopla support-development --gems N          -- send N gems to development 
 
-# hopla get_user-user
+# hopla get-user user
 these should have a mutually exclusive --json vs. 'everyday' user output:
     hopla get-user inventory                 -- get all user-items
     hopla get-user inventory pets            -- list pets
     hopla get-user inventory mounts          -- list mounts
     hopla get-user inventory food            -- list food
-    hopla get-user inventory --filter [FILTER]   -- filter yourself
 
 
 these should have a mutually exclusive --json vs. 'everyday' user output:
@@ -82,7 +80,6 @@ these should have a mutually exclusive --json vs. 'everyday' user output:
     hopla get-user stats xp|exp|experience   -- get exp
     hopla get-user stats mp|mana|manapoints  -- get mana
     hopla get-user stats gp|gold             -- get gold
-    hopla get-user stats --filter [FILTER]   -- filter inventory yourself
 
 these should have a mutually exclusive --json vs. 'everyday' user output:
     hopla get-user auth                    -- get all auth info
@@ -90,10 +87,7 @@ these should have a mutually exclusive --json vs. 'everyday' user output:
     hopla get-user auth mail|email|e-mail  -- get user email
     hopla get-user auth name|username      -- get profile name
     hopla get-user auth profilename        -- get profile name
-    hopla get-user auth --filter [FILTER]  -- filter auth yourself
 
-these should have a mutually exclusive --json vs. 'everyday' user output:
-    hopla get-user info --filter [FILTER]   -- filter on the core user information
     
 user-friendly output (e.g. colors+emoticons, not JSON) of user information
    hopla get-user summary
