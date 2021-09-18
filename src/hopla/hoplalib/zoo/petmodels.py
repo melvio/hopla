@@ -54,11 +54,11 @@ class Pet:
         return self.pet_name not in PetData.unfeedable_pet_names
 
     def has_just_1_favorite_food(self) -> bool:
-        """Return True if pet likes only 1 type of food."""
+        """Return True if this pet likes only 1 type of food."""
         return self.pet_name in PetData.only_1favorite_food_pet_names
 
     def likes_all_food(self) -> bool:
-        """Return True if this prefers all food."""
+        """Return True if this pet prefers all food."""
         return self.pet_name in PetData.magic_potion_pet_names
 
     def feeding_status_explanation(self) -> str:
@@ -88,8 +88,8 @@ class Pet:
 
     def favorite_food(self, *,
                       default_value_for_unfeedable: str = "Unfeedable",
-                      default_value_for_all_favorite_food: str = "Any"):
-        """Return the favorite _stockpile of this pet."""
+                      default_value_for_all_favorite_food: str = "Any") -> str:
+        """Return the favorite food of this pet."""
         if self.is_feedable() is False:
             return default_value_for_unfeedable
 

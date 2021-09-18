@@ -90,8 +90,8 @@ class Food:
 
     def is_rare_food_item(self) -> bool:
         """
-        Return False if the _stockpile item is a drop _stockpile.
-        Else return True.
+        Return False if the food_item item is a drop food.
+        Otherwise, return True.
         """
         return self.food_name not in FoodData.drop_food_names
 
@@ -164,7 +164,7 @@ class FoodStockpileBuilder:
 
     def user(self, habitica_user: HabiticaUser):
         """
-        Add a user's _stockpile to the stockpile. This ignores saddles,
+        Add a user's food to the stockpile. This ignores saddles,
         cakes, and other rare foods.
         :param habitica_user:
         :return: self

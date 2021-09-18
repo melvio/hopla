@@ -5,7 +5,7 @@ Module with data about Habitica food information.
 
 class FoodData:
     """
-    Helper class with valid Habitica _stockpile and drop hatching potions and
+    Helper class with valid Habitica food and drop hatching potions and
     the relationship between them.
     """
 
@@ -22,7 +22,7 @@ class FoodData:
         "Golden": "Honey"
     }
     """
-    Note: Pets hatched with magic hatching potions prefer any type of _stockpile.
+    Note: Pets hatched with magic hatching potions prefer any type of food.
     These pets are not supported by this dict.
     Rare favorite foods are also not supported such as Cake, Candy, and Pie.
 
@@ -42,7 +42,7 @@ class FoodData:
     """A list of the non magic, non special hatching potions"""
 
     drop_food_names = list(hatching_potion_favorite_food_mapping.values())
-    """A list of _stockpile that can be dropped by doing tasks.
+    """A list of food items that can be dropped by doing tasks.
 
     These dont include cakes etc., those are rare collectibles.
 
