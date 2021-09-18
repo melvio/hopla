@@ -4,49 +4,25 @@ A helper module with Pet Data.
 Later on this module may be refactored to dynamically retrieve pet
 data from the API. The retrieved data from the API can then be
 cached locally. We then need to refresh our cache only when the
-appVersion of the Habitica API increases. However, this appraoch
+appVersion of the Habitica API increases. However, this approach
 is overkill for now.
 """
 
 
 class PetData:
-    """
-    Helper class with valid foods, pets, hatchingPotions and the relationships
-    between these things.
-    """
+    """ Helper class with valid Habitica pets.
 
-    hatching_potion_favorite_food_mapping = {
-        "Base": "Meat",
-        "White": "Milk",
-        "Desert": "Potatoe",
-        "Red": "Strawberry",
-        "Shade": "Chocolate",
-        "Skeleton": "Fish",
-        "Zombie": "RottenMeat",
-        "CottonCandyPink": "CottonCandyPink",
-        "CottonCandyBlue": "CottonCandyBlue",
-        "Golden": "Honey"
-    }
+    For more info:
+    * hopla api content | jq .petInfo
+    * hopla api content | jq .mountInfo
+
+    And also interesting:
+    * hopla api content | jq .premiumPets
+    * hopla api content | jq .pets
+    * hopla api content | jq .questPets
+    * hopla api content | jq .specialPets
+    * hopla api content | jq .wackyPets
     """
-    Note: Pets hatched with magic hatching potions prefer any type of food.
-    These pets are not supported by this dict.
-    Rare favorite foods are also not supported such as Cake, Candy, and Pie.
-
-    @see:
-    * <https://habitica.fandom.com/wiki/Food_Preferences>
-    * hopla api content | jq .dropHatchingPotions
-    """
-
-    drop_hatching_potions = list(hatching_potion_favorite_food_mapping.keys())
-    """A list of the non magic, non special hatching potions"""
-
-    drop_food_names = list(hatching_potion_favorite_food_mapping.values())
-    """A list of food that can be dropped by doing tasks"""
-    # We dont consider cakes etc. because those are rare collectibles
-    # for more info @see:
-    #    hopla api content | jq .food
-    #    hopla api content | jq '.food[] | select(.canDrop==true)'
-    #    hopla api content | jq '[.food[] | select(.canDrop==true) | .key]'
 
     generation1_pet_names = [
         "Wolf-Base", "Wolf-White", "Wolf-Desert", "Wolf-Red", "Wolf-Shade", "Wolf-Skeleton",

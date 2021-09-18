@@ -6,6 +6,7 @@ import pytest
 
 from hopla.cli.groupcmds.get_user import HabiticaUser
 from hopla.hoplalib.common import GlobalConstants
+from hopla.hoplalib.zoo.foodmodels import FoodData
 from hopla.hoplalib.zoo.petdata import PetData
 from hopla.hoplalib.zoo.petmodels import FeedingStatus, InvalidFeedingStatus, \
     InvalidPet, Pet, PetMountPair, Zoo, ZooBuilder
@@ -132,7 +133,7 @@ class TestIsFavoriteFood:
         # we use choices here because both groups are smaller than
         # the specified k
         zip(random.choices(PetData.unfeedable_pet_names, k=_SAMPLE_SIZE),
-            random.choices(PetData.drop_food_names, k=_SAMPLE_SIZE))
+            random.choices(FoodData.drop_food_names, k=_SAMPLE_SIZE))
     )
     def test_is_favorite_food_false_because_unfeedable(self, pet_name: str,
                                                        food_name: str):
@@ -142,7 +143,7 @@ class TestIsFavoriteFood:
     @pytest.mark.parametrize(
         "pet_name,food_name",
         zip(random.sample(PetData.magic_potion_pet_names, k=_SAMPLE_SIZE),
-            random.choices(PetData.drop_food_names, k=_SAMPLE_SIZE))
+            random.choices(FoodData.drop_food_names, k=_SAMPLE_SIZE))
     )
     def test_is_favorite_food_true_because_likes_all_food(self,
                                                           pet_name: str,

@@ -1,8 +1,11 @@
 """
 A helper module for feeding logic.
 """
-
 import math
+from dataclasses import dataclass
+from typing import Dict, Optional
+
+from hopla.cli.groupcmds.get_user import HabiticaUser
 from hopla.hoplalib.clickhelper import PrintableException
 
 
@@ -65,3 +68,138 @@ class FeedingStatus:
         if self.__feeding_status == -1:
             return 100  # The pet is now a mount
         return self.__feeding_status * 2
+
+
+class FoodData:
+    """
+    Helper class with valid Habitica _stockpile and drop hatching potions and
+    the relationship between them.
+    """
+
+    hatching_potion_favorite_food_mapping = {
+        "Base": "Meat",
+        "White": "Milk",
+        "Desert": "Potatoe",
+        "Red": "Strawberry",
+        "Shade": "Chocolate",
+        "Skeleton": "Fish",
+        "Zombie": "RottenMeat",
+        "CottonCandyPink": "CottonCandyPink",
+        "CottonCandyBlue": "CottonCandyBlue",
+        "Golden": "Honey"
+    }
+    """
+    Note: Pets hatched with magic hatching potions prefer any type of _stockpile.
+    These pets are not supported by this dict.
+    Rare favorite foods are also not supported such as Cake, Candy, and Pie.
+
+    @see:
+    * <https://habitica.fandom.com/wiki/Food_Preferences>
+    * hopla api content | jq .dropHatchingPotions
+    * hopla api content | jq .dropEggs
+
+    also interesting:
+    * hopla api content | jq .questEggs
+    * hopla api content | jq .hatchingPotions
+    * hopla api content | jq .premiumHatchingPotions
+    * hopla api content | jq. wackyHatchingPotions
+    """
+
+    drop_hatching_potions = list(hatching_potion_favorite_food_mapping.keys())
+    """A list of the non magic, non special hatching potions"""
+
+    drop_food_names = list(hatching_potion_favorite_food_mapping.values())
+    """A list of _stockpile that can be dropped by doing tasks.
+
+    These dont include cakes etc., those are rare collectibles.
+
+    # for more info @see:
+    #    hopla api content | jq .food
+    #    hopla api content | jq '.food[] | select(.canDrop==true)'
+    #    hopla api content | jq '[.food[] | select(.canDrop==true) | .key]'
+    """
+
+
+class FoodException(PrintableException):
+    """Exception thrown when there is a food error."""
+
+    def __init__(self, msg: str, *, food: Optional["Food"] = None):
+        super().__init__(msg)
+        self.food = food
+
+
+@dataclass(frozen=True)
+class Food:
+    """A stockpile food item."""
+    food_name: str
+
+    def __repr__(self) -> str:
+        return self.__class__.__name__ + f"({self.food_name})"
+
+    def is_rare_food_item(self) -> bool:
+        """
+        Return False if the _stockpile item is a drop _stockpile.
+        Else return True.
+        """
+        return self.food_name not in FoodData.drop_food_names
+
+
+class FoodStockpile:
+    """The food of a user."""
+    def __init__(self, _stockpile: Dict[str, int]):
+        self.__stockpile = _stockpile
+
+    def modify_stockpile(self, food_name: str, *, amount: int) -> None:
+        """
+        Change the number of specified food in the stockpile.
+
+        :param food_name: the food to modify
+        :param amount: when positive add this number of food, when negative subtract
+                it from the stockpile
+        :return:
+        """
+        food = Food(food_name)
+        if food.is_rare_food_item():
+            raise FoodException(msg=f"Not Supported: Food {food_name} is not supported.",
+                                food=food)
+
+        self.__stockpile[food_name] += amount
+
+
+class FoodStockpileBuilder:
+    """
+    Class that creates a FoodStockpile using the builder
+    design pattern.
+    """
+
+    def __init__(self):
+        self.__stockpile: Dict[str, int] = self.__empty_stockpile()
+
+    def __repr__(self):
+        return self.__class__.__name__ + f"({self.__dict__})"
+
+    def user(self, habitica_user: HabiticaUser):
+        """
+        Add a user's _stockpile to the stockpile. This ignores saddles,
+        cakes, and other rare foods.
+        :param habitica_user:
+        :return: self
+        """
+        food: Dict[str, int] = habitica_user.get_food()
+        for food_name in food:
+            quantity = food[food_name]
+            if Food(food_name).is_rare_food_item() is False:
+                self.__stockpile[food_name] = quantity
+        return self
+
+    def build(self) -> FoodStockpile:
+        """
+        Build a normalized FoodStockpile. This stockpile never has rare items, and
+        it add a 0 count for foods that we don't have.
+        """
+        return FoodStockpile(self.__stockpile)
+
+    @staticmethod
+    def __empty_stockpile() -> Dict[str, int]:
+        no_food = 0
+        return dict.fromkeys(FoodData.drop_food_names, no_food)

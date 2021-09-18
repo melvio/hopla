@@ -1,20 +1,20 @@
 """
 A helper module for Pet logic.
 """
-from typing import Dict, NoReturn
+from typing import Dict, NoReturn, Optional
 
 from hopla.cli.groupcmds.get_user import HabiticaUser
 from hopla.hoplalib.clickhelper import PrintableException
-
 from hopla.hoplalib.common import GlobalConstants
+from hopla.hoplalib.zoo.foodmodels import \
+    FeedingStatus, FoodData, InvalidFeedingStatus
 from hopla.hoplalib.zoo.petdata import PetData
-from hopla.hoplalib.zoo.foodmodels import FeedingStatus, InvalidFeedingStatus
 
 
 class InvalidPet(PrintableException):
     """Exception raised when a pet is invalid."""
 
-    def __init__(self, msg: str, *, pet=None):
+    def __init__(self, msg: str, *, pet: Optional["Pet"] = None):
         super().__init__(msg)
         self.pet = pet
 
@@ -54,7 +54,7 @@ class Pet:
         return self.pet_name not in PetData.unfeedable_pet_names
 
     def has_just_1_favorite_food(self) -> bool:
-        """Return True if pet likes only 1 type of food"""
+        """Return True if pet likes only 1 type of food."""
         return self.pet_name in PetData.only_1favorite_food_pet_names
 
     def likes_all_food(self) -> bool:
@@ -62,7 +62,7 @@ class Pet:
         return self.pet_name in PetData.magic_potion_pet_names
 
     def feeding_status_explanation(self) -> str:
-        """Explain the feeding status of a pet"""
+        """Explain the feeding status of a pet."""
         if self.is_feedable() is False:
             return f"{self.pet_name=} can't be fed because it is special."
         if int(self.feeding_status) == -1:
@@ -89,7 +89,7 @@ class Pet:
     def favorite_food(self, *,
                       default_value_for_unfeedable: str = "Unfeedable",
                       default_value_for_all_favorite_food: str = "Any"):
-        """Return the favorite food of this pet."""
+        """Return the favorite _stockpile of this pet."""
         if self.is_feedable() is False:
             return default_value_for_unfeedable
 
@@ -97,14 +97,14 @@ class Pet:
             return default_value_for_all_favorite_food
 
         if self.has_just_1_favorite_food():
-            return (PetData.hatching_potion_favorite_food_mapping
+            return (FoodData.hatching_potion_favorite_food_mapping
                     .get(self.hatching_potion))
 
         raise InvalidPet(f"Could not find the feeding habits of this {self.pet_name=}",
                          pet=self)  # pragma: no cover
 
     def is_favorite_food(self, food_name: str) -> bool:
-        """Return true if 'food_name' is this Pets favorite food. """
+        """Return true if 'food_name' is this Pets favorite food."""
         if self.is_feedable() is False:
             return False
         if self.likes_all_food():
@@ -132,7 +132,7 @@ class Pet:
         Return True if the pet was hatched from one of the 'ordinary'
         potions. (Such as: Base, Desert, ...).
         """
-        return self.hatching_potion in PetData.drop_hatching_potions
+        return self.hatching_potion in FoodData.drop_hatching_potions
 
 
 class PetMountPair:
@@ -164,7 +164,7 @@ class PetMountPair:
 
 Zoo = Dict[str, PetMountPair]
 """
-Zoo is dictionary with key pet names for O(1) access to the
+Zoo is dictionary with key pet name keys for O(1) access to the
 PetMountPair.
 """
 

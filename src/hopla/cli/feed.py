@@ -10,6 +10,7 @@ import requests
 
 from hopla.cli.groupcmds.get_user import HabiticaUser, HabiticaUserRequest
 from hopla.hoplalib.outputformatter import JsonFormatter
+from hopla.hoplalib.zoo.foodmodels import FoodData
 from hopla.hoplalib.zoo.petmodels import InvalidPet, Pet
 from hopla.hoplalib.zoo.petmodels import PetMountPair, Zoo, ZooBuilder
 from hopla.hoplalib.zoo.petcontroller import FeedPostRequester
@@ -108,7 +109,7 @@ def get_feed_times_until_mount(pet_name: str, food_name: str) -> Union[int, NoRe
     metavar="PET_NAME"
 )
 @click.argument(
-    "food_name", type=click.Choice(PetData.drop_food_names),
+    "food_name", type=click.Choice(FoodData.drop_food_names),
     metavar="[FOOD_NAME]", required=False
 )
 @click.option(
@@ -133,8 +134,8 @@ def feed(pet_name: str, food_name: str,
     """Feed a pet.
 
      \b
-     PET_NAME   name of the pet (e.g. "Wolf-Golden")
-     FOOD_NAME  name of the food (e.g. "Honey").
+     PET_NAME   name of the pet (e.g. Wolf-Golden)
+     FOOD_NAME  name of the food (e.g. Honey).
 
      \b
      Examples:
