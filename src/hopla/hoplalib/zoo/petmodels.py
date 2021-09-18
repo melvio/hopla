@@ -6,8 +6,8 @@ from typing import Dict, NoReturn, Optional
 from hopla.cli.groupcmds.get_user import HabiticaUser
 from hopla.hoplalib.clickhelper import PrintableException
 from hopla.hoplalib.common import GlobalConstants
-from hopla.hoplalib.zoo.foodmodels import \
-    FeedingStatus, FoodData, InvalidFeedingStatus
+from hopla.hoplalib.zoo.foodmodels import FeedingStatus, InvalidFeedingStatus
+from hopla.hoplalib.zoo.fooddata import FoodData
 from hopla.hoplalib.zoo.petdata import PetData
 
 

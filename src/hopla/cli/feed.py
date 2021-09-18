@@ -10,7 +10,7 @@ import requests
 
 from hopla.cli.groupcmds.get_user import HabiticaUser, HabiticaUserRequest
 from hopla.hoplalib.outputformatter import JsonFormatter
-from hopla.hoplalib.zoo.foodmodels import FoodData
+from hopla.hoplalib.zoo.fooddata import FoodData
 from hopla.hoplalib.zoo.petmodels import InvalidPet, Pet
 from hopla.hoplalib.zoo.petmodels import PetMountPair, Zoo, ZooBuilder
 from hopla.hoplalib.zoo.petcontroller import FeedPostRequester
