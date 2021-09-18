@@ -61,11 +61,13 @@ class HabiticaUserRequest:
 
     def __init__(self):
         self.url = UrlBuilder(path_extension="/user").url
-        self.headers = RequestHeaders().get_default_request_headers()
 
     def request_user(self) -> requests.Response:
         """Perform the user get request and return the response"""
-        return requests.get(url=self.url, headers=self.headers)
+        return requests.get(
+            url=self.url,
+            headers=RequestHeaders().get_default_request_headers()
+        )
 
     def request_user_data_or_exit_on_fail(self) -> HabiticaUser:
         """
