@@ -146,8 +146,12 @@ class Food:
 
 class FoodStockpile:
     """The food of a user."""
+
     def __init__(self, _stockpile: Dict[str, int]):
         self.__stockpile = _stockpile
+
+    def __repr__(self):
+        return self.__class__.__name__ + f"({self.__dict__})"
 
     def modify_stockpile(self, food_name: str, *, amount: int) -> None:
         """
@@ -160,10 +164,30 @@ class FoodStockpile:
         """
         food = Food(food_name)
         if food.is_rare_food_item():
-            raise FoodException(msg=f"Not Supported: Food {food_name} is not supported.",
+            raise FoodException(msg=f"Not Supported: {food_name=} is not supported.",
                                 food=food)
 
+        cur_quantity = self.__stockpile[food_name]
+
+        if cur_quantity + amount < 0:
+            msg = (f"Insufficient food: Cannot remove {amount=} of food from the stockpile\n"
+                   f"The current quantity of {food_name=} is {cur_quantity=}.")
+            raise FoodException(msg, food=Food(food_name))
+
         self.__stockpile[food_name] += amount
+
+    def get_most_abundant_food(self) -> str:
+        """Return the most abundant food in the stockpile."""
+        return max(self.__stockpile, key=self.__stockpile.get)
+
+    def has_eq_or_more_of_food(self, food_name: str, *, n: int) -> bool:
+        """Return True if the stockpile has >=n of the specified food item."""
+        return self.__stockpile[food_name] >= n
+
+    def has_eq_or_more_of_most_abundant_food(self, *, n: int):
+        """Return True if the stockpile has >=n of the most abundant food item."""
+        food_name: str = self.get_most_abundant_food()
+        return self.has_eq_or_more_of_food(food_name, n=n)
 
 
 class FoodStockpileBuilder:
