@@ -8,7 +8,7 @@ import click
 import requests
 
 from hopla.hoplalib.requests_helper import get_data_or_exit
-from hopla.hoplalib.http import RequestHeaders, UrlBuilder
+from hopla.hoplalib.http import HabiticaRequest, UrlBuilder
 
 log = logging.getLogger()
 
@@ -56,7 +56,7 @@ class HabiticaUser:
         return int(balance * 4)
 
 
-class HabiticaUserRequest:
+class HabiticaUserRequest(HabiticaRequest):
     """Class that requests a user model from the Habitica API"""
 
     def __init__(self):
@@ -66,7 +66,7 @@ class HabiticaUserRequest:
         """Perform the user get request and return the response"""
         return requests.get(
             url=self.url,
-            headers=RequestHeaders().get_default_request_headers()
+            headers=self.default_headers
         )
 
     def request_user_data_or_exit(self) -> HabiticaUser:

@@ -11,7 +11,7 @@ import requests
 
 from hopla.hoplalib.requests_helper import get_data_or_exit
 from hopla.hoplalib.clickhelper import EnhancedDate
-from hopla.hoplalib.http import RequestHeaders, UrlBuilder
+from hopla.hoplalib.http import HabiticaRequest, UrlBuilder
 from hopla.hoplalib.outputformatter import JsonFormatter
 
 log = logging.getLogger()
@@ -110,19 +110,18 @@ class HabiticaTodo:
         return todo_dict
 
 
-class AddTodoRequest:
+class AddTodoRequest(HabiticaRequest):
     """An object that can perform an add To-Do request"""
 
     def __init__(self, habitica_todo: HabiticaTodo):
         self.url: str = UrlBuilder(path_extension="/tasks/user").url
-        self.headers: dict = RequestHeaders().get_default_request_headers()
         self.habitica_todo = habitica_todo
 
     def post_add_todo_request(self):
         """Perform the add To-Do request and return the data in case of success"""
         response = requests.post(
             url=self.url,
-            headers=self.headers,
+            headers=self.default_headers,
             json=self.habitica_todo.to_json_dict()
         )
         return get_data_or_exit(response)

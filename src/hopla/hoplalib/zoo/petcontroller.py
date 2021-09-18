@@ -2,10 +2,10 @@
 A module for performing feeding Pet HTTP requests.
 """
 import requests
-from hopla.hoplalib.http import RequestHeaders, UrlBuilder
+from hopla.hoplalib.http import HabiticaRequest, UrlBuilder
 
 
-class FeedPostRequester:
+class FeedPostRequester(HabiticaRequest):
     """
     The FeedPostRequester sends a post request to feed a pet.
 
@@ -23,13 +23,6 @@ class FeedPostRequester:
         self.food_name = food_name
         self.query_params = {"amount": food_amount}
 
-    def __repr__(self) -> str:
-        return self.__class__.__name__ + f"({self.__dict__})"
-
-    @property
-    def request_headers(self) -> dict:
-        """Return the required headers for a feed-pet post request."""
-        return RequestHeaders().get_default_request_headers()
 
     @property
     def path(self) -> str:
@@ -43,5 +36,5 @@ class FeedPostRequester:
 
     def post_feed_request(self) -> requests.Response:
         """Performs the feed pet post requests and return the response"""
-        return requests.post(url=self.feed_pet_food_url, headers=self.request_headers,
+        return requests.post(url=self.feed_pet_food_url, headers=self.default_headers,
                              params=self.query_params)
