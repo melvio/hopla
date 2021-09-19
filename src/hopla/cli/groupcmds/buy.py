@@ -60,7 +60,8 @@ def enchanted_armoire(requested_times: int, until_poor_flag: bool):
 
     TIMES - the number of times to buy from the enchanted armoire. Must be at least 0.
     When TIMES is omitted, 1 is the default. When TIMES is larger than the budget allows,
-    --until-poor will be used instead.
+    --until-poor will be used instead. This behavior is likely to change in the
+    future: <https://github.com/melvio/hopla/issues/100>
 
     If no options are specified, you buy once.
 
@@ -84,9 +85,6 @@ def enchanted_armoire(requested_times: int, until_poor_flag: bool):
     """
     log.debug(f"hopla buy enchanted-armoire times={requested_times}, until_poor={until_poor_flag}")
 
-    # TODO: (contact:melvio) --until-poor and --times N should be mutually exclusive options:
-    #  and I dont think this is the case right now.
-    #  * if it is the case: this TODO is DONE
     times: int = get_buy_times_within_budget(until_poor_flag=until_poor_flag,
                                              requested_times=requested_times)
 
