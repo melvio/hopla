@@ -7,9 +7,10 @@ import pytest
 from hopla.cli.groupcmds.get_user import HabiticaUser
 from hopla.hoplalib.common import GlobalConstants
 from hopla.hoplalib.zoo.fooddata import FoodData
+from hopla.hoplalib.zoo.foodmodels import FeedingStatus, InvalidFeedingStatus
 from hopla.hoplalib.zoo.petdata import PetData
-from hopla.hoplalib.zoo.petmodels import FeedingStatus, InvalidFeedingStatus, \
-    InvalidPet, Pet, PetMountPair, Zoo, ZooBuilder
+from hopla.hoplalib.zoo.petmodels import InvalidPet, \
+    Pet, PetMountPair, Zoo, ZooBuilder
 
 _SAMPLE_SIZE = 50
 """
