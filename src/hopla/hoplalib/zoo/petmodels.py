@@ -1,13 +1,14 @@
 """
 A helper module for Pet logic.
 """
-from typing import Dict, NoReturn, Optional
+from dataclasses import dataclass
+from typing import Callable, Dict, NoReturn, Optional
 
 from hopla.cli.groupcmds.get_user import HabiticaUser
-from hopla.hoplalib.errors import PrintableException
 from hopla.hoplalib.common import GlobalConstants
-from hopla.hoplalib.zoo.foodmodels import FeedingStatus, InvalidFeedingStatus
+from hopla.hoplalib.errors import PrintableException
 from hopla.hoplalib.zoo.fooddata import FoodData
+from hopla.hoplalib.zoo.foodmodels import FeedingStatus, InvalidFeedingStatus
 from hopla.hoplalib.zoo.petdata import PetData
 
 
@@ -136,7 +137,7 @@ class Pet:
 
 
 class PetMountPair:
-    """A pair of a pet and its corresponding mount information"""
+    """A pair of a pet and its corresponding mount information."""
 
     def __init__(self, pet: Pet, *,
                  pet_available: bool,
@@ -157,6 +158,7 @@ class PetMountPair:
         """Return true if the pet itself is feedable and there is no mount yet."""
         return (
                 self.mount_available is False
+                and self.pet_available
                 and self.pet.is_feedable()
                 and int(self.pet.feeding_status) != -1
         )
@@ -167,6 +169,38 @@ Zoo = Dict[str, PetMountPair]
 Zoo is dictionary with key pet name keys for O(1) access to the
 PetMountPair.
 """
+
+
+@dataclass(frozen=True)
+class ZooHelper:
+    """Class with helper functions for a Zoo."""
+    zoo: Zoo
+
+    def filter_on_pet_mount_pairs(self, predicate: Callable[[PetMountPair], bool]) -> Zoo:
+        """Filter the zoo on the pair. This does not change the underlying zoo.
+
+        :param predicate: Include the PetMountPair if the predicate returns True, else
+                          omit the pair.
+        :return: A filtered Zoo
+        """
+        return {
+            pet_name: pair for (pet_name, pair) in self.zoo.items() if predicate(pair)
+        }
+
+    def get_feedable_zoo(self) -> Zoo:
+        """Helper function to get only the pets that can be fed in this Zoo."""
+        return self.filter_on_pet_mount_pairs(PetMountPair.can_feed_pet)
+
+    def filter_on_pet_name(self, predicate: Callable[[str], bool]) -> Zoo:
+        """Filter the zoo on the pet name. This does not change the underlying zoo.
+
+        :param predicate: Include the PetMountPair if the predicate returns True, else
+                          omit the pair.
+        :return: A filtered zoo.
+        """
+        return {
+            pet_name: pair for (pet_name, pair) in self.zoo.items() if predicate(pet_name)
+        }
 
 
 class ZooBuilder:

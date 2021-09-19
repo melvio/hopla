@@ -10,7 +10,7 @@ from hopla.hoplalib.zoo.fooddata import FoodData
 from hopla.hoplalib.zoo.foodmodels import FeedingStatus, InvalidFeedingStatus
 from hopla.hoplalib.zoo.petdata import PetData
 from hopla.hoplalib.zoo.petmodels import InvalidPet, \
-    Pet, PetMountPair, Zoo, ZooBuilder
+    Pet, PetMountPair, Zoo, ZooBuilder, ZooHelper
 
 _SAMPLE_SIZE = 50
 """
@@ -385,7 +385,7 @@ class TestZooBuilder:
 
         pets_dict = {animal_name: feeding_status, animal_name2: feeding_status2}
         mounts_dict = {animal_name: True}
-        user: HabiticaUser = self.create_user(pets=pets_dict, mounts=mounts_dict)
+        user: HabiticaUser = _create_user(pets=pets_dict, mounts=mounts_dict)
 
         builder = ZooBuilder(user)
 
@@ -397,7 +397,7 @@ class TestZooBuilder:
         feeding_status = 5
         pets_dict = {animal_name: feeding_status}
         mounts_dict = {animal_name: True}
-        user: HabiticaUser = self.create_user(pets=pets_dict, mounts=mounts_dict)
+        user: HabiticaUser = _create_user(pets=pets_dict, mounts=mounts_dict)
 
         builder_str = str(ZooBuilder(user))
 
@@ -415,8 +415,8 @@ class TestZooBuilder:
     def test_build_raised_pet(self):
         animal_name = "BearCub-Shadow"
         feed_status = -1  # i.e. No pet, just mount
-        user: HabiticaUser = self.create_user(pets={animal_name: feed_status},
-                                              mounts={animal_name: True})
+        user: HabiticaUser = _create_user(pets={animal_name: feed_status},
+                                          mounts={animal_name: True})
 
         zoo: Zoo = ZooBuilder(user).build()
 
@@ -430,7 +430,7 @@ class TestZooBuilder:
 
     def test_build_no_pet_yes_mount(self):
         animal_name = "Aether-Invisible"
-        user: HabiticaUser = self.create_user(mounts={animal_name: True})
+        user: HabiticaUser = _create_user(mounts={animal_name: True})
 
         zoo: Zoo = ZooBuilder(user).build()
 
@@ -443,7 +443,7 @@ class TestZooBuilder:
     def test_build_yes_pet_no_mount(self):
         animal_name = "Dragon-Skeleton"
         feeding_status = 27
-        user = self.create_user(pets={animal_name: feeding_status})
+        user = _create_user(pets={animal_name: feeding_status})
 
         zoo: Zoo = ZooBuilder(user).build()
 
@@ -454,13 +454,62 @@ class TestZooBuilder:
         assert result_pair.mount_available is False
         assert result_pair.pet_available
 
-    def create_user(self, *,
-                    pets: Optional[dict] = None,
-                    mounts: Optional[dict] = None):
-        """Create a simple user to test pet and mount logic"""
-        if pets is None:
-            pets = {}
-        if mounts is None:
-            mounts = {}
 
-        return HabiticaUser({"items": {"pets": pets, "mounts": mounts}})
+class TestZooHelper:
+    def test_filter_on_pet_mount_pair(self):
+        pets: dict = {"Owl-Golden": -1, "Ferret-Red": 27, "Phoenix-Base": 5, "Parrot-Base": 10}
+        mounts: dict = {"BearCub-Desert": True}
+        user: HabiticaUser = _create_user(pets=pets, mounts=mounts)
+        zoo: Zoo = ZooBuilder(user).build()
+
+        def predicate(pair: PetMountPair) -> bool:
+            # arbitrary filter function
+            return (pair.pet.pet_name == "Parrot-Base"
+                    or pair.mount_available
+                    or int(pair.pet.feeding_status) == 27)
+
+        helper = ZooHelper(zoo)
+        filtered_zoo: Zoo = helper.filter_on_pet_mount_pairs(predicate=predicate)
+
+        expected_pet_names = sorted(["Ferret-Red", "Parrot-Base", "BearCub-Desert"])
+        assert sorted(list(filtered_zoo.keys())) == expected_pet_names
+
+    def test_get_feedable_zoo(self):
+        pets: dict = {
+            "BearCub-Desert": 5,  # we have the mount, not hungry
+            "Owl-Golden": -1,  # we don't have the pet
+            "Ferret-Red": 27,  # can be fed
+            "Phoenix-Base": 5,  # unfeedable pet
+            "Parrot-Base": 10,  # can be fed
+        }
+        mounts: dict = {"BearCub-Desert": True}
+        user: HabiticaUser = _create_user(pets=pets, mounts=mounts)
+        zoo: Zoo = ZooBuilder(user).build()
+
+        helper = ZooHelper(zoo)
+        filtered_zoo: Zoo = helper.get_feedable_zoo()
+
+        assert len(filtered_zoo) is 2
+        assert "Ferret-Red" in filtered_zoo
+        assert "Parrot-Base" in filtered_zoo
+
+    def test_filter_on_pet_name(self):
+        pets: dict = {"BearCub-Desert": 5, "Owl-Golden": -1, "Ferret-Red": 27, "Phoenix-Base": 5,
+                      "Parrot-Base": 10}
+        user: HabiticaUser = _create_user(pets=pets)
+        zoo: Zoo = ZooBuilder(user).build()
+
+        helper = ZooHelper(zoo)
+        filtered_zoo: Zoo = helper.filter_on_pet_name(lambda name: name.endswith("-Base"))
+
+        assert list(filtered_zoo.keys()) == ["Phoenix-Base", "Parrot-Base"]
+
+
+def _create_user(*, pets: Optional[dict] = None, mounts: Optional[dict] = None) -> HabiticaUser:
+    """Create a simple user to test pet and mount logic"""
+    if pets is None:
+        pets = {}
+    if mounts is None:
+        mounts = {}
+
+    return HabiticaUser({"items": {"pets": pets, "mounts": mounts}})
