@@ -157,36 +157,37 @@ class TestFoodStockpileBuilder:
         expected_repr = f"FoodStockpileBuilder({expected_food})"
         assert result == expected_repr
 
+    def test_empty_stockpile(self):
+        stockpile: FoodStockpile = FoodStockpileBuilder.empty_stockpile()
+
+        assert all(amount == 0 for amount in stockpile.as_dict().values())
+
 
 class TestFoodStockpile:
     def get_user_with_empty_stockpile(self) -> HabiticaUser:
         empty_stockpile: Dict[str, int] = get_empty_stockpile_dict()
         return HabiticaUser({"items": {"food": empty_stockpile}})
 
-    def test_modify_stockpile_add_food_ok(self):
-        stockpile: FoodStockpile = (FoodStockpileBuilder()
-                                    .user(self.get_user_with_empty_stockpile())
-                                    .build())
+    def test_add_food_ok(self):
+        stockpile: FoodStockpile = FoodStockpileBuilder.empty_stockpile()
 
         food1, amount1 = "Meat", 5
         food2, amount2 = "Honey", 1
-        stockpile.modify_stockpile(food1, n=amount1)
-        stockpile.modify_stockpile(food2, n=amount2)
+        stockpile.add_food(food1, n=amount1)
+        stockpile.add_food(food2, n=amount2)
 
         expected_food = get_empty_stockpile_dict()
         expected_food.update({food1: amount1, food2: amount2})
         assert stockpile.as_dict() == expected_food
         assert str(stockpile) == f"FoodStockpile({expected_food})"
 
-    def test_modify_stockpile_supply_too_small_fail(self):
-        stockpile: FoodStockpile = (FoodStockpileBuilder()
-                                    .user(self.get_user_with_empty_stockpile())
-                                    .build())
+    def test_add_food_supply_too_small_fail(self):
+        stockpile: FoodStockpile = FoodStockpileBuilder.empty_stockpile()
 
         food_name = "CottonCandyBlue"
         with pytest.raises(FoodException) as execinfo:
             # can't subtract anything anything from empty stockpile
-            stockpile.modify_stockpile(food_name, n=-1)
+            stockpile.add_food(food_name, n=-1)
 
         msg = str(execinfo.value)
         expected_msg = (f"Insufficient food: Cannot remove n=-1 of food from the stockpile\n"
@@ -197,15 +198,13 @@ class TestFoodStockpile:
         assert msg == expected_msg
         assert execinfo.value.food == expected_food
 
-    def test_modify_stockpile_supply_rare_item_fail(self):
-        stockpile: FoodStockpile = (FoodStockpileBuilder()
-                                    .user(self.get_user_with_empty_stockpile())
-                                    .build())
+    def test_add_rare_food_item_fail(self):
+        stockpile: FoodStockpile = FoodStockpileBuilder.empty_stockpile()
 
         food_name = "Saddle"
         with pytest.raises(FoodException) as execinfo:
             # Saddles are not supported by our stockpile
-            stockpile.modify_stockpile(food_name, n=1)
+            stockpile.add_food(food_name, n=1)
 
         msg = str(execinfo.value)
         expected_msg = f"Not Supported: {food_name=} is not supported."
@@ -214,15 +213,27 @@ class TestFoodStockpile:
         assert msg == expected_msg
         assert execinfo.value.food == expected_food
 
+    def test_add_food_dict(self):
+        food_dict = {"Meat": 9, "CottonCandyBlue": 8, "Honey": 7}
+        food_dict2 = {"Meat": -3, "Fish": 1}
+
+        stockpile: FoodStockpile = FoodStockpileBuilder.empty_stockpile()
+
+        stockpile.add_food_dict(food_dict)
+        stockpile.add_food_dict(food_dict2)
+
+        expected_stockpile = FoodStockpile(
+            {'Chocolate': 0, 'CottonCandyBlue': 8, 'CottonCandyPink': 0, 'Fish': 1, 'Honey': 7,
+             'Meat': 6, 'Milk': 0, 'Potatoe': 0, 'RottenMeat': 0, 'Strawberry': 0})
+        assert stockpile == expected_stockpile
+
     def test_get_most_abundant_food(self):
-        stockpile: FoodStockpile = (FoodStockpileBuilder()
-                                    .user(self.get_user_with_empty_stockpile())
-                                    .build())
+        stockpile: FoodStockpile = FoodStockpileBuilder.empty_stockpile()
 
         most_abundant_food, most_abundant_frequency = "Strawberry", 10
-        stockpile.modify_stockpile(most_abundant_food, n=most_abundant_frequency)
-        stockpile.modify_stockpile("Meat", n=most_abundant_frequency - 2)
-        stockpile.modify_stockpile("CottonCandyBlue", n=most_abundant_frequency - 5)
+        stockpile.add_food(most_abundant_food, n=most_abundant_frequency)
+        stockpile.add_food("Meat", n=most_abundant_frequency - 2)
+        stockpile.add_food("CottonCandyBlue", n=most_abundant_frequency - 5)
 
         result_food: str = stockpile.get_most_abundant_food()
 
@@ -232,12 +243,10 @@ class TestFoodStockpile:
         "food_name,n", [("Meat", 0), ("Milk", 8), ("Honey", 10), ("Strawberry", 11)]
     )
     def test_has_sufficient(self, food_name: str, n: int):
-        stockpile: FoodStockpile = (FoodStockpileBuilder()
-                                    .user(self.get_user_with_empty_stockpile())
-                                    .build())
+        stockpile: FoodStockpile = FoodStockpileBuilder.empty_stockpile()
 
         start_quantity = 10
-        stockpile.modify_stockpile(food_name, n=start_quantity)
+        stockpile.add_food(food_name, n=start_quantity)
 
         result_sufficient: bool = stockpile.has_sufficient(food_name, n=n)
 
@@ -247,14 +256,12 @@ class TestFoodStockpile:
         assert result_sufficient == expected_sufficient
 
     def test_has_sufficient_abundant_food(self):
-        stockpile: FoodStockpile = (FoodStockpileBuilder()
-                                    .user(self.get_user_with_empty_stockpile())
-                                    .build())
+        stockpile: FoodStockpile = FoodStockpileBuilder.empty_stockpile()
 
         abundant_food, abundant_food_quantity = "Meat", 12
         other_food = "Strawberry"
-        stockpile.modify_stockpile(abundant_food, n=abundant_food_quantity)
-        stockpile.modify_stockpile(other_food, n=abundant_food_quantity - 10)
+        stockpile.add_food(abundant_food, n=abundant_food_quantity)
+        stockpile.add_food(other_food, n=abundant_food_quantity - 10)
 
         assert stockpile.has_sufficient_abundant_food(n=0)
         assert stockpile.has_sufficient_abundant_food(n=abundant_food_quantity - 1)

@@ -23,6 +23,16 @@ class InvalidPet(PrintableException):
 class Pet:
     """A habitica pet"""
 
+    # pylint: disable=too-many-public-methods
+    #################################################################
+    # In a way, pylint is right. This class does have a lot of functions.
+    # Most of these are oneliners, however we can also use polymorphism.
+    # That would make it easier to find functions in this class.
+    # We can use a PetFactory that creates QuestPets, MagicPets etc.
+    # However, that is really overkill for now and not urgent enough.
+    # Therefore, too-many-public-methods is disabled for this class.
+    #################################################################
+
     def __init__(self, pet_name: str, *,
                  feeding_status: FeedingStatus = FeedingStatus(5)):
         if pet_name not in PetData.pet_names:
@@ -128,6 +138,17 @@ class Pet:
         """Return True if this pet is from the generation 1 pet"""
         return self.pet_name in PetData.generation1_pet_names
 
+    def is_quest_pet(self) -> bool:
+        """
+        Return True if this pet is a quest pet. This doesn't include
+        special pets such as world event related pets.
+        """
+        return self.pet_name in PetData.quest_pet_names
+
+    def is_magic_hatching_pet(self) -> bool:
+        """Return True if this pet is hatched from a magic potion."""
+        return self.pet_name in PetData.magic_potion_pet_names
+
     def is_from_drop_hatching_potions(self) -> bool:
         """
         Return True if the pet was hatched from one of the 'ordinary'
@@ -200,6 +221,17 @@ class ZooHelper:
         """
         return {
             pet_name: pair for (pet_name, pair) in self.zoo.items() if predicate(pet_name)
+        }
+
+    def filter_on_pet(self, predicate: Callable[[Pet], bool]) -> Zoo:
+        """Filter the zoo on the pet object. This does not change the underlying zoo.
+
+        :param predicate: Include the PetMountPair if the predicate returns True, else
+                          omit the pair.
+        :return: A filtered zoo.
+        """
+        return {
+            pet_name: pair for (pet_name, pair) in self.zoo.items() if predicate(pair.pet)
         }
 
 

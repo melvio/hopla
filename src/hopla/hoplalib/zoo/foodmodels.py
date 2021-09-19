@@ -96,23 +96,31 @@ class Food:
         return self.food_name not in FoodData.drop_food_names
 
 
+@dataclass
 class FoodStockpile:
     """The food of a user."""
 
     def __init__(self, __stockpile: Dict[str, int]):
         self.__stockpile = __stockpile
 
+    def __eq__(self, other):
+        # pylint: disable=protected-access
+        return isinstance(other, FoodStockpile) and self.__stockpile == other.__stockpile
+
+    def __hash__(self):
+        return hash(self.__stockpile)
+
     def __repr__(self):
         return self.__class__.__name__ + f"({self.__stockpile})"
 
-    def modify_stockpile(self, food_name: str, *, n: int) -> None:
+    def add_food(self, food_name: str, *, n: int) -> "FoodStockpile":
         """
         Change the number of specified food in the stockpile.
 
         :param food_name: the food to modify
         :param n: When n is positive, add this number of food.
                   When negative, subtract n from this food from the stockpile.
-        :return: None
+        :return: The modified FoodStockPile
         """
         food = Food(food_name)
         if food.is_rare_food_item():
@@ -127,6 +135,23 @@ class FoodStockpile:
             raise FoodException(msg, food=Food(food_name))
 
         self.__stockpile[food_name] += n
+
+        return self
+
+    def add_food_dict(self, food_dict: Dict[str, int]) -> "FoodStockpile":
+        """
+        Add an entire food dict to the stockpile.
+
+        Note that negative values will reduce the number of food items in this
+        FoodStockPile
+
+        :param food_dict:
+        :return: the modified FoodStockPile
+        """
+        for food_name, times in food_dict.items():
+            self.add_food(food_name, n=times)
+
+        return self
 
     def get_most_abundant_food(self) -> str:
         """
@@ -187,3 +212,8 @@ class FoodStockpileBuilder:
     def __empty_stockpile() -> Dict[str, int]:
         no_food = 0
         return dict.fromkeys(FoodData.drop_food_names, no_food)
+
+    @classmethod
+    def empty_stockpile(cls) -> FoodStockpile:
+        """Create an empty stockpile."""
+        return FoodStockpile(FoodStockpileBuilder.__empty_stockpile())
