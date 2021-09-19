@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from typing import Dict, Optional
 
 from hopla.cli.groupcmds.get_user import HabiticaUser
-from hopla.hoplalib.clickhelper import PrintableException
+from hopla.hoplalib.errors import PrintableException
 from hopla.hoplalib.zoo.fooddata import FoodData
 
 

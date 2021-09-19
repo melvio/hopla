@@ -1,7 +1,10 @@
 """
 A module for performing feeding Pet HTTP requests.
 """
+from typing import Optional
+
 import requests
+
 from hopla.hoplalib.http import HabiticaRequest, UrlBuilder
 
 
@@ -14,14 +17,17 @@ class FeedPostRequester(HabiticaRequest):
 
     [APIDOCS](https://habitica.com/apidoc/#api-User-UserFeed)
     """
+    _DEFAULT_FOOD_AMOUNT = 1
 
     def __init__(self, *,
                  pet_name: str,
                  food_name: str,
-                 food_amount: int = 1):
+                 food_amount: Optional[int] = _DEFAULT_FOOD_AMOUNT):
         self.pet_name = pet_name
         self.food_name = food_name
-        self.query_params = {"amount": food_amount}
+        self.query_params = {
+            "amount": food_amount or FeedPostRequester._DEFAULT_FOOD_AMOUNT
+        }
 
     @property
     def path(self) -> str:

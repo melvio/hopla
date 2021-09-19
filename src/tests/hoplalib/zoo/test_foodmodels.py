@@ -3,8 +3,8 @@ from typing import Dict
 import pytest
 
 from hopla.cli.groupcmds.get_user import HabiticaUser
-from hopla.hoplalib.zoo.foodmodels import Food, FoodException, FoodStockpile, FoodStockpileBuilder
-from hopla.hoplalib.zoo.petmodels import FeedingStatus
+from hopla.hoplalib.zoo.foodmodels import Food, FeedingStatus, \
+    FoodException, FoodStockpile, FoodStockpileBuilder
 
 
 class TestFeedingStatus:

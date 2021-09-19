@@ -4,7 +4,7 @@ A helper module for Pet logic.
 from typing import Dict, NoReturn, Optional
 
 from hopla.cli.groupcmds.get_user import HabiticaUser
-from hopla.hoplalib.clickhelper import PrintableException
+from hopla.hoplalib.errors import PrintableException
 from hopla.hoplalib.common import GlobalConstants
 from hopla.hoplalib.zoo.foodmodels import FeedingStatus, InvalidFeedingStatus
 from hopla.hoplalib.zoo.fooddata import FoodData

@@ -8,7 +8,7 @@ import os
 from pathlib import Path
 
 import click
-from hopla.hoplalib.clickhelper import PrintableException
+from hopla.hoplalib.errors import PrintableException
 
 log = logging.getLogger()
 

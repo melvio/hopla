@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import List
 from collections import namedtuple
 
-from hopla.hoplalib.clickhelper import PrintableException
+from hopla.hoplalib.errors import PrintableException
 from hopla.hoplalib.common import get_configuration_dirpath, EnvironmentVariables
 
 log = logging.getLogger()

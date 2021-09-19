@@ -9,12 +9,13 @@ import click
 import requests
 
 from hopla.cli.groupcmds.get_user import HabiticaUser, HabiticaUserRequest
+from hopla.hoplalib.errors import YouFoundABugRewardError
 from hopla.hoplalib.outputformatter import JsonFormatter
 from hopla.hoplalib.zoo.fooddata import FoodData
-from hopla.hoplalib.zoo.petmodels import InvalidPet, Pet
-from hopla.hoplalib.zoo.petmodels import PetMountPair, Zoo, ZooBuilder
+from hopla.hoplalib.zoo.foodmodels import FoodStockpile, FoodStockpileBuilder
 from hopla.hoplalib.zoo.petcontroller import FeedPostRequester
 from hopla.hoplalib.zoo.petdata import PetData
+from hopla.hoplalib.zoo.petmodels import Pet, PetMountPair, Zoo, ZooBuilder
 
 log = logging.getLogger()
 
@@ -31,32 +32,6 @@ def print_favorite_food_and_exit(pet_name: str):
     pet = Pet(pet_name)
     click.echo(pet.favorite_food())
     sys.exit()
-
-
-def get_favorite_food_or_exit(pet_name: str):
-    """Get the favorite food for the specified pet, else exit with 1."""
-    try:
-        pet = Pet(pet_name=pet_name)
-        favorite_food = pet.favorite_food()
-    except (InvalidPet, ValueError) as ex:
-        click.echo(f"We could not create {pet_name}. Received the following exception:")
-        click.echo(ex)
-        sys.exit(1)
-
-    __exit_if_pet_has_no_favorite_food(pet_name, favorite_food)
-
-    return favorite_food
-
-
-def __exit_if_pet_has_no_favorite_food(pet_name: str, favorite_food: str):
-    if favorite_food == "Any":
-        msg = f"{pet_name} likes all foods. You must specify a FOOD_NAME for this pet."
-        click.echo(msg)
-        sys.exit(1)
-    elif favorite_food == "Unfeedable":  # pragma: unreachable branch
-        msg = f"{pet_name} is a special pet. It cannot be fed."
-        click.echo(msg)
-        sys.exit(1)
 
 
 def __get_feed_data_or_exit(feed_response: requests.Response):
@@ -101,6 +76,28 @@ def get_feed_times_until_mount(pet_name: str, food_name: str) -> Union[int, NoRe
                  + pet.feeding_status_explanation())
 
     return pet.required_food_items_until_mount(food_name)
+
+
+def get_appropriate_food_or_exit(pet_name: str) -> Union[str, NoReturn]:
+    """Return the food that is appropriate for this pet.
+
+    For pets hatched with normal hatching potion, return their favorite food.
+    For pets hatched with magic hatching potion, return the most abundant food you have.
+    Other types of pets should not be received by this function.
+    """
+    pet = Pet(pet_name)
+    if pet.has_just_1_favorite_food():
+        return pet.favorite_food()
+
+    if pet.likes_all_food():
+        user: HabiticaUser = HabiticaUserRequest().request_user_data_or_exit()
+        stockpile: FoodStockpile = FoodStockpileBuilder().user(user).build()
+        return stockpile.get_most_abundant_food()
+
+    msg = (f"We tried to find the appropriate food for {pet_name=}.\n"
+           "We assumed that we would have found the appropriate food by now.\n"
+           "Unfortunately, that was not the case.")
+    raise YouFoundABugRewardError(msg)
 
 
 @click.command()
@@ -188,13 +185,14 @@ def feed(pet_name: str, food_name: str,
               f" {list_favorite_food=}")
 
     __raise_if_conflicting(times=times, until_mount=until_mount)
+    times = times or 1
 
     if list_favorite_food:
         print_favorite_food_and_exit(pet_name=pet_name)
 
     if food_name is None:
-        food_name = get_favorite_food_or_exit(pet_name=pet_name)
-        log.debug(f"Favorite food is automatically selected to be {food_name=}.")
+        food_name = get_appropriate_food_or_exit(pet_name=pet_name)
+        log.debug(f"Food is automatically selected to be {food_name=}.")
 
     if until_mount:
         times: int = get_feed_times_until_mount(pet_name=pet_name,

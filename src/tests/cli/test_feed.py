@@ -1,5 +1,3 @@
-import random
-
 import pytest
 from requests.status_codes import codes
 from click.testing import CliRunner, Result
@@ -7,7 +5,6 @@ from unittest.mock import patch, MagicMock
 
 from hopla.cli.feed import feed, get_feed_times_until_mount
 from hopla.cli.groupcmds.get_user import HabiticaUser
-from hopla.hoplalib.zoo.petmodels import PetData
 
 
 class MockFeedResponse:
@@ -41,11 +38,11 @@ class TestFeedCliCommand:
 
     @patch("hopla.cli.feed.FeedPostRequester.post_feed_request")
     def test_feed_pet_once_ok(self, mock_feed_api_call: MagicMock):
-        pet_name = "Wolf-Base"
+        pet_name = "Wolf-Zombie"
         food_name = "RottenMeat"
 
         feeding_status_expected = 15
-        message_expected = "Sand Sculpture Lion Cub really likes the Rotten Meat!"
+        message_expected = f"{pet_name} really likes the Rotten Meat!"
         response_content = {"success": True, "data": feeding_status_expected,
                             "message": message_expected, "userV": 59173,
                             "appVersion": "4.205.1"}
@@ -91,19 +88,32 @@ class TestFeedCliCommand:
         assert f'"feeding_status": {feeding_status_expected},' in result.output
         assert f'"message": "{message_expected}"' in result.output
 
-    @pytest.mark.parametrize(
-        "magic_pet_name",
-        random.sample(PetData.magic_potion_pet_names, k=30)
-    )
-    def test_feed_pet_with_favorite_food_no_favorite_food_fail(self, magic_pet_name: str):
+    @patch("hopla.cli.feed.HabiticaUserRequest.request_user_data_or_exit")
+    @patch("hopla.cli.feed.FeedPostRequester.post_feed_request")
+    def test_feed_pet_with_abundant_food(self, mock_feed_request: MagicMock,
+                                         mock_user_request: MagicMock):
+        most_abundant_food = "Meat"
+        magic_pet_name = "PandaCub-Rainbow"
+
+        mock_user_request.return_value = HabiticaUser({
+            "items": {"food": {most_abundant_food: 10, "Honey": 4}}
+        })
+
+        expected_feed_data = 10
+        expected_msg = f"{magic_pet_name} really likes the {most_abundant_food}!"
+        success_response = {
+            "success": True,
+            "data": expected_feed_data,
+            "message": expected_msg
+        }
+        mock_feed_request.return_value = MockFeedResponse(json=success_response)
+
         runner = CliRunner()
-        result = runner.invoke(feed, [magic_pet_name])
+        result: Result = runner.invoke(feed, [magic_pet_name])
 
-        expected_msg = (f"{magic_pet_name} likes all foods. "
-                        "You must specify a FOOD_NAME for this pet.")
-
-        assert result.exit_code == 1
-        assert result.output == f"{expected_msg}\n"
+        assert result.exit_code == 0
+        assert f'"feeding_status": {expected_feed_data}' in result.stdout
+        assert f'"message": "{expected_msg}"' in result.stdout
 
     @patch("hopla.cli.feed.FeedPostRequester.post_feed_request")
     def test_feed_pet_once_fail(self, mock_feed_api_call: MagicMock):
@@ -123,6 +133,8 @@ class TestFeedCliCommand:
         result: Result = runner.invoke(feed, [pet_name, food_name])
 
         mock_feed_api_call.assert_called_with()  # no args
+
+        # TODO: https://github.com/melvio/hopla/issues/104
         assert result.exit_code == codes.unauthorized
         assert result.stdout == f"{expected_errmsg}\n"
 
