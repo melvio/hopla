@@ -133,7 +133,9 @@ class TestFeedCliCommand:
         result: Result = runner.invoke(feed, [pet_name, food_name])
 
         mock_feed_api_call.assert_called_with()  # no args
-        assert result.exit_code == codes.unauthorized  # TODO: change later to 2
+
+        # TODO: https://github.com/melvio/hopla/issues/104
+        assert result.exit_code == codes.unauthorized
         assert result.stdout == f"{expected_errmsg}\n"
 
     def test_cannot_specify_times_and_until_mount(self):

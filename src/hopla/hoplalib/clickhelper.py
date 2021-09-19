@@ -10,18 +10,6 @@ import click
 log = logging.getLogger()
 
 
-class PrintableException(BaseException):
-    """A BaseException that implements a default __str__"""
-
-    def __init__(self, msg: str):
-        super().__init__(PrintableException.__class__)
-        self.msg = msg
-
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}({self.msg})"
-
-    def __str__(self) -> str:
-        return self.msg
 
 
 def case_insensitive_aliases(argument: str, choices: List[str], *,
