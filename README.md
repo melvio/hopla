@@ -25,25 +25,33 @@ git clone "https://github.com/melvio/hopla.git"
 gh repo clone melvio/hopla
 ```
 
-Now `cd` into the repository and install hopla:
+Now `cd` into the repository with: 
 
 ```bash
-cd ./hopla && pip install --upgrade --editable .
+cd ./hopla 
+```
+
+And install Hopla by running:
+
+```bash
+pip install --upgrade --editable .
 ```
 
 ### First Time Usage
 
-Hopla needs your `User Id` and `API Token` to connect to Habitica on your behalf. You can find
-these over at `https://habitica.com/user/settings/api`. Run the following command to configure this
-automatically:
+Hopla needs your `User Id` and `API Token` to connect to Habitica. 
+You can find these over at `https://habitica.com/user/settings/api`. 
+
+Run the following command to configure this automatically:
 
 ```bash
 $ hopla authenticate 
-Please enter your credentials
-You can find them over at <https://habitica.com/user/settings/api> 
-The user id can be found under 'User ID' and you need to click 'Show API Token'
-Please paste your user id here: 7c551d98-31e9-42b4-b7fa-9d89b0944320
-Please paste your api token id here: *******-*******-*******-*******
+Please enter your credentials.
+You can find them over at <https://habitica.com/user/settings/api>.
+They have the following format: 'c0ffee69-dada-feed-abb1-5ca1ab1ed004'.
+The user id can be found under 'User ID'.
+Please paste your user ID here (press Ctrl-C to abort): c0ffee69-dada-feed-abb1-5ca1ab1ed004
+Please paste your user API Token here (input remains hidden):
 ```
 
 This will create a credentials file at `~/.config/hopla/authenticate.conf` that Hopla uses. 
@@ -52,7 +60,7 @@ variable to choose your own file.
 
 ##### Autocompletion
 
-If you want bash autocompletion you can run the following command:
+If you want bash autocompletion, you can run the following command:
 
 ```bash
 $ hopla complete bash --enable
@@ -72,7 +80,8 @@ hopla complete fish
 
 ## Everyday Usage
 
-After installation, you can use `hopla`. The supported commands can be found by running:
+After installation, you can use `hopla`. 
+The supported commands can be found by running:
 
 ```bash
 $ hopla --help
@@ -93,9 +102,11 @@ Commands:
   # etcetera
 ```
 
-More functionality is currently being implemented. Hopla is open-source. Pull request, feature
-requests, and issues are welcomed at <https://github.com/melvio/hopla>. If you want to contribute,
-but don't know where to start, you might want to look in the `./developers`. folder.
+More functionality is currently being implemented. 
+Hopla is open-source. 
+Pull request, feature requests, and issues are welcomed at <https://github.com/melvio/hopla>. 
+If you want to contribute, but don't know where to start, you might want to look in 
+the `./developers`. folder.
 
 [![License](https://img.shields.io/badge/License-apache--2.0-blue)](#license)
 
@@ -103,19 +114,24 @@ but don't know where to start, you might want to look in the `./developers`. fol
 
 *Use case*: You can use environment variables to set default values for all Hopla options. 
 
-Hopla automatically recognizes environment variables starting with `HOPLA_`. All option (such
-as `--difficulty` for `hopla add todo` and `--amount` for `hopla feed`) can be set in this manner.
+Hopla automatically recognizes environment variables starting with `HOPLA_`. 
+All option (such as `--difficulty` for `hopla add todo` and `--amount` for `hopla feed`) can be 
+set in this manner.
 
 To get the right environment variable name, use this logic:
+
 1. Define an environment variable starting with `HOPLA_`
+
 2. Append the subcommand to the environment variable as follows:
     * `hopla add todo` -> `HOPLA_ADD_TODO_`
     * `hopla support-development` -> `HOPLA_SUPPORT_DEVELOPMENT_`
     * `hopla feed` -> `HOPLA_FEED_`
+ 
 3. Append the option name that you want to set as follows:
     * `hopla add todo --difficulty` -> `HOPLA_ADD_TODO_DIFFICULTY`
     * `hopla support-development --gems` -> `HOPLA_SUPPORT_DEVELOPMENT_GEMS`
     * `hopla feed --amount` -> `HOPLA_FEED_AMOUNT`
+
 
 For example:
 
@@ -124,6 +140,7 @@ HOPLA_ADD_TODO_DIFFICULTY=hard    hopla add todo "Hello"
 HOPLA_SUPPORT_DEVELOPMENT_GEMS=8  hopla support-development
 HOPLA_FEED_AMOUNT=3               hopla feed Wolf-Shade Chocolate
 ````
+
 
 Other examples:
 
@@ -144,9 +161,10 @@ HOPLA_COMPLETE_ENABLE=no      hopla complete bash
 
 ### Background
 
-Hopla is a XDG-compliant bash-based command line interface (CLI). It was created because no other
-CLI supported the creation of To-Dos with both a due date and a checklist. Hopla provides the
-following command to create these with the following command:
+Hopla is a XDG-compliant bash-based command line interface (CLI). 
+It was created because no other CLI supported the creation of To-Dos with both a 
+due date and a checklist. 
+Hopla provides the following command to create these with the following command:
 
 ```bash
 # Add a hard To-Do. Every line in the specified file will being added as
@@ -156,6 +174,15 @@ hopla add todo --difficulty hard \
                --checklist ./my_todo.txt \
                "my todo name here"
 ```
+
+The most simple way to add a To-Do would be to run `hopla add todo` without arguments.
+Hopla will then prompt you for a To-Do name:
+
+```bash
+$ hopla add todo
+Please provide a name for your todo: Feed the dog
+```
+
 
 
 
