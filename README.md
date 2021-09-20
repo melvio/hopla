@@ -21,7 +21,7 @@ Clone this repository by running:
 git clone "git@github.com:melvio/hopla.git"
 # Or, by using HTTPS:
 git clone "https://github.com/melvio/hopla.git"
-# or (my favorite), by using gh:
+# Or (my favorite), by using gh:
 gh repo clone melvio/hopla
 ```
 
