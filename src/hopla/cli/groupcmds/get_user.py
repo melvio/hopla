@@ -44,7 +44,7 @@ class HabiticaUser:
         return self.get_inventory()["mounts"]
 
     def get_food(self) -> Dict[str, int]:
-        """Return the _stockpile that the user has"""
+        """Return the food that the user has"""
         return self.get_inventory()["food"]
 
     def get_auth(self) -> dict:
