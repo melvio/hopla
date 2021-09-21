@@ -110,7 +110,7 @@ hopla_request_invite_party_for_quest:
 	hopla request -XPOST /api/v3/groups/party/quests/invite/moon1
 
 hopla_request_invite_for_lunar_quest_every_10mins:
-	watch --differences=permanent -interval=600 'hopla request -XPOST /api/v3/groups/party/quests/invite/moon1'
+	watch --differences=permanent --interval=600 'hopla request -XPOST /api/v3/groups/party/quests/invite/moon1'
 
 
 
