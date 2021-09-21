@@ -1,9 +1,8 @@
 ## first time hopla usage ##
-## note: On some machines, this command might require a restart of your
-##       terminal to load the commands on your $PATH
 configure:
-	hopla auth
+	hopla authenticate
 
+# note: reload your bash terminal to load the autocompletion.
 enable_autocomplete:
 	hopla complete bash --enable
 
@@ -20,9 +19,13 @@ hopla_support_development:
 hopla_add_simple_todo:
 	hopla add todo "Donate"
 
-# the 'today' keyword will use today as the due date
+hopla_add_simple_prompt_for_todo_name:
+	hopla add todo
+
+# the 'today' and 'tomorrow' keyword will use today and tomorrow as the due date
 hopla_add_todo_hard_now_without_checklist:
-	hopla add todo --difficulty hard --due-date 'today' "my todo thingy here"
+	hopla add todo --difficulty hard --due-date tomorrow "my todo thingy here" \
+	&& hopla add todo --difficulty hard --due-date tomorrow "task for tomorrow "
 
 # GNU date: iso-date for tomorrow: YYYY-MM-DD
 tomorrow="$$(date --iso-8601 --date=tomorrow)"
@@ -38,9 +41,8 @@ today="$$(date --iso-8601)"
 hopla_add_todo_checklist_today:
 	hopla add todo --difficulty trivial --due-date=today --checklist ~/todo/todo_list/today.md "$(today) checklist"
 
-# TODO: fix editor not working with make in Jetbrains products
 hopla_add_todo_in_1_week_provide_editor_checklist:
-	hopla add todo --due-date $(date '+%F' --date='+1 week') --editor weekly-study-goal
+	hopla add todo --due-date $$(date '+%F' --date='+1 week') --editor weekly-study-goal
 
 hopla_config_get_loglevel:
 	hopla config 'cmd_all.loglevel'
@@ -57,6 +59,8 @@ hopla_buy_armoire:
 hopla_buy_armoire10:
 	hopla buy enchanted-armoire --times 10
 
+# This command will buy from the enchanted-armoire until you
+# cannot afford it anymore.
 hopla_buy_armoire_until_poor:
 	hopla buy enchanted-armoire --until-poor
 
@@ -73,20 +77,47 @@ hopla_api_version:
 
 hopla_feed_list_examples:
 	hopla feed Wolf-Base --list-favorite-food \
-	&& hopla feed Dragon-Bronze --list-favorite-food \
+	; hopla feed Dragon-Bronze --list-favorite-food
 
 hopla_feed_examples:
 	hopla feed Wolf-Base Meat \
-	; hopla feed Parrot-Golden Honey --times 5
+	; hopla feed Triceratops-Red Strawberry
 
+hopla_feed_multiple_times:
+	hopla feed Parrot-Golden Honey --times 5 \
+    ; hopla feed Ferret-Desert --times 2 Potatoe \
+    ; hopla feed --times 7 PandaCub-Silver --times 8 CottonCandyPink \
+
+
+hopla_feed_until_they_are_a_mount:
+	hopla feed --until-mount Parrot-Golden Honey \
+    ; hopla feed Ferret-Desert --until-mount Potatoe \
+    ; hopla feed Sloth-Golden Strawberry --until-mount
+
+
+# for pets with favorite foods, use the favorite food when no food is specified
 hopla_feed_favorite_food_by_default:
 	hopla feed PandaCub-CottonCandyBlue \
 	; hopla feed LionCub-Desert --times=3
 
+# for pets that like all foods, use the most abundant food when no food is specified
+hopla_feed_abundant_food_by_default:
+	hopla feed PandaCub-Frost \
+	; hopla feed LionCub-Desert --until-mount
+
+# perform your own habitica API requests using 'hopla request'
+hopla_request_invite_party_for_quest:
+	hopla request -XPOST /api/v3/groups/party/quests/invite/moon1
+
+hopla_request_invite_for_lunar_quest_every_10mins:
+	watch --differences=permanent -interval=600 'hopla request -XPOST /api/v3/groups/party/quests/invite/moon1'
+
+
 
 # hopla get-user auth
 hopla_get_user_auth:
-	hopla get-user auth \
+	hopla get-user auth --help  \
+	&& hopla get-user auth \
 	&& hopla get-user auth all \
 	&& hopla get-user auth email \
 	&& hopla get-user auth mail \
@@ -98,9 +129,9 @@ hopla_get_user_auth:
 
 # hopla get-user stats
 hopla_get_user_stats:
-	hopla get-user stats \
+	hopla get-user stats --help  \
+	&& hopla get-user stats \
 	&& hopla get-user stats all  \
-    && hopla get-user stats --help \
     && hopla get-user stats \
     && hopla get-user stats manapoints \
     && hopla get-user stats experience \
@@ -112,17 +143,18 @@ hopla_get_user_stats:
 
 # hopla get-user inventory
 hopla_get_user_inventory:
-	hopla get-user inventory \
-	&& hopla get-user inventory --help \
+	hopla get-user inventory --help \
+	&& hopla get-user inventory \
 	&& hopla get-user inventory all \
 	&& hopla get-user inventory pets \
 	&& hopla get-user inventory mounts \
 	&& hopla get-user inventory food \
 	&& hopla get-user inventory lastDrop
 
-#
+# hopla get-user info
 hopla_get_user_info_filter_keywords:
-	hopla get-user info \
+	hopla get-user info --help \
+	&& hopla get-user info \
 	&& hopla get-user info all \
 	&& hopla get-user info notifications \
 	&& hopla get-user info id \
