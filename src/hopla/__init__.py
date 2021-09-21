@@ -9,7 +9,7 @@ import click
 from hopla.cli.authenticate import authenticate
 from hopla.cli.complete import complete
 from hopla.cli.config import config
-from hopla.cli.feed import feed
+from hopla.cli.feed import feed, feed_all
 from hopla.cli.get_group import get_group
 from hopla.cli.get_user.auth import auth
 from hopla.cli.get_user.info import info
@@ -95,6 +95,7 @@ def organize_cli():
     hopla.add_command(version)
     hopla.add_command(authenticate)
     hopla.add_command(feed)
+    hopla.add_command(feed_all)
     hopla.add_command(support_development)
     hopla.add_command(request)
     hopla.add_command(get_group)

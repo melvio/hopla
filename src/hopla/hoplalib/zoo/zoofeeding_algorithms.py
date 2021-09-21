@@ -1,7 +1,6 @@
 """
 A modules with algorithms for feeding multiple pets at once.
 """
-from collections import namedtuple
 from dataclasses import dataclass
 from typing import List
 from copy import deepcopy
@@ -9,8 +8,20 @@ from copy import deepcopy
 from hopla.hoplalib.zoo.foodmodels import FoodStockpile
 from hopla.hoplalib.zoo.petmodels import Pet, Zoo, ZooHelper
 
-FeedPlanItem = namedtuple(typename="FeedPlanItem",
-                          field_names=["pet_name", "food_name", "times"])
+
+@dataclass(frozen=True)
+class FeedPlanItem:
+    """An item of a zookeeper feed plan.
+
+    Every item on the zookeeper plan describes an action to feed 1 pet.
+    """
+    pet_name: str
+    food_name: str
+    times: int
+
+    def format_item(self) -> str:
+        """A to string function for nice terminal output"""
+        return f"Pet {self.pet_name} will get {self.times} {self.food_name}."
 
 
 @dataclass
@@ -49,6 +60,11 @@ class ZookeeperFeedPlan:
         no FeedPlanItems have been added yet.
         """
         return self.__feed_plan
+
+    def format_plan(self):
+        """A to string function for nice terminal output"""
+        joined_plan: str = "\n".join([item.format_item() for item in self.__feed_plan])
+        return f"{joined_plan}\n"
 
 
 @dataclass

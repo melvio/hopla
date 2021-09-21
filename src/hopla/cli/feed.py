@@ -3,6 +3,7 @@ The module with CLI code that handles the `hopla feed` command.
 """
 import logging
 import sys
+from dataclasses import dataclass
 from typing import NoReturn, Optional, Union
 
 import click
@@ -16,6 +17,7 @@ from hopla.hoplalib.zoo.foodmodels import FoodStockpile, FoodStockpileBuilder
 from hopla.hoplalib.zoo.petcontroller import FeedPostRequester
 from hopla.hoplalib.zoo.petdata import PetData
 from hopla.hoplalib.zoo.petmodels import Pet, PetMountPair, Zoo, ZooBuilder
+from hopla.hoplalib.zoo.zoofeeding_algorithms import ZooFeedingAlgorithm, ZookeeperFeedPlan
 
 log = logging.getLogger()
 
@@ -41,17 +43,16 @@ def __get_feed_data_or_exit(feed_response: requests.Response):
     """
     response_json = feed_response.json()
     if response_json["success"]:
-        feed_data = {"feeding_status": response_json["data"], "message": response_json["message"]}
+        feed_data = {
+            "feeding_status": response_json["data"],
+            "message": response_json["message"]
+        }
 
         click.echo(JsonFormatter(feed_data).format_with_double_quotes())
         return feed_data
 
     click.echo(response_json["message"])
-    sys.exit(feed_response.status_code)
-
-
-__TIMES_OPTION = "--times"
-__UNTIL_MOUNT_OPTION = "--until-mount"
+    sys.exit(1)
 
 
 def get_feed_times_until_mount(pet_name: str, food_name: str) -> Union[int, NoReturn]:
@@ -100,26 +101,68 @@ def get_appropriate_food_or_exit(pet_name: str) -> Union[str, NoReturn]:
     raise YouFoundABugRewardError(msg)
 
 
+_TIMES_OPTION = "--times"
+_UNTIL_MOUNT_OPTION = "--until-mount"
+_FEED_ALL_PETS_OPTION = "--feed-pets-until-food-runs-out"
+_PET_NAME_METAVAR = "PET_NAME"
+
+
+def feed_all_pets_and_exit() -> NoReturn:
+    """Feed all the pets"""
+    user: HabiticaUser = HabiticaUserRequest().request_user_data_or_exit()
+    stockpile: FoodStockpile = FoodStockpileBuilder().user(user).build()
+    zoo: Zoo = ZooBuilder(user).build()
+
+    algorithm = ZooFeedingAlgorithm(zoo=zoo, stockpile=stockpile)
+    plan: ZookeeperFeedPlan = algorithm.make_plan()
+
+    click.echo("pre confirm!")
+    user_confirmed: bool = confirm_with_user(plan)
+    if user_confirmed:
+        for item in plan.feed_plan:
+            request = FeedPostRequester(pet_name=item.pet_name,
+                                        food_name=item.food_name,
+                                        food_amount=item.times)
+            response: requests.Response = request.post_feed_request()
+            __get_feed_data_or_exit(feed_response=response)
+    else:
+        click.echo("Aborted. No pets were fed.")
+
+    sys.exit(0)
+
+
+def confirm_with_user(plan: ZookeeperFeedPlan) -> bool:
+    """Ask the user to confirm the specified plan.
+
+    :param plan: the zookeeper feeding plan to display
+    :return: Return True if confirmation was received.
+    """
+    prompt_msg = f"{plan.format_plan()}Do you want to proceed?"
+    user_confirmed: bool = click.confirm(text=prompt_msg)
+    return user_confirmed
+
+
 @click.command()
 @click.argument(
     "pet_name", type=click.Choice(PetData.feedable_pet_names),
-    metavar="PET_NAME"
+    metavar=f"[{_PET_NAME_METAVAR}]"
 )
 @click.argument(
     "food_name", type=click.Choice(FoodData.drop_food_names),
     metavar="[FOOD_NAME]", required=False
 )
 @click.option(
-    __TIMES_OPTION, type=valid_feed_amount_range,
+    _TIMES_OPTION, type=valid_feed_amount_range,
     metavar="N_FOOD",
     help="Number of FOOD_NAME to feed to PET_NAME.\n "
          f"Values under {MIN_FEED_TIMES} are clamped to {MIN_FEED_TIMES}. "
          f"Values over {MAX_FEED_TIMES} are clamped to {MAX_FEED_TIMES}."
 )
 @click.option(
-    f"{__UNTIL_MOUNT_OPTION}/--no-until-mount",
+    f"{_UNTIL_MOUNT_OPTION}/--no-until-mount",
     default=False, show_default=True,
-    help="Keep feeding this pet until it is a mount.")
+    help="Keep feeding this pet until it is a mount."
+)
 @click.option(
     "--list-favorite-food/--no-list-favorite-food",
     default=False, show_default=True,
@@ -128,6 +171,7 @@ def get_appropriate_food_or_exit(pet_name: str) -> Union[str, NoReturn]:
 def feed(pet_name: str, food_name: str,
          times: int, until_mount: bool,
          list_favorite_food: bool):
+    # pylint: disable=too-many-arguments
     """Feed a pet.
 
      \b
@@ -142,12 +186,13 @@ def feed(pet_name: str, food_name: str,
 
      \b
      # Feed a pet its favorite food once. This only works if a pet
-     # pet is feedable and has one favorite food.
+     # pet is feedable. For magic hatched pets, the most
+     # abundant food you have is used.
      $ hopla feed Rock-White
 
      \b
      # Feed a pet its favorite food until it is a mount. This
-     # only works if a pet is feedable and has one favorite food.
+     # only works if a pet is feedable.
      $ hopla feed TRex-Red --until-mount
 
      \b
@@ -172,6 +217,7 @@ def feed(pet_name: str, food_name: str,
      # Tip: You can use the <Tab> key to show the pet and food keys
      $ hopla feed <Tab><Tab>
      $ hopla feed Axolotl-White <Tab><Tab>
+     $ hopla feed Axolotl-White Milk
 
      [API-docs](https://habitica.com/apidoc/#api-User-UserFeed)
     \f
@@ -184,8 +230,8 @@ def feed(pet_name: str, food_name: str,
               f" {times=} {until_mount=}"
               f" {list_favorite_food=}")
 
-    __raise_if_conflicting(times=times, until_mount=until_mount)
-    times = times or 1
+    FeedCommandParameterChecker(times=times, until_mount=until_mount) \
+        .raise_if_conflicting_feed_time_options()
 
     if list_favorite_food:
         print_favorite_food_and_exit(pet_name=pet_name)
@@ -197,6 +243,8 @@ def feed(pet_name: str, food_name: str,
     if until_mount:
         times: int = get_feed_times_until_mount(pet_name=pet_name,
                                                 food_name=food_name)
+    else:
+        times: int = times or 1
 
     pet_feed_request = FeedPostRequester(
         pet_name=pet_name,
@@ -208,9 +256,36 @@ def feed(pet_name: str, food_name: str,
     return __get_feed_data_or_exit(feed_response=response)
 
 
-def __raise_if_conflicting(*, times: Optional[int], until_mount: bool):
-    if until_mount and times is not None:
-        raise click.UsageError(
-            "Conflicting options: "
-            f"Cannot specify both {__TIMES_OPTION} and {__UNTIL_MOUNT_OPTION}."
-        )
+@click.command()
+def feed_all():
+    """ Feed all your pets.
+
+     This command will normal pets, then your quest pets, and finally all your
+     pets that were hatched with magic hatching potions.
+
+     This command will first show you the feeding plan, ask for
+     your confirmation, and then feed all the listed pets.
+    """
+    log.debug(f"hopla feed-all")
+    feed_all_pets_and_exit()
+
+
+@dataclass
+class FeedCommandParameterChecker:
+    """
+    A class that raises errors when `hopla feed` received an invalid
+    combination of parameters.
+    """
+    times: Optional[int]
+    until_mount: bool
+
+    def raise_if_conflicting_feed_time_options(self) -> Optional[NoReturn]:
+        """
+        The user should not use conflicting options that both specify
+        how many food items should be given.
+        """
+        if self.until_mount and self.times is not None:
+            raise click.UsageError(
+                "Conflicting options: "
+                f"Cannot specify both {_TIMES_OPTION} and {_UNTIL_MOUNT_OPTION}."
+            )
