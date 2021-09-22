@@ -35,7 +35,7 @@ hopla_add_todo_use_editor_for_checklist_tomorrow:
 	hopla add todo --difficulty medium --due-date=tomorrow --editor "$(tomorrow) checklist"
 
 hopla_add_todo_use_file_as_checklist:
-	hopla add todo --difficulty medium --due-date tomorrow --checklist ~/todo/todo_list/roll.md "$(tomorrow) studies"
+	hopla add todo --difficulty hard --due-date tomorrow --checklist ~/todo/todo_list/roll60.md "$(tomorrow) studies"
 
 today="$$(date --iso-8601)"
 hopla_add_todo_checklist_today:
@@ -110,7 +110,7 @@ hopla_request_invite_party_for_quest:
 	hopla request -XPOST /api/v3/groups/party/quests/invite/moon1
 
 hopla_request_invite_for_lunar_quest_every_10mins:
-	watch --differences=permanent --interval=600 'hopla request -XPOST /api/v3/groups/party/quests/invite/moon1'
+	watch --differences=permanent --interval=600 'hopla request -XPOST /api/v3/groups/party/quests/invite/moon3'
 
 
 
