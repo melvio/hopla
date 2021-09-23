@@ -44,12 +44,28 @@ def request(method: str,
     $ hopla request /api/v3/groups/party
 
     \b
+    # GET: a user's tasks
+    $ hopla request /api/v3/tasks/user
+
+    \b
+    # GET: a user's habits
+    hopla request /api/v3/tasks/user?type=habits
+
+    \b
     # POST: open a mystery item
     $ hopla request --method=POST /api/v3/user/open-mystery-item
 
     \b
     # POST: send a quest invite for Recidivate pt. 3 to your party
-    $ hopla request -XPOST /api/v3/groups/party/quests/invite/moonstone3
+    $ hopla request --method POST /api/v3/groups/party/quests/invite/moonstone3
+
+    \b
+    # POST: buy a special item. In this case, a spooky sparkles item.
+    $ hopla request -XPOST /api/v3/user/buy-special-spell/spookySparkles
+
+    \b
+    # POST: cast the Searing Brightness spell
+    $ hopla request -XPOST /api/v3/user/class/cast/brightness
 
     \b
     # POST: set your custom day start to 1 AM
@@ -77,6 +93,6 @@ def request(method: str,
 
     response: requests.Response = requests.session().send(http_request.prepare())
 
-    click.echo(f"HTTP Status Code: {response.status_code}")
+    log.debug(f"HTTP Status Code: {response.status_code}")
     # no support for non-JSON output
     click.echo(JsonFormatter(response.json()).format_with_double_quotes())
