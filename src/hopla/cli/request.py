@@ -49,7 +49,7 @@ def request(method: str,
 
     \b
     # GET: a user's habits
-    hopla request /api/v3/tasks/user?type=habits
+    $ hopla request /api/v3/tasks/user?type=habits
 
     \b
     # POST: open a mystery item
