@@ -9,7 +9,8 @@ import click
 from hopla.cli.authenticate import authenticate
 from hopla.cli.complete import complete
 from hopla.cli.config import config
-from hopla.cli.feed import feed, feed_all
+from hopla.cli.feed import feed
+from hopla.cli.feed_all import feed_all
 from hopla.cli.get_group import get_group
 from hopla.cli.get_user.auth import auth
 from hopla.cli.get_user.info import info

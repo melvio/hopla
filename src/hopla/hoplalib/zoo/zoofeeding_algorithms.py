@@ -37,6 +37,14 @@ class ZookeeperFeedPlan:
     def __iter__(self):
         return iter(self.__feed_plan)
 
+    def __len__(self) -> int:
+        """Return the number of FeedPlanItems in this zookeeper feed plan."""
+        return len(self.__feed_plan)
+
+    def isempty(self):
+        """Return true if the feed plan is empty."""
+        return len(self) == 0
+
     def add_to_feed_plan(self, pet_name: str, food_name: str, times: int) -> None:
         """Add an item to the zookeeper's feed plan.
 
@@ -119,13 +127,13 @@ class ZooFeedingAlgorithm:
             pet: Pet = pair.pet
 
             if pet.has_just_1_favorite_food():
-                food_name = pet.favorite_food()
+                food_name: str = pet.favorite_food()
             else:
-                food_name = self.__stockpile.get_most_abundant_food()
+                food_name: str = self.__stockpile.get_most_abundant_food()
 
-            times = pet.required_food_items_until_mount(food_name)
+            times: int = pet.required_food_items_until_mount(food_name)
             if self.__stockpile.has_sufficient(food_name, n=times):
-                subtract_times = -times
+                subtract_times: int = -times
                 self.__stockpile.add_food(food_name,
                                           n=subtract_times)
                 self.__zookeeper_plan.add_to_feed_plan(

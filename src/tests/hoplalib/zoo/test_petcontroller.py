@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+from unittest.mock import MagicMock, patch
+
+import pytest
+
 from hopla.hoplalib.zoo.petcontroller import FeedPostRequester
 
 
@@ -23,3 +27,32 @@ class TestFeedPostRequester:
 
         expected_url = f"https://habitica.com/api/v3/user/feed/{pet}/{food}"
         assert result_url == expected_url
+
+    @pytest.mark.parametrize(
+        "times,expected_times",
+        [(2, 2), (None, 1)]
+    )
+    @patch("hopla.hoplalib.zoo.petcontroller.HabiticaRequest.default_headers")
+    @patch("hopla.hoplalib.zoo.petcontroller.requests.post")
+    def test_post_feed_request(self, mock_post_request: MagicMock,
+                               mock_headers: MagicMock,
+                               times: int,
+                               expected_times: int):
+        # No need for credentials, were mocking the API call
+        mock_post_request.return_value = MagicMock()
+
+        pet_name = "Egg-CottonCandyPink"
+        food_name = "CottonCandyPink"
+
+        feed_requester = FeedPostRequester(
+            pet_name=pet_name, food_name=food_name, food_amount=times
+        )
+
+        _ = feed_requester.post_feed_request()
+
+        expected_url = f"https://habitica.com/api/v3/user/feed/{pet_name}/{food_name}"
+        mock_post_request.assert_called_with(
+            url=expected_url,
+            headers=mock_headers,
+            params={"amount": expected_times}
+        )

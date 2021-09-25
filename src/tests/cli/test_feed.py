@@ -3,8 +3,7 @@ from requests.status_codes import codes
 from click.testing import CliRunner, Result
 from unittest.mock import patch, MagicMock
 
-from hopla.cli.feed import feed, feed_all, \
-    get_feed_times_until_mount
+from hopla.cli.feed import feed, get_feed_times_until_mount
 from hopla.cli.groupcmds.get_user import HabiticaUser
 
 
@@ -250,22 +249,3 @@ class TestFeedCliCommand:
         assert response_msg in result.stdout
         assert f'"feeding_status": {response_data}' in result.stdout
 
-    @patch("hopla.cli.feed.HabiticaUserRequest.request_user_data_or_exit")
-    def test_feed_all_pets_user_aborts(self,
-                                       mock_user_request: MagicMock,
-                                       simple_user: HabiticaUser):
-        mock_user_request.return_value = simple_user
-        runner = CliRunner()
-        result: Result = runner.invoke(feed_all, input="No")
-
-        assert "Aborted. No pets were fed." in result.stdout
-        # aborting should not be an error
-        assert result.exit_code == 0
-
-    @pytest.fixture
-    def simple_user(self) -> HabiticaUser:
-        return HabiticaUser({"items": {
-            "pets": {},
-            "mounts": {},
-            "food": {}
-        }})
