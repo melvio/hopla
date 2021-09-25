@@ -75,6 +75,7 @@ def get_appropriate_food_or_exit(pet_name: str) -> Union[str, NoReturn]:
         stockpile: FoodStockpile = FoodStockpileBuilder().user(user).build()
         return stockpile.get_most_abundant_food()
 
+    # This should be unreachable if we configured click with the correct pets.
     msg = (f"We tried to find the appropriate food for {pet_name=}.\n"
            "We assumed that we would have found the appropriate food by now.\n"
            "Unfortunately, that was not the case.")

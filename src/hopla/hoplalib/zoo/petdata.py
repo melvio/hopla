@@ -281,19 +281,22 @@ class PetData:
     ]
     # Consider refactoring this entire class to contain more semantic information when important.
 
-    event_item_sequence_pet_names = [
+    event_sequence_pet_names = [
         "Wolf-Veteran", "Turkey-Base", "JackOLantern-Base", "Tiger-Veteran", "Turkey-Gilded",
         "Lion-Veteran", "Gryphon-RoyalPurple", "JackOLantern-Ghost", "Orca-Base", "Bear-Veteran",
         "Fox-Veteran", "JackOLantern-Glow", "JackOLantern-RoyalPurple"
     ]
+    """https://habitica.fandom.com/wiki/Event_Item_Sequences"""
 
     other_pet_names = [
         "Jackalope-RoyalPurple", "BearCub-Polar", "Dragon-Hydra", "Wolf-Cerberus",
         "Gryphon-Gryphatrice", "Aether-Invisible"
     ]
 
-    rare_pet_names = world_boss_reward_pet_names + event_item_sequence_pet_names + other_pet_names
-    """Rare pets: <https://habitica.fandom.com/wiki/Pets#Rare_Pets>"""
+    rare_pet_names = world_boss_reward_pet_names + event_sequence_pet_names + other_pet_names
+    """Rare pet names are pets that cannot be hatched.
+    @see: <https://habitica.fandom.com/wiki/Pets#Rare_Pets>
+    """
 
     only_1favorite_food_pet_names = generation1_pet_names + quest_pet_names
     """Only quest pets and gen1 pets have only 1 favorite food (anno Sept. 2021)"""
