@@ -187,7 +187,7 @@ class FoodStockpileBuilder:
     def __repr__(self):
         return self.__class__.__name__ + f"({self.__stockpile})"
 
-    def user(self, habitica_user: HabiticaUser):
+    def user(self, habitica_user: HabiticaUser) -> "FoodStockpileBuilder":
         """
         Add a user's food to the stockpile. This ignores saddles,
         cakes, and other rare foods.

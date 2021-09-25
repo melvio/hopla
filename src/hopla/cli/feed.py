@@ -3,6 +3,7 @@ The module with CLI code that handles the `hopla feed` command.
 """
 import logging
 import sys
+from dataclasses import dataclass
 from typing import NoReturn, Optional, Union
 
 import click
@@ -10,7 +11,7 @@ import requests
 
 from hopla.cli.groupcmds.get_user import HabiticaUser, HabiticaUserRequest
 from hopla.hoplalib.errors import YouFoundABugRewardError
-from hopla.hoplalib.outputformatter import JsonFormatter
+from hopla.hoplalib.zoo.feeding_clickhelper import get_feed_data_or_exit
 from hopla.hoplalib.zoo.fooddata import FoodData
 from hopla.hoplalib.zoo.foodmodels import FoodStockpile, FoodStockpileBuilder
 from hopla.hoplalib.zoo.petcontroller import FeedPostRequester
@@ -32,26 +33,6 @@ def print_favorite_food_and_exit(pet_name: str):
     pet = Pet(pet_name)
     click.echo(pet.favorite_food())
     sys.exit()
-
-
-def __get_feed_data_or_exit(feed_response: requests.Response):
-    """
-    Given a feed response, if the API request was successful, return interesting
-    feeding information. On failure, exit with an error message.
-    """
-    response_json = feed_response.json()
-    if response_json["success"]:
-        feed_data = {"feeding_status": response_json["data"], "message": response_json["message"]}
-
-        click.echo(JsonFormatter(feed_data).format_with_double_quotes())
-        return feed_data
-
-    click.echo(response_json["message"])
-    sys.exit(feed_response.status_code)
-
-
-__TIMES_OPTION = "--times"
-__UNTIL_MOUNT_OPTION = "--until-mount"
 
 
 def get_feed_times_until_mount(pet_name: str, food_name: str) -> Union[int, NoReturn]:
@@ -94,10 +75,15 @@ def get_appropriate_food_or_exit(pet_name: str) -> Union[str, NoReturn]:
         stockpile: FoodStockpile = FoodStockpileBuilder().user(user).build()
         return stockpile.get_most_abundant_food()
 
+    # This should be unreachable if we configured click with the correct pets.
     msg = (f"We tried to find the appropriate food for {pet_name=}.\n"
            "We assumed that we would have found the appropriate food by now.\n"
            "Unfortunately, that was not the case.")
     raise YouFoundABugRewardError(msg)
+
+
+_TIMES_OPTION = "--times"
+_UNTIL_MOUNT_OPTION = "--until-mount"
 
 
 @click.command()
@@ -110,16 +96,17 @@ def get_appropriate_food_or_exit(pet_name: str) -> Union[str, NoReturn]:
     metavar="[FOOD_NAME]", required=False
 )
 @click.option(
-    __TIMES_OPTION, type=valid_feed_amount_range,
+    _TIMES_OPTION, type=valid_feed_amount_range,
     metavar="N_FOOD",
     help="Number of FOOD_NAME to feed to PET_NAME.\n "
          f"Values under {MIN_FEED_TIMES} are clamped to {MIN_FEED_TIMES}. "
          f"Values over {MAX_FEED_TIMES} are clamped to {MAX_FEED_TIMES}."
 )
 @click.option(
-    f"{__UNTIL_MOUNT_OPTION}/--no-until-mount",
+    f"{_UNTIL_MOUNT_OPTION}/--no-until-mount",
     default=False, show_default=True,
-    help="Keep feeding this pet until it is a mount.")
+    help="Keep feeding this pet until it is a mount."
+)
 @click.option(
     "--list-favorite-food/--no-list-favorite-food",
     default=False, show_default=True,
@@ -128,7 +115,7 @@ def get_appropriate_food_or_exit(pet_name: str) -> Union[str, NoReturn]:
 def feed(pet_name: str, food_name: str,
          times: int, until_mount: bool,
          list_favorite_food: bool):
-    """Feed a pet.
+    """Feed a single pet.
 
      \b
      PET_NAME   name of the pet (e.g. Wolf-Golden)
@@ -142,12 +129,13 @@ def feed(pet_name: str, food_name: str,
 
      \b
      # Feed a pet its favorite food once. This only works if a pet
-     # pet is feedable and has one favorite food.
+     # pet is feedable. For magic hatched pets, the most
+     # abundant food you have is used.
      $ hopla feed Rock-White
 
      \b
      # Feed a pet its favorite food until it is a mount. This
-     # only works if a pet is feedable and has one favorite food.
+     # only works if a pet is feedable.
      $ hopla feed TRex-Red --until-mount
 
      \b
@@ -172,6 +160,7 @@ def feed(pet_name: str, food_name: str,
      # Tip: You can use the <Tab> key to show the pet and food keys
      $ hopla feed <Tab><Tab>
      $ hopla feed Axolotl-White <Tab><Tab>
+     $ hopla feed Axolotl-White Milk
 
      [API-docs](https://habitica.com/apidoc/#api-User-UserFeed)
     \f
@@ -184,8 +173,8 @@ def feed(pet_name: str, food_name: str,
               f" {times=} {until_mount=}"
               f" {list_favorite_food=}")
 
-    __raise_if_conflicting(times=times, until_mount=until_mount)
-    times = times or 1
+    FeedCommandParameterChecker(times=times, until_mount=until_mount) \
+        .raise_if_conflicting_feed_time_options()
 
     if list_favorite_food:
         print_favorite_food_and_exit(pet_name=pet_name)
@@ -197,6 +186,8 @@ def feed(pet_name: str, food_name: str,
     if until_mount:
         times: int = get_feed_times_until_mount(pet_name=pet_name,
                                                 food_name=food_name)
+    else:
+        times: int = times or 1
 
     pet_feed_request = FeedPostRequester(
         pet_name=pet_name,
@@ -205,12 +196,25 @@ def feed(pet_name: str, food_name: str,
     )
 
     response: requests.Response = pet_feed_request.post_feed_request()
-    return __get_feed_data_or_exit(feed_response=response)
+    return get_feed_data_or_exit(feed_response=response)
 
 
-def __raise_if_conflicting(*, times: Optional[int], until_mount: bool):
-    if until_mount and times is not None:
-        raise click.UsageError(
-            "Conflicting options: "
-            f"Cannot specify both {__TIMES_OPTION} and {__UNTIL_MOUNT_OPTION}."
-        )
+@dataclass
+class FeedCommandParameterChecker:
+    """
+    A class that raises errors when `hopla feed` received an invalid
+    combination of parameters.
+    """
+    times: Optional[int]
+    until_mount: bool
+
+    def raise_if_conflicting_feed_time_options(self) -> Optional[NoReturn]:
+        """
+        The user should not use conflicting options that both specify
+        how many food items should be given.
+        """
+        if self.until_mount and self.times is not None:
+            raise click.UsageError(
+                "Conflicting options: "
+                f"Cannot specify both {_TIMES_OPTION} and {_UNTIL_MOUNT_OPTION}."
+            )

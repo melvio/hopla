@@ -9,8 +9,8 @@ import click
 import requests
 
 from hopla.hoplalib.http import HabiticaRequest, UrlBuilder
-from hopla.hoplalib.outputformatter import JsonFormatter
 from hopla.hoplalib.requests_helper import get_data_or_exit
+from hopla.hoplalib.outputformatter import JsonFormatter
 
 log = logging.getLogger()
 

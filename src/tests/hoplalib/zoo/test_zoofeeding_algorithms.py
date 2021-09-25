@@ -118,6 +118,33 @@ class TestZooFeedingAlgorithm:
         assert all(feed_item in result_plan for feed_item in expected_feed_plan)
         assert result_plan == algorithm.zookeeper_plan  # sanity check
 
+    def test_make_plan_feed_single_pet(self):
+        pet_name = "Velociraptor-Skeleton"
+        start_fish = 20
+        food_name = "Fish"
+        user = HabiticaUser({"items": {
+            "pets": {pet_name: 10},
+            "mounts": {},
+            "food": {food_name: start_fish}
+        }})
+        zoo: Zoo = ZooBuilder(user).build()
+        stockpile: FoodStockpile = FoodStockpileBuilder().user(user).build()
+        algorithm = ZooFeedingAlgorithm(zoo=zoo, stockpile=stockpile)
+
+        feed_plan: ZookeeperFeedPlan = algorithm.make_plan()
+
+        expected_fish_given = 8
+        assert len(feed_plan) == 1
+        assert feed_plan.feed_plan[0] == FeedPlanItem(
+            pet_name=pet_name,
+            food_name=food_name,
+            times=expected_fish_given
+        )
+
+        expected_fish_leftover: int = start_fish - expected_fish_given
+        actual_fish_leftover = algorithm.stockpile.as_dict()[food_name]
+        assert actual_fish_leftover == expected_fish_leftover
+
     @pytest.fixture
     def empty_stockpile(self) -> FoodStockpile:
         return FoodStockpileBuilder().build()

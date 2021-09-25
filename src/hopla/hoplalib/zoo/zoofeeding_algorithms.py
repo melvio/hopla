@@ -1,7 +1,6 @@
 """
 A modules with algorithms for feeding multiple pets at once.
 """
-from collections import namedtuple
 from dataclasses import dataclass
 from typing import List
 from copy import deepcopy
@@ -9,8 +8,20 @@ from copy import deepcopy
 from hopla.hoplalib.zoo.foodmodels import FoodStockpile
 from hopla.hoplalib.zoo.petmodels import Pet, Zoo, ZooHelper
 
-FeedPlanItem = namedtuple(typename="FeedPlanItem",
-                          field_names=["pet_name", "food_name", "times"])
+
+@dataclass(frozen=True)
+class FeedPlanItem:
+    """An item of a zookeeper feed plan.
+
+    Every item on the zookeeper plan describes an action to feed 1 pet.
+    """
+    pet_name: str
+    food_name: str
+    times: int
+
+    def format_item(self) -> str:
+        """A to string function for nice terminal output"""
+        return f"Pet {self.pet_name} will get {self.times} {self.food_name}."
 
 
 @dataclass
@@ -25,6 +36,14 @@ class ZookeeperFeedPlan:
 
     def __iter__(self):
         return iter(self.__feed_plan)
+
+    def __len__(self) -> int:
+        """Return the number of FeedPlanItems in this zookeeper feed plan."""
+        return len(self.__feed_plan)
+
+    def isempty(self):
+        """Return true if the feed plan is empty."""
+        return len(self) == 0
 
     def add_to_feed_plan(self, pet_name: str, food_name: str, times: int) -> None:
         """Add an item to the zookeeper's feed plan.
@@ -49,6 +68,11 @@ class ZookeeperFeedPlan:
         no FeedPlanItems have been added yet.
         """
         return self.__feed_plan
+
+    def format_plan(self):
+        """A to string function for nice terminal output"""
+        joined_plan: str = "\n".join([item.format_item() for item in self.__feed_plan])
+        return f"{joined_plan}\n"
 
 
 @dataclass
@@ -103,13 +127,13 @@ class ZooFeedingAlgorithm:
             pet: Pet = pair.pet
 
             if pet.has_just_1_favorite_food():
-                food_name = pet.favorite_food()
+                food_name: str = pet.favorite_food()
             else:
-                food_name = self.__stockpile.get_most_abundant_food()
+                food_name: str = self.__stockpile.get_most_abundant_food()
 
-            times = pet.required_food_items_until_mount(food_name)
+            times: int = pet.required_food_items_until_mount(food_name)
             if self.__stockpile.has_sufficient(food_name, n=times):
-                subtract_times = -times
+                subtract_times: int = -times
                 self.__stockpile.add_food(food_name,
                                           n=subtract_times)
                 self.__zookeeper_plan.add_to_feed_plan(
