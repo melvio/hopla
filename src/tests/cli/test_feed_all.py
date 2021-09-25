@@ -68,12 +68,14 @@ class TestFeedAllCliCommand:
         assert result.exit_code == 0
         assert result.stdout.startswith("The feed plan is empty.")
 
+    @pytest.mark.parametrize("yes_response", ["y", "Y", "yes", "Yes", "YES"])
     @patch("hopla.cli.feed_all.FeedPostRequester.post_feed_request")
     @patch("hopla.cli.feed_all.HabiticaUserRequest.request_user_data_or_exit")
     def test_feed_all_ok(self,
                          mock_user_request: MagicMock,
                          mock_feed_request: MagicMock,
-                         user_with_feedable_pet: HabiticaUser):
+                         user_with_feedable_pet: HabiticaUser,
+                         yes_response: str):
         # This user has a pet that can be grown into a mount by feeding 8 Fish
         mock_user_request.return_value = user_with_feedable_pet
 
@@ -81,10 +83,10 @@ class TestFeedAllCliCommand:
         mock_feed_request.return_value = MockOkResponse(msg=feed_msg)
 
         runner = CliRunner()
-        result: Result = runner.invoke(feed_all, input="Yes")
+        result: Result = runner.invoke(feed_all, input=yes_response)
 
         assert "Pet Velociraptor-Skeleton will get 8 Fish.\n" in result.stdout
-        assert "Do you want to proceed? [y/N]: Yes\n" in result.stdout
+        assert f"Do you want to proceed? [y/N]: {yes_response}\n" in result.stdout
         assert feed_msg in result.stdout
         assert '"feeding_status": -1' in result.stdout
         assert result.exit_code == 0

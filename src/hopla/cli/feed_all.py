@@ -64,13 +64,13 @@ def feed_all_pets_and_exit() -> NoReturn:
 
 @click.command()
 def feed_all():
-    """ Feed all your pets.
+    """Feed all your pets.
 
-     This command will normal pets, then your quest pets, and finally all your
-     pets that were hatched with magic hatching potions.
+    This command will first feed normal pets, then your quest pets, and
+    finally all your pets that were hatched with magic hatching potions.
 
-     This command will first show you the feeding plan, ask for
-     your confirmation, and then feed all the listed pets.
+    Not this command will first show you the feeding plan, and for safety,
+    ask for your confirmation. Pets will only if you confirm this prompt.
     """
     log.debug("hopla feed-all")
     feed_all_pets_and_exit()

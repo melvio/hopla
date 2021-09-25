@@ -137,7 +137,6 @@ class TestFeedCliCommand:
 
         mock_feed_api_call.assert_called_with()  # no args
 
-        # TODO: https://github.com/melvio/hopla/issues/104
         assert result.exit_code == 1
         assert result.stdout == f"{expected_errmsg}\n"
 

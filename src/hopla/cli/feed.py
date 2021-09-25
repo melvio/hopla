@@ -115,7 +115,7 @@ _UNTIL_MOUNT_OPTION = "--until-mount"
 def feed(pet_name: str, food_name: str,
          times: int, until_mount: bool,
          list_favorite_food: bool):
-    """Feed a pet.
+    """Feed a single pet.
 
      \b
      PET_NAME   name of the pet (e.g. Wolf-Golden)
