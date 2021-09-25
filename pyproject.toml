@@ -1,3 +1,7 @@
 [build-system]
+# Listing something in build-system.requires will only make
+# it available during the build, not after it is installed.
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
+
+# https://packaging.python.org/tutorials/packaging-projects/
