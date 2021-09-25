@@ -5,6 +5,9 @@ build:
 develop:
 	pip install --upgrade --editable .
 
+send_package_to_pypi:
+	python -m twine upload dist/*
+
 
 # This works like running: "make lint && make unittest"
 test: lint unittest
