@@ -15,27 +15,12 @@ Hopla is currently under active development so new features are added rapidly.
 
 ### Installation
 
-Clone this repository by running:
+Hopla can be installed by running the following command:
 
 ```bash
-git clone "git@github.com:melvio/hopla.git"
-# Or, by using HTTPS:
-git clone "https://github.com/melvio/hopla.git"
-# Or (my favorite), by using gh:
-gh repo clone melvio/hopla
+python3 -m pip install --user hopla-cli
 ```
 
-Now `cd` into the repository with: 
-
-```bash
-cd ./hopla 
-```
-
-And install Hopla by running:
-
-```bash
-pip install --upgrade --editable .
-```
 
 ### First Time Usage
 
@@ -68,8 +53,13 @@ enabled autocompletion
 restart bash to make use of it
 ```
 
-To print the autocomplete code for bash|zsh|fish, so that you can install it yourself, optionally
-run:
+To make use of the autocompletion you need to reload your bashrc.
+You can do this by either opening up a new terminal window, or
+running `bash` again, or running `source ~/.bashrc`.
+
+
+To print the autocomplete code for bash|zsh|fish, so that you can install 
+it yourself, optionally run:
 
 ```bash
 # optionally, install the autocomplete code yourself:
@@ -105,8 +95,8 @@ Commands:
 More functionality is currently being implemented. 
 Hopla is open-source. 
 Pull request, feature requests, and issues are welcomed at <https://github.com/melvio/hopla>. 
-If you want to contribute, but don't know where to start, you might want to look in 
-the `./developers`. folder.
+If you want to contribute, but don't know where to start, you might want to look at
+`.github/CONTRIBUTING.md` and the `./developers` folder.
 
 [![License](https://img.shields.io/badge/License-apache--2.0-blue)](#license)
 
@@ -115,7 +105,7 @@ the `./developers`. folder.
 *Use case*: You can use environment variables to set default values for all Hopla options. 
 
 Hopla automatically recognizes environment variables starting with `HOPLA_`. 
-All option (such as `--difficulty` for `hopla add todo` and `--amount` for `hopla feed`) can be 
+All option (such as `--difficulty` for `hopla add todo` and `--times` for `hopla feed`) can be 
 set in this manner.
 
 To get the right environment variable name, use this logic:
@@ -130,7 +120,7 @@ To get the right environment variable name, use this logic:
 3. Append the option name that you want to set as follows:
     * `hopla add todo --difficulty` -> `HOPLA_ADD_TODO_DIFFICULTY`
     * `hopla support-development --gems` -> `HOPLA_SUPPORT_DEVELOPMENT_GEMS`
-    * `hopla feed --amount` -> `HOPLA_FEED_AMOUNT`
+    * `hopla feed --times` -> `HOPLA_FEED_TIMES`
 
 
 For example:
