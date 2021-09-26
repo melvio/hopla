@@ -3,7 +3,9 @@ build:
 	python -m build && pip install .
 
 clean:
-	rm -r dist/*
+	rm -r -- dist/*
+
+clean_build: clean build
 
 develop:
 	pip install --upgrade --editable .
