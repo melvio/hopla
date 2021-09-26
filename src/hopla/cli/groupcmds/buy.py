@@ -1,16 +1,17 @@
 """
 The module with CLI code that handles the `hopla buy` group command.
 """
+from dataclasses import dataclass
 import logging
-import time
 
 import click
 import requests
 
 from hopla.hoplalib.requests_helper import get_data_or_exit
-from hopla.hoplalib.http import RequestHeaders, UrlBuilder
+from hopla.hoplalib.http import HabiticaRequest, UrlBuilder
 from hopla.hoplalib.outputformatter import JsonFormatter
 from hopla.cli.groupcmds.get_user import HabiticaUserRequest, HabiticaUser
+from hopla.hoplalib.throttling import ApiRequestThrottler
 
 log = logging.getLogger()
 
@@ -22,12 +23,25 @@ def buy():
     """
 
 
+@dataclass
+class BuyEnchantedArmoireRequest(HabiticaRequest):
+    """HabiticaRequest that buys from the enchanted armoire."""
+
+    @property
+    def url(self):
+        """The habitica API buy url."""
+        return UrlBuilder(path_extension="/user/buy-armoire").url
+
+    def post_buy_request(self) -> requests.Response:
+        """Post a buy request to the habitica API."""
+        return requests.post(url=self.url, headers=self.default_headers)
+
+
 def buy_from_enchanted_armoire_once():
     """buy once from the enchanted armoire"""
-    url = UrlBuilder(path_extension="/user/buy-armoire").url
-    headers = RequestHeaders().get_default_request_headers()
+    buy_request = BuyEnchantedArmoireRequest()
 
-    response = requests.post(url=url, headers=headers)
+    response: requests.Response = buy_request.post_buy_request()
     buy_data = get_data_or_exit(response)
 
     # By default, we get way too much JSON info, so filter on "armoire".
@@ -88,25 +102,10 @@ def enchanted_armoire(requested_times: int, until_poor_flag: bool):
     times: int = get_buy_times_within_budget(until_poor_flag=until_poor_flag,
                                              requested_times=requested_times)
 
-    exceeds_throttle_threshold = exceeds_throttle_limit(times)
-    throttle_seconds = 2.5
-    if exceeds_throttle_threshold:
-        click.echo(f"To prevent overheating Habitica, we'll "
-                   f"buy once every {throttle_seconds} seconds")
-
-    for _ in range(times):
-        buy_from_enchanted_armoire_once()
-        # throttle because we are going to call the API often
-        if exceeds_throttle_threshold:
-            time.sleep(throttle_seconds)
-
-
-def exceeds_throttle_limit(times: int) -> bool:
-    """Return True if we need Hopla to go easy on the Habitica API."""
-    # Remark: When we need to throttle in multiple places, handle this globally, not
-    #  here in `buy`.
-    requests_throttle_limit = 25
-    return times > requests_throttle_limit
+    buy_requests = [buy_from_enchanted_armoire_once for _ in range(times)]
+    dispatcher = ApiRequestThrottler(buy_requests)
+    for buy_request in dispatcher.release():
+        _ = buy_request()
 
 
 def get_buy_times_within_budget(until_poor_flag: bool,

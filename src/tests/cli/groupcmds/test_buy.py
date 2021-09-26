@@ -1,4 +1,6 @@
-from hopla.cli.groupcmds.buy import times_until_poor
+from click.testing import CliRunner, Result
+
+from hopla.cli.groupcmds.buy import enchanted_armoire, times_until_poor
 
 
 class TestTimesUntilPoor:
@@ -10,3 +12,5 @@ class TestTimesUntilPoor:
 
     def test_times_until_poor__budget_is_over100(self):
         assert times_until_poor(212) == 2
+
+
