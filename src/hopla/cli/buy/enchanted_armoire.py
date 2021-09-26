@@ -68,9 +68,9 @@ def times_until_poor(gp_budget: float) -> int:
               type=click.IntRange(min=0),
               metavar="[TIMES]",
               help="number of times to buy from the enchanted-armoire")
-@click.option("--until-poor/--no-until-poor", "-u", "until_poor_flag",
+@click.option("--until-poor", "-u", "until_poor_flag",
               help="buy from enchanted-armoire until gp runs out",
-              default=False, show_default=True)
+              default=False, is_flag=True, show_default=True)
 def enchanted_armoire(requested_times: int, until_poor_flag: bool):
     """Buy from the enchanted armoire
 
