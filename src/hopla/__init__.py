@@ -24,9 +24,11 @@ from hopla.cli.groupcmds.get_user import get_user
 from hopla.cli.groupcmds.set import set  # pylint: disable=redefined-builtin
 from hopla.cli.request import request
 from hopla.cli.support_development import support_development
-from hopla.cli.version import version, hopla_version
+from hopla.cli.version import version
 from hopla.hoplalib.common import GlobalConstants
 from hopla.hoplalib.configuration import ConfigInitializer, ConfigurationFileParser
+
+from hopla.hoplalib.hoplaversion import HoplaVersion
 
 
 def setup_logging() -> logging.Logger:
@@ -59,7 +61,7 @@ HOPLA_CONTEXT_SETTINGS = dict(
 
 
 @click.group(context_settings=HOPLA_CONTEXT_SETTINGS)
-@click.version_option(version=hopla_version())
+@click.version_option(version=HoplaVersion().full_version())
 def hopla():
     """hopla - a command line interface (CLI) to interact with habitica.com"""
 
