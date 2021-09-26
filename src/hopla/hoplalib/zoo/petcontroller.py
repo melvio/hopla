@@ -1,11 +1,13 @@
 """
 A module for performing feeding Pet HTTP requests.
 """
-from typing import Optional
+from typing import NoReturn, Optional, Union
 
 import requests
 
 from hopla.hoplalib.http import HabiticaRequest, UrlBuilder
+from hopla.hoplalib.zoo.feeding_clickhelper import get_feed_data_or_exit
+from hopla.hoplalib.zoo.zoofeeding_algorithms import FeedPlanItem
 
 
 class FeedPostRequester(HabiticaRequest):
@@ -43,3 +45,22 @@ class FeedPostRequester(HabiticaRequest):
         """Performs the feed pet post requests and return the response"""
         return requests.post(url=self.feed_pet_food_url, headers=self.default_headers,
                              params=self.query_params)
+
+    def post_feed_request_get_data_or_exit(self) -> Union[NoReturn, dict]:
+        """
+        Performs the feed pet post requests and return
+        the feeding response if successful. Else exit
+
+        :return:
+        """
+        response: requests.Response = self.post_feed_request()
+        return get_feed_data_or_exit(response)
+
+    @classmethod
+    def build_from(cls, feed_item: FeedPlanItem) -> "FeedPostRequester":
+        """Create a request from a feed plan item."""
+        return FeedPostRequester(
+            pet_name=feed_item.pet_name,
+            food_name=feed_item.food_name,
+            food_amount=feed_item.times
+        )

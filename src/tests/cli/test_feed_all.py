@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 import pytest
 from click.testing import CliRunner, Result
 from unittest.mock import patch, MagicMock

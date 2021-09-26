@@ -4,13 +4,12 @@ The module with CLI code that handles the `hopla feed-all` command.
 """
 import logging
 import sys
-from typing import NoReturn, Optional, Union
+from typing import Callable, List, NoReturn, Optional, Union
 
 import click
-import requests
 
 from hopla.cli.groupcmds.get_user import HabiticaUser, HabiticaUserRequest
-from hopla.hoplalib.zoo.feeding_clickhelper import get_feed_data_or_exit
+from hopla.hoplalib.throttling import ApiRequestThrottler
 from hopla.hoplalib.zoo.foodmodels import FoodStockpile, FoodStockpileBuilder
 from hopla.hoplalib.zoo.petcontroller import FeedPostRequester
 from hopla.hoplalib.zoo.petmodels import Zoo, ZooBuilder
@@ -53,12 +52,13 @@ def feed_all_pets_and_exit() -> NoReturn:
 
     __confirm_with_user_or_abort(plan)
 
+    feed_requests: List[Callable[[None], None]] = []
     for item in plan:
-        request = FeedPostRequester(pet_name=item.pet_name,
-                                    food_name=item.food_name,
-                                    food_amount=item.times)
-        response: requests.Response = request.post_feed_request()
-        get_feed_data_or_exit(feed_response=response)
+        feed_requester: FeedPostRequester = FeedPostRequester.build_from(item)
+        feed_requests.append(feed_requester.post_feed_request_get_data_or_exit)
+
+    throttler = ApiRequestThrottler(feed_requests)
+    throttler.execute_all_requests()
     sys.exit(0)
 
 
