@@ -7,6 +7,7 @@ from hopla.cli.groupcmds.get_user import HabiticaUser
 
 class UserTestUtil:
     """test utility to create an user"""
+
     @classmethod
     def user_with_zoo(cls, *,
                       pets: Optional[Dict[str, int]] = None,
@@ -18,3 +19,9 @@ class UserTestUtil:
             mounts = {}
 
         return HabiticaUser({"items": {"pets": pets, "mounts": mounts}})
+
+    @classmethod
+    def user_with_gp(cls, *,
+                     gold: float):
+        """Create the simplest user with the specified budget."""
+        return HabiticaUser({"stats": {"gp": gold}})

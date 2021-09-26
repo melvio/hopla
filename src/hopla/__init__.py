@@ -19,6 +19,7 @@ from hopla.cli.get_user.stats import stats
 from hopla.cli.groupcmds.add import add
 from hopla.cli.groupcmds.api import api
 from hopla.cli.groupcmds.buy import buy
+from hopla.cli.buy.enchanted_armoire import enchanted_armoire
 from hopla.cli.groupcmds.get_user import get_user
 from hopla.cli.groupcmds.set import set  # pylint: disable=redefined-builtin
 from hopla.cli.request import request
@@ -79,18 +80,7 @@ def entry_cmd():
 
 def organize_cli():
     """Attach the subgroups and subcommands to the top hopla group command"""
-    # subgroups
-    hopla.add_command(add)
-    hopla.add_command(api)
-    hopla.add_command(set)
-    hopla.add_command(buy)
-    hopla.add_command(get_user)
-    # get-user subgroup
-    get_user.add_command(inventory)
-    get_user.add_command(stats)
-    get_user.add_command(info)
-    get_user.add_command(auth)
-    # subcommands
+    # hopla subcommands
     hopla.add_command(config)
     hopla.add_command(complete)
     hopla.add_command(version)
@@ -100,3 +90,19 @@ def organize_cli():
     hopla.add_command(support_development)
     hopla.add_command(request)
     hopla.add_command(get_group)
+
+    # hopla subgroups
+    hopla.add_command(add)
+    hopla.add_command(api)
+    hopla.add_command(set)
+    hopla.add_command(buy)
+    hopla.add_command(get_user)
+
+    # hopla buy subgroup
+    buy.add_command(enchanted_armoire)
+
+    # hopla get-user subgroup
+    get_user.add_command(inventory)
+    get_user.add_command(stats)
+    get_user.add_command(info)
+    get_user.add_command(auth)
