@@ -2,6 +2,9 @@ build:
 	# https://setuptools.readthedocs.io/en/latest/userguide/quickstart.html
 	python -m build && pip install .
 
+clean:
+	rm -r dist/*
+
 develop:
 	pip install --upgrade --editable .
 
