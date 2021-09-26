@@ -95,8 +95,8 @@ Commands:
 More functionality is currently being implemented. 
 Hopla is open-source. 
 Pull request, feature requests, and issues are welcomed at <https://github.com/melvio/hopla>. 
-If you want to contribute, but don't know where to start, you might want to look in 
-the `./developers` folder.
+If you want to contribute, but don't know where to start, you might want to look at
+`.github/CONTRIBUTING.md` and the `./developers` folder.
 
 [![License](https://img.shields.io/badge/License-apache--2.0-blue)](#license)
 
