@@ -23,7 +23,7 @@ class BuyEnchantedArmoireRequest(HabiticaRequest):
     """HabiticaRequest that buys from the enchanted armoire."""
 
     @property
-    def url(self):
+    def url(self) -> str:
         """The habitica API buy url."""
         return UrlBuilder(path_extension="/user/buy-armoire").url
 
@@ -108,8 +108,7 @@ def enchanted_armoire(requested_times: int, until_poor_flag: bool):
 
     buy_requests = [buy_from_enchanted_armoire_once for _ in range(times)]
     dispatcher = ApiRequestThrottler(buy_requests)
-    for buy_request in dispatcher.release():
-        _ = buy_request()
+    dispatcher.execute_all_requests()
 
 
 def get_buy_times_within_budget(*, user: HabiticaUser,

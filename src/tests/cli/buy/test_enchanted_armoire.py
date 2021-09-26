@@ -1,8 +1,10 @@
+from unittest.mock import MagicMock, patch
 
 import pytest
+from click.testing import CliRunner, Result
 
 from hopla.cli.buy.enchanted_armoire import get_buy_times_within_budget, \
-    times_until_poor
+    times_until_poor, enchanted_armoire
 from hopla.cli.groupcmds.get_user import HabiticaUser
 from tests.testutils.user_test_utils import UserTestUtil
 
@@ -55,12 +57,38 @@ class TestBuyTimesWithBudget:
         assert times == expected_times
 
 
-class TestBuyEnchantedArmoireCliCommand:
-    pass
 
-    # @patch("hopla.cli.buy")
-    # def test_buy_enchanted_armoire_ok(self):
-    #     runner = CliRunner()
-    #     result: Result = runner.invoke(enchanted_armoire)
-    #
-    #     assert result.exit_code == 0
+
+class TestBuyEnchantedArmoireCliCommand:
+
+    @patch("hopla.cli.buy.enchanted_armoire.BuyEnchantedArmoireRequest.post_buy_request")
+    @patch("hopla.cli.buy.enchanted_armoire.HabiticaUserRequest.request_user_data_or_exit")
+    def test_buy_enchanted_armoire_ok(self, user_request: MagicMock,
+                                      buy_request: MagicMock):
+        gold = 500.
+        user_request.return_value = UserTestUtil.user_with_gp(gold=gold)
+
+        class MockBuyResponse:
+            def __init__(self, json):
+                self._json = json
+
+            def json(self) -> dict:
+                return self._json
+
+        exp = 35
+        armoire_value = {"type": "experience", "value": exp}
+        json_response = {
+            "success": True,
+            "message": "You wrestle with the Armoire and gain Experience. Take that!",
+            "data": {
+                "armoire": armoire_value
+            }
+        }
+        buy_request.return_value = MockBuyResponse(json=json_response)
+
+        runner = CliRunner()
+        result: Result = runner.invoke(enchanted_armoire)
+
+        assert result.exit_code == 0
+        assert '"type": "experience",' in result.stdout
+        assert f'"value": {exp}' in result.stdout
