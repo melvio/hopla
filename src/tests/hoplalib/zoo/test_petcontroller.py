@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from hopla.hoplalib.zoo.petcontroller import FeedPostRequester
+from hopla.hoplalib.zoo.zoofeeding_algorithms import FeedPlanItem
 
 
 class TestFeedPostRequester:
@@ -50,3 +51,18 @@ class TestFeedPostRequester:
             headers=mock_headers,
             params={"amount": expected_times}
         )
+
+    @pytest.mark.parametrize(
+        "feed_plan_item", [
+            FeedPlanItem(pet_name="Wolf-Ruby", food_name="Chocolate", times=4),
+            FeedPlanItem(pet_name="TigerCub-Floral", food_name="Honey", times=2),
+            FeedPlanItem(pet_name="Egg-Zombie", food_name="Meat", times=13),
+            FeedPlanItem(pet_name="PandaCub-Shade", food_name="Milk", times=1)
+        ]
+    )
+    def test_build_from_feed_plan_item(self, feed_plan_item: FeedPlanItem):
+        requester: FeedPostRequester = FeedPostRequester.build_from(feed_plan_item)
+
+        assert requester.pet_name == feed_plan_item.pet_name
+        assert requester.food_name == feed_plan_item.food_name
+        assert requester.query_params == {"amount": feed_plan_item.times}

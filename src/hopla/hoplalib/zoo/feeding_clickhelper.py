@@ -4,6 +4,7 @@ A module with helper functions for the `hopla feed` and `hopla feed-all`
 CLI commands.
 """
 import sys
+from typing import NoReturn, Union
 
 import click
 import requests
@@ -11,7 +12,7 @@ import requests
 from hopla.hoplalib.outputformatter import JsonFormatter
 
 
-def get_feed_data_or_exit(feed_response: requests.Response):
+def get_feed_data_or_exit(feed_response: requests.Response) -> Union[NoReturn, dict]:
     """
     Given a feed response, if the API request was successful, return interesting
     feeding information. On failure, exit with an error message.
