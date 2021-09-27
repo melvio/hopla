@@ -19,4 +19,4 @@ def version():
     :return:
     """
     log.debug("hopla version")
-    click.echo(HoplaVersion().full_version())
+    click.echo(HoplaVersion().semantic_version())

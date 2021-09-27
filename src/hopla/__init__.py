@@ -61,7 +61,7 @@ HOPLA_CONTEXT_SETTINGS = dict(
 
 
 @click.group(context_settings=HOPLA_CONTEXT_SETTINGS)
-@click.version_option(version=HoplaVersion().full_version())
+@click.version_option(version=HoplaVersion().semantic_version())
 def hopla():
     """hopla - a command line interface (CLI) to interact with habitica.com"""
 
