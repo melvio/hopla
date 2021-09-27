@@ -1,17 +1,25 @@
 """
-Module responsible for setting up initialization of the hopla entry command.
+Module that sets __version__ and then calls the kickstarter.
 """
-import sys
 
-from hopla.kickstart import hopla, init_config, organize_cli, setup_logging
-from hopla.hoplalib.configuration import ConfigurationFileParser
+from hopla.hoplalib.hoplaversion import HoplaVersion
 
-log = setup_logging()
+__version__ = HoplaVersion().semantic_version()
+""" This __version__ is read by setup.cfg. """
+
+try:
+    from hopla.kickstart import hopla, kickstart_hopla
 
 
-def setup_hopla_cli():
-    """The entry function for the hopla command"""
-    init_config()
-    log.debug(f"start application with arguments: {sys.argv}")
-    organize_cli()
-    hopla()
+    def setup_hopla_application():
+        """
+        This function only calls kickstart_hopla. This reduces the
+        required logic in base __init__.py
+        """
+        kickstart_hopla()
+
+except ModuleNotFoundError as ex:
+    pass
+    # This error catching is just here for the `python -m build` call that
+    # fails to find click at build time when trying to find the
+    # __version__ variable.

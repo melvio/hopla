@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """
-Module that constructs the CLI and sets configuration files and logging.
+Module that constructs the CLI, handles configuration files initialization,
+and sets up logging.
 """
 import logging
+import sys
 
 import click
 
@@ -28,6 +30,31 @@ from hopla.cli.version import version
 from hopla.hoplalib.common import GlobalConstants
 from hopla.hoplalib.configuration import ConfigInitializer, ConfigurationFileParser
 from hopla.hoplalib.hoplaversion import HoplaVersion
+
+
+def setup_logging() -> logging.Logger:
+    """Setup python logging for the entire hopla project"""
+
+    parsed_loglevel = ConfigurationFileParser().get_full_config_name("cmd_all.loglevel",
+                                                                     fallback="info")
+    loglevel_mapping = {
+        "debug": logging.DEBUG,
+        "info": logging.INFO,
+        "warning": logging.WARNING,
+        "error": logging.ERROR
+    }
+
+    # https://docs.python.org/3.8/howto/logging.html#logging-basic-tutorial
+    logging.basicConfig(
+        format="[%(levelname)s][%(filename)s|%(asctime)s] %(message)s",
+        level=loglevel_mapping[parsed_loglevel],
+        datefmt="%Y-%m-%dT%H:%M:%S"
+    )
+    return logging.getLogger(__name__)
+
+
+log = setup_logging()
+log.debug(f"start application with arguments: {sys.argv}")
 
 HOPLA_CONTEXT_SETTINGS = dict(
     help_option_names=["-h", "--help"],  # add -h
@@ -71,7 +98,7 @@ def organize_cli():
     get_user.add_command(auth)
 
 
-def init_config():
+def init_hopla_config_files():
     """Setup the config file."""
     had_to_create_new_config_file: bool = ConfigInitializer().initialize_before_running_cmds()
     if had_to_create_new_config_file:
@@ -82,22 +109,8 @@ def init_config():
         click.echo("  <https://github.com/melvio/hopla>")
 
 
-def setup_logging() -> logging.Logger:
-    """Setup python logging for the entire hopla project"""
-
-    parsed_loglevel = ConfigurationFileParser().get_full_config_name("cmd_all.loglevel",
-                                                                     fallback="info")
-    loglevel_mapping = {
-        "debug": logging.DEBUG,
-        "info": logging.INFO,
-        "warning": logging.WARNING,
-        "error": logging.ERROR
-    }
-
-    # https://docs.python.org/3.8/howto/logging.html#logging-basic-tutorial
-    logging.basicConfig(
-        format="[%(levelname)s][%(filename)s|%(asctime)s] %(message)s",
-        level=loglevel_mapping[parsed_loglevel],
-        datefmt="%Y-%m-%dT%H:%M:%S"
-    )
-    return logging.getLogger(__name__)
+def kickstart_hopla():
+    """Setup the config files, organize the CLI, and call the base command group."""
+    init_hopla_config_files()
+    organize_cli()
+    hopla()
