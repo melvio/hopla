@@ -127,8 +127,8 @@ class AddTodoRequest(HabiticaRequest):
         return get_data_or_exit(response)
 
 
-# @see https://habitica.com/apidoc/#api-Task-CreateUserTasks
 valid_difficulties = click.Choice(list(DIFFICULTIES_SCORE_MAPPING.keys()))
+"""Habitica task difficulties. See https://habitica.com/apidoc/#api-Task-CreateUserTasks."""
 
 
 @add.command()
