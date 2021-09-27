@@ -68,7 +68,7 @@ def hopla():
     """hopla - a command line interface (CLI) to interact with habitica.com"""
 
 
-def organize_cli():
+def organize_cli() -> None:
     """Attach the subgroups and subcommands to the top hopla group command"""
     # hopla subcommands
     hopla.add_command(config)
@@ -98,18 +98,18 @@ def organize_cli():
     get_user.add_command(auth)
 
 
-def init_hopla_config_files():
+def init_hopla_config_files() -> None:
     """Setup the config file."""
     had_to_create_new_config_file: bool = ConfigInitializer().initialize_before_running_cmds()
     if had_to_create_new_config_file:
-        click.echo("Thank you for trying out hopla")
+        click.echo(f"Thank you for trying out {GlobalConstants.APPLICATION_NAME}")
         click.echo(
             "Bug reports, pull requests, and feature requests are welcomed over at:  "
         )
-        click.echo("  <https://github.com/melvio/hopla>")
+        click.echo(GlobalConstants.ISSUE_URL)
 
 
-def kickstart_hopla():
+def kickstart_hopla() -> None:
     """Setup the config files, organize the CLI, and call the base command group."""
     init_hopla_config_files()
     organize_cli()
