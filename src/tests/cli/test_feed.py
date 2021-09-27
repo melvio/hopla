@@ -3,9 +3,9 @@ from requests.status_codes import codes
 from click.testing import CliRunner, Result
 from unittest.mock import patch, MagicMock
 
-from hopla import GlobalConstants
 from hopla.cli.feed import feed, get_appropriate_food_or_exit, get_feed_times_until_mount
 from hopla.cli.groupcmds.get_user import HabiticaUser
+from hopla.hoplalib.common import GlobalConstants
 from hopla.hoplalib.errors import YouFoundABugRewardError
 from hopla.hoplalib.zoo.petmodels import Pet
 
