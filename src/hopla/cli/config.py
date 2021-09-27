@@ -46,13 +46,8 @@ def print_config_file_content():
             click.echo(line.strip())
 
 
-# levels supported:
-# hopla config cmd_all.loglevel debug
-# hopla config cmd_all.loglevel info
-# hopla config cmd_all.loglevel warning
-# hopla config cmd_all.loglevel error
-# TODO: get_user this value from the HoplaDefaultConfiguration class instead of duplicating it here
 supported_config_names = click.Choice(["cmd_all.loglevel"])
+"""Values supported: debug,info,warning,error"""
 
 
 @click.command()
@@ -64,8 +59,6 @@ supported_config_names = click.Choice(["cmd_all.loglevel"])
 @click.option("--config-file-name/--no-config-file-name", "config_file_name_flag",
               default=False, show_default=True,
               help="Get the absolute path of the config file.")
-# @click.option("--file", "alternative_file",
-#                type=click.File(encoding="utf-8"), help="Specify which config file to use")
 def config(config_name: str,
            value,
            list_flag: bool,

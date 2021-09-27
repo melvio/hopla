@@ -20,18 +20,19 @@ class InvalidFeedingStatus(PrintableException):
 
 
 class FeedingStatus:
-    """A class implementing feeding status logic for pets"""
+    """A class implementing feeding status logic for pets.
+
+    Every pet starts at 5. 50 would turn the pet into a mount.
+    The feeding status of 0 is documented but never returned anno Sept 2021 to
+    my understanding, and according to a comment made by @Alys on github
+    in 2020.
+    """
     START_FEEDING_STATE = 5
     FULLY_FED_STATE = 50
     FAVORITE_INCREMENT = 5
     NON_FAVORITE_INCREMENT = 2
 
     def __init__(self, feeding_status: int = START_FEEDING_STATE):
-        # every pet starts at 5
-        # 50 would turn the pet into a mount
-        # The feeding status of 0 is documented but never returned anno Sept 2021 to
-        #  my understanding and according to a comment made by @Alys on github
-        #  in 2020.
         invalid_status = (feeding_status < -1
                           or feeding_status in [0, 1, 2, 3, 4]
                           or feeding_status >= 50)

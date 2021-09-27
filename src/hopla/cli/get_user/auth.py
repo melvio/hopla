@@ -11,20 +11,6 @@ from hopla.cli.groupcmds.get_user import pass_user, HabiticaUser
 
 log = logging.getLogger()
 
-# username -> 'data.auth.local.username':
-# * Your username is used for invitations, @mentions in chat, and messaging.
-#   * It:
-#     + must be 1 to 20 characters,
-#     + must contain only letters a to z, numbers 0 to 9, hyphens, or underscores, and
-#     + cannot include any inappropriate terms.
-# * is changeable at '<https://habitica.com/user/settings/site>' 'Change Display Name'
-
-# profilename -> 'data.profile.name'
-# *  is changeable at '<https://habitica.com/user/settings/site>' under 'Change Display Name'
-# profilename is not really in the .data.auth section of /user.. but fits well here
-# TODO: probably better to remove profilename here regardless
-
-
 __SIGN_IN_OPTIONS = ["local", "google", "apple", "facebook"]
 valid_auth_info_names = click.Choice([
     "username", "email", "profilename", *__SIGN_IN_OPTIONS, "all"
