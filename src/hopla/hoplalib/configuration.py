@@ -105,8 +105,6 @@ class FullConfigurationNameStr:
         loglevel = ...
     """
 
-    # TODO: this would be nicely testable
-
     def __init__(self, full_config_name_str: str):
         try:
             split_name: List[str] = full_config_name_str.split(".")
