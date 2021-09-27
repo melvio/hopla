@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Module that calls the entry command
+Module that gets the CLI going.
 """
-from . import entry_cmd
+from . import setup_hopla_cli
 
 if __name__ == "__main__":
-    entry_cmd()
+    setup_hopla_cli()
