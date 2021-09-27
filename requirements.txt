@@ -4,3 +4,4 @@ click
 build
 pytest
 pytest-cov
+flake8
