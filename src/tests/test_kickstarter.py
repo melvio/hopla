@@ -32,3 +32,14 @@ class TestVersionCliCommand:
             r"(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?"
             "\n"
         )
+
+
+class TestHoplaCommand:
+    def test_hopla_base_cmd_gives_help(self):
+        runner = CliRunner()
+        result_hopla: Result = runner.invoke(hopla)
+        result_help: Result = runner.invoke(hopla, ["--help"])
+
+        assert result_hopla.exit_code == 0
+        assert result_help.exit_code == 0
+        assert result_hopla.stdout == result_help.stdout
