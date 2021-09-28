@@ -163,10 +163,6 @@ class TestFoodStockpileBuilder:
 
 
 class TestFoodStockpile:
-    def get_user_with_empty_stockpile(self) -> HabiticaUser:
-        empty_stockpile: Dict[str, int] = get_empty_stockpile_dict()
-        return HabiticaUser({"items": {"food": empty_stockpile}})
-
     def test_add_food_ok(self):
         stockpile: FoodStockpile = FoodStockpileBuilder.empty_stockpile()
 

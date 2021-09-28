@@ -196,8 +196,7 @@ class FoodStockpileBuilder:
         :return: self
         """
         food: Dict[str, int] = habitica_user.get_food()
-        for food_name in food:
-            quantity = food[food_name]
+        for food_name, quantity in food.items():
             if Food(food_name).is_rare_food_item() is False:
                 self.__stockpile[food_name] = quantity
         return self
