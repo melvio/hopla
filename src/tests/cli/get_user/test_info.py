@@ -55,17 +55,23 @@ def get_test_user() -> HabiticaUser:
     * All dates have been changed (most to the future)
     * long lists have been cut down significantly to remove the duplication
       of data that is largely similar in syntax (.g. finished quests).
-      The was to keep the original range of data intact (e.g. at least 
-      keep a large value, negative value, and default value for feeding 
-      status of pets. e.g. within 'history' dates came in multiple formats, 
+      The was to keep the original range of data intact (e.g. at least
+      keep a large value, negative value, and default value for feeding
+      status of pets. e.g. within 'history' dates came in multiple formats,
       (millis and iso dates) so both formats were kept).
-    * care was taken to not modify the underlying structure and 
+    * care was taken to not modify the underlying structure and
       realisticness of the data. However, the data is note entirely valid
       because e.g. available eggs don't match finished quests. Sort order
       ids dont match actual ids or do not exist, etc.
     * null from javascript were replaced with "null" strings
     * unicode chars were remove (\\u)
     """
+    contributions: str = (
+        "[x xx GitHub](https://github.com/x), "
+        "[xxx on the wiki](https://habitica.fandom.com/wiki/User:xxx)\n"
+        "* Tier 2 (in progress): "
+        "[dsklaf DSL dklasfalsjfjsts](https://github.com/xxx/xxxx/pull/21389)"
+    )
     semi_realistic_user: dict = {
         "auth": {
             "local": {
@@ -144,7 +150,7 @@ def get_test_user() -> HabiticaUser:
         },
         "backer": {},
         "contributor": {
-            "contributions": "[x xx GitHub](https://github.com/x), [xxx on the wiki](https://habitica.fandom.com/wiki/User:xxx)\n\n* Tier 1: [xxxxx](https://habitica.fandom.com/wiki/xxxxx)\n* Tier 2 (in progress): [dsklaf DSL dklasfalsdkjf for dasklfjsts](https://github.com/xxx/xxxx/pull/19689)",
+            "contributions": contributions,
             "level": 1,
             "text": "Comrade, Blacksmith",
             "admin": False
@@ -591,14 +597,14 @@ def get_test_user() -> HabiticaUser:
                     "ownerId": "79551d98-31e9-42b4-b7fa-9d89b0944319",
                     "flags": {},
                     "id": "aaaaaaaa-d9b7-42a4-0000-00000048f725",
-                    "text": "dsjk :blush:. dsjklfjasdklfjdsklfja  sdakfl. \nR dsjkl klsdfjd jkldsfsdkljf .asdjfkl asdflasf'asdfljksdf jsdalf   :smiley:",
-                    "unformattedText": "sdaf :blush:. Idsajkl sdjklf dfs ljsd fjkl.\nI dsjklfjsdaklfjasdklfjklasd . djsklajw :smiley:",
+                    "text": "dsjk :blush:. \nR .asdjfkl asdflasf'asdfljksdf jsdalf   :smiley:",
+                    "unformattedText": "sdaf :blush:. fjkl.\nI  djsklajw :smiley:",
                     "info": {},
                     "timestamp": "2024-03-09T04:54:32.565Z",
                     "likes": {},
                     "uuid": "aaaaaaaa-324a-aaaa-abbb-bbbbbbbbbbeb",
                     "contributor": {
-                        "contributions": "[x xx GitHub](https://github.com/x), [xxx on the wiki](https://habitica.fandom.com/wiki/User:xxx)\n* Tier 2 (in progress): [dsklaf DSL dklasfalsdkjf for dasklfjsts](https://github.com/xxx/xxxx/pull/21389)",
+                        "contributions": contributions,
                         "level": 1,
                         "text": "Comrade, Blacksmith",
                         "admin": False

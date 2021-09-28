@@ -1,7 +1,7 @@
+#!/usr/bin/env python3
 """
 A module with helper functions for the requests package.
 """
-#!/usr/bin/env python3
 import logging
 import sys
 from typing import Any, NoReturn, Union

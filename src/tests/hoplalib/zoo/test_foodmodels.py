@@ -67,10 +67,8 @@ class TestFeedingStatusHash:
         FeedingStatus(20), FeedingStatus(35), FeedingStatus(49)
     ]
 
-    @pytest.mark.parametrize(
-        "feeding_status", _feeding_statuses
-    )
-    def test___hash__(self, feeding_status: FeedingStatus):
+    @pytest.mark.parametrize("feeding_status", _feeding_statuses)
+    def test__hash__same_object(self, feeding_status: FeedingStatus):
         # A minimal requirement for __hash__ is that if 2 FeedingStatus objects are
         # identical, they MUST have the same hash.
         assert hash(feeding_status) == hash(feeding_status)
@@ -80,12 +78,13 @@ class TestFeedingStatusHash:
         list(zip(_feeding_statuses + [FeedingStatus()],
                  _feeding_statuses + [FeedingStatus(5)]))
     )
-    def test___hash__(self,
-                      feeding_status: FeedingStatus,
-                      equal_feeding_status: FeedingStatus):
+    def test__hash__same_valued_object(self,
+                                       feeding_status: FeedingStatus,
+                                       equal_feeding_status: FeedingStatus):
         # A minimal requirement for __hash__ if 2 FeedingStatus objects
         # are equal (__eq__) , they MUST have the same hash.
-        assert hash(feeding_status) == hash(feeding_status)
+        assert feeding_status == equal_feeding_status
+        assert hash(feeding_status) == hash(equal_feeding_status)
 
 
 class TestFood:

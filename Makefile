@@ -25,8 +25,12 @@ send_package_to_pypi:
 	python -m twine upload dist/*
 
 
-# This works like running: "make lint && make unittest"
-test: lint unittest
+# This works like running: "make flake && make lint && make unittest"
+test: flake lint unittest
+
+
+flake:
+	flake8 --config="./.github/workflows/flake8.ini" src/ setup.py
 
 
 lint:

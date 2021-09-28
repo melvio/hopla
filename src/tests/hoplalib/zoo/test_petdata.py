@@ -88,7 +88,6 @@ class TestPetData:
         assert event_sequence_pet not in PetData.feedable_pet_names
         assert other_pet not in PetData.feedable_pet_names
 
-
         assert wacky_pet not in PetData.rare_pet_names
         assert world_boss_pet in PetData.rare_pet_names
         assert event_sequence_pet in PetData.rare_pet_names

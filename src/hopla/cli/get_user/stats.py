@@ -17,7 +17,7 @@ valid_stat_names = click.Choice(["hp", "mp", "exp", "gp", "lvl", "class",
                                  "all"])
 
 
-def stat_alias_to_official_habitica_name(stat_name: str) -> str:
+def stat_alias_to_official_habitica_name(stat_name: str) -> str:  # noqa: C901 (Mccabe too high)
     """Turn typos and similar namings into stats recognized by the habitica API.
 
     :param stat_name:
