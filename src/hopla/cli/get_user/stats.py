@@ -3,6 +3,7 @@ The module with CLI code that handles the `hopla get-user stats` command.
 """
 
 import logging
+from typing import Any
 
 import click
 
@@ -53,9 +54,8 @@ def stat_alias_to_official_habitica_name(stat_name: str) -> str:  # noqa: C901 (
 )
 @click.argument("stat_name", type=valid_stat_names, default="all")
 @pass_user
-def stats(user: HabiticaUser, stat_name: str):
+def stats(user: HabiticaUser, stat_name: str) -> Any:
     """Get the stats of a user
-
 
     \b
     Examples
@@ -65,13 +65,12 @@ def stats(user: HabiticaUser, stat_name: str):
     $ hopla get-user stats all
 
     \b
-    # get_user mana, health, level
-    $ hopla get_user stats mp
-    $ hopla get_user stats hp
-    $ hopla get_user stats lvl
-
+    # get-user mana, health, level
+    $ hopla get-user stats mp
+    $ hopla get-user stats hp
+    $ hopla get-user stats lvl
     """
-    log.debug(f"hopla get_user user-stats stat={stat_name}")
+    log.debug(f"hopla get-user stats {stat_name=}")
 
     stats_data = user.get_stats()
     if stat_name == "all":

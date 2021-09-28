@@ -1,13 +1,16 @@
 """
 Library code that helps with outputting strings to the CLI user.
 """
+from dataclasses import dataclass
 import json
 
 
+@dataclass
 class JsonFormatter:
     """
     Class for formatting JSON s.t. it can be used in bash pipelines.
     """
+
     def __init__(self, json_as_dict: dict):
         self.json_as_dict = json_as_dict
 
