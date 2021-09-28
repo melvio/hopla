@@ -10,8 +10,6 @@ import click
 log = logging.getLogger()
 
 
-
-
 def case_insensitive_aliases(argument: str, choices: List[str], *,
                              raise_if_not_found=False):
     """Takes a potentially in-properly cased argument and returns
@@ -40,7 +38,9 @@ class EnhancedDate(click.DateTime):
         # This will add 'today' and 'tomorrow to the help message
         self.formats += ["today", "tomorrow"]
 
-    def convert(self, value: Any, param: Optional["Parameter"], ctx: Optional["Context"]) -> Any:
+    def convert(self, value: Any,
+                param: Optional[click.Parameter],
+                ctx: Optional[click.Context]) -> Any:
         """Convert a value provided by the user into a datetime object."""
         if value == "today":
             return datetime.date.today()

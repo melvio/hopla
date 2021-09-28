@@ -57,8 +57,6 @@ class TestBuyTimesWithBudget:
         assert times == expected_times
 
 
-
-
 class TestBuyEnchantedArmoireCliCommand:
 
     @patch("hopla.cli.buy.enchanted_armoire.BuyEnchantedArmoireRequest.post_buy_request")

@@ -1,5 +1,5 @@
-"""TestUtils to get HabiticaUser objects for users."""
 #!/usr/bin/env python3
+"""TestUtils to get HabiticaUser objects for users."""
 from typing import Dict, Optional
 
 from hopla.cli.groupcmds.get_user import HabiticaUser

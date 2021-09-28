@@ -30,7 +30,7 @@ test: flake lint unittest
 
 
 flake:
-	flake8 --config "./.github/workflows/flake8.ini" src/ setup.py
+	flake8 --config="./.github/workflows/flake8.ini" src/ setup.py
 
 
 lint:
