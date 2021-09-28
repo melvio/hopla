@@ -1,6 +1,7 @@
 """
 Library code to help with Habitica API HTTPS-requests
 """
+from dataclasses import dataclass
 
 from hopla.hoplalib.authorization import AuthorizationHandler
 from hopla.hoplalib.common import GlobalConstants
@@ -62,15 +63,12 @@ class UrlBuilder:
         return f"{self._get_base_url()}{self.path_extension}"
 
 
+@dataclass(repr=True, init=False)
 class HabiticaRequest:
     """
     A generic API request class with inheritable logic for specific
     request classes.
     """
-
-    def __repr__(self) -> str:
-        """Represent this request"""
-        return self.__class__.__name__ + f"({self.__dict__})"
 
     @property
     def default_headers(self):
