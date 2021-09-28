@@ -34,7 +34,7 @@ flake:
 
 
 lint:
-	pylint $$(find src/ -name "*.py") --rcfile=./.github/workflows/pylintrc.conf
+	pylint $$(find src/ -name "*.py") setup.py --rcfile=./.github/workflows/pylintrc.conf
 
 unittest:
 	pytest -c ./.github/workflows/pytest.ini
