@@ -31,21 +31,4 @@ pip install --upgrade --editable .
 
 
 ## Style Guide
-### Writing Documentation
-
-Style Guide Rules for User-facing Documentation:
-* Every option, argument, command, and group is documented.
-* Use full sentences.
-* Sentences start with uppercase letter and end with a dot.
-* Use `hopla` (lowercase) when you mean the command.
-* Use 'Hopla' (uppercase) when you mean to name the CLI by its name.
-* Use 'Habitica' (uppercase) unless it is factually incorrect (e.g. <https://habitica.com>)
-* Use 'CLI' and 'API' uppercase unless it is factually incorrect (e.g. `hopla api ...`)
-
-Style Guide Suggestions for Developer-facing Documentation:
-* Same as above
-
-### Code Style
-Code style is enforced by `pylint`. 
-Run `make lint` in the root of the repository to see what `pylint` opinion is of your code changes.
-
+See [style-guide](./style_guide.md)
