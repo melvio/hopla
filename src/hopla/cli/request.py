@@ -64,8 +64,9 @@ def request(method: str,
     $ hopla request -XPOST /api/v3/user/buy-special-spell/spookySparkles
 
     \b
-    # POST: cast the Searing Brightness spell
+    # POST: cast the Searing Brightness (Healer) and Tool of Trade (Rogue) spell.
     $ hopla request -XPOST /api/v3/user/class/cast/brightness
+    $ hopla request -XPOST /api/v3/user/class/cast/toolsOfTrade
 
     \b
     # POST: set your custom day start to 1 AM

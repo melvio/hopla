@@ -10,6 +10,7 @@ import click
 
 from hopla.cli.authenticate import authenticate
 from hopla.cli.buy.enchanted_armoire import enchanted_armoire
+from hopla.cli.cast import cast
 from hopla.cli.complete import complete
 from hopla.cli.config import config
 from hopla.cli.feed import feed
@@ -71,6 +72,7 @@ def hopla():
 def organize_cli() -> None:
     """Attach the subgroups and subcommands to the top hopla group command"""
     # hopla subcommands
+    hopla.add_command(cast)
     hopla.add_command(config)
     hopla.add_command(complete)
     hopla.add_command(version)
