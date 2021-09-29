@@ -23,9 +23,8 @@ class FeedingStatus:
     """A class implementing feeding status logic for pets.
 
     Every pet starts at 5. 50 would turn the pet into a mount.
-    The feeding status of 0 is documented but never returned anno Sept 2021 to
-    my understanding, and according to a comment made by @Alys on github
-    in 2020.
+    The feeding status of 0 means that you had the pet before, but
+    you released it.
     """
     START_FEEDING_STATE = 5
     FULLY_FED_STATE = 50
