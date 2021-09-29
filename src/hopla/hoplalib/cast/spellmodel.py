@@ -20,7 +20,7 @@ class SpellData:
     rogue_spells_single_arg = ["toolsOfTrade", "stealth"]
     healer_spells_single_arg = ["heal", "brightness", "protectAura", "healAll"]
 
-    single_arg_spell_choices: List[str] = (
+    single_arg_spells: List[str] = (
             warrior_spells_single_arg
             + mage_spells_single_arg
             + rogue_spells_single_arg
@@ -31,9 +31,14 @@ class SpellData:
 @dataclass
 class Spell:
     """A spell."""
-    spell_name: str
-    target_id: Optional[UUID] = None
-    """ not supported now """
+
+    def __init__(self, spell_name: str,
+                 *, target_id: UUID = None):
+        if spell_name not in SpellData.single_arg_spells:
+            raise YouFoundABugRewardError(f"{spell_name=} does not exist.")
+        self.spell_name = spell_name
+        self.target_id: Optional[UUID] = target_id
+        """ not supported now """
 
     @property
     def class_name(self) -> str:

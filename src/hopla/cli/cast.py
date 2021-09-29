@@ -16,7 +16,7 @@ log = logging.getLogger()
 
 
 @click.command()
-@click.argument("spell_name", type=click.Choice(SpellData.single_arg_spell_choices))
+@click.argument("spell_name", type=click.Choice(SpellData.single_arg_spells))
 def cast(spell_name):
     """Cast a spell.
 
