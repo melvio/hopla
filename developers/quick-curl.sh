@@ -38,7 +38,7 @@ source "${this_script_parent_dir}/developer.env"
 
 #curl -XPUT https://habitica.com/api/v3/user \
 #  --verbose \
-#  --data '{ "preferences.dateFormat" : "dd/MM/YYYY", "achievements.habitBirthdays" : 0, "achievements.rebirths" : 1 }' \
+#  --data '{ "preferences.dateFormat" : "dd/MM/YYYY", "achievements.habitBirthdays" : 0, "achievements.rebirths" : 1, "achievements.perfect": 150 }' \
 #  --header "Content-Type: application/json" \
 #  --header "x-api-user: ${user_id}" \
 #  --header "x-api-key: ${api_token}" \
