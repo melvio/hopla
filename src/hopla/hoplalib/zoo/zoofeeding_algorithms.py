@@ -6,7 +6,8 @@ from typing import List
 from copy import deepcopy
 
 from hopla.hoplalib.zoo.foodmodels import FoodStockpile
-from hopla.hoplalib.zoo.petmodels import Pet, Zoo, ZooHelper
+from hopla.hoplalib.zoo.petmodels import Pet
+from hopla.hoplalib.zoo.zoomodels import Zoo, ZooHelper
 
 
 @dataclass(frozen=True)

@@ -16,7 +16,8 @@ from hopla.hoplalib.zoo.fooddata import FoodData
 from hopla.hoplalib.zoo.foodmodels import FoodStockpile, FoodStockpileBuilder
 from hopla.hoplalib.zoo.petcontroller import FeedPostRequester
 from hopla.hoplalib.zoo.petdata import PetData
-from hopla.hoplalib.zoo.petmodels import Pet, PetMountPair, Zoo, ZooBuilder
+from hopla.hoplalib.zoo.petmodels import Pet, PetMountPair
+from hopla.hoplalib.zoo.zoomodels import Zoo, ZooBuilder
 
 log = logging.getLogger()
 

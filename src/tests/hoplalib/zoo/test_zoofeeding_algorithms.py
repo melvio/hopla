@@ -4,7 +4,7 @@ import pytest
 from hopla.cli.groupcmds.get_user import HabiticaUser
 from hopla.hoplalib.zoo.fooddata import FoodData
 from hopla.hoplalib.zoo.foodmodels import FoodStockpile, FoodStockpileBuilder
-from hopla.hoplalib.zoo.petmodels import Zoo, ZooBuilder
+from hopla.hoplalib.zoo.zoomodels import Zoo, ZooBuilder
 from hopla.hoplalib.zoo.zoofeeding_algorithms import FeedPlanItem, ZooFeedingAlgorithm, \
     ZookeeperFeedPlan
 from tests.testutils.user_test_utils import UserTestUtil

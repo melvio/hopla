@@ -8,7 +8,9 @@ from hopla.hoplalib.zoo.foodmodels import Food, FeedingStatus, \
 
 
 class TestFeedingStatus:
-    @pytest.mark.parametrize("valid_status", [-1, 0, *range(5, 50)])
+    valid_feeding_range = [-1, 0, *range(5, 50)]
+
+    @pytest.mark.parametrize("valid_status", valid_feeding_range)
     def test__init__ok(self, valid_status):
         status = FeedingStatus(valid_status)
         assert int(status) == valid_status
@@ -16,12 +18,17 @@ class TestFeedingStatus:
     @pytest.mark.parametrize("invalid_status", [
         *range(-10, -1), *range(1, 5), *range(50, 60)
     ])
-    def test__init__fail(self, invalid_status):
+    def test__init__fail(self, invalid_status: int):
         with pytest.raises(InvalidFeedingStatus) as exec_info:
             FeedingStatus(invalid_status)
 
         er_msg = str(exec_info.value)
         assert f"{invalid_status} is invalid" in er_msg
+
+    @pytest.mark.parametrize("valid_status", valid_feeding_range)
+    def test__repr__ok(self, valid_status: int):
+        result: str = repr(FeedingStatus(valid_status))
+        assert result == f"FeedingStatus({valid_status})"
 
     @pytest.mark.parametrize(
         "feeding_status,expected_percentage",
@@ -34,6 +41,19 @@ class TestFeedingStatus:
         result_percentage = feeding_status.to_percentage()
 
         assert result_percentage == expected_percentage
+
+    @pytest.mark.parametrize(
+        "feeding_status,expected_available", [
+            (-1, False), (0, False), (5, True), (27, True), (42, True)
+        ]
+    )
+    def test_is_pet_available(self, feeding_status: int,
+                              expected_available: bool):
+        status = FeedingStatus(feeding_status)
+
+        result: bool = status.is_pet_available()
+
+        assert result == expected_available
 
     @pytest.mark.parametrize(
         "start_status,expected_food_items", [
