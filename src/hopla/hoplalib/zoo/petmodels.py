@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 from hopla.hoplalib.common import GlobalConstants
-from hopla.hoplalib.errors import PrintableException
+from hopla.hoplalib.errors import PrintableException, YouFoundABugRewardError
 from hopla.hoplalib.zoo.fooddata import FoodData
 from hopla.hoplalib.zoo.foodmodels import FeedingStatus
 from hopla.hoplalib.zoo.petdata import PetData
@@ -168,6 +168,7 @@ class Mount:
 
     def __init__(self, mount_name: str, *,
                  availability_status: Optional[bool]):
+        """__REMINDER__ check mount names before finally committing this. """
         self.mount_name = mount_name
         self._availability_status = availability_status
 
@@ -179,11 +180,27 @@ class Mount:
         return self._availability_status is True
 
 
+class InvalidPetMountPair(YouFoundABugRewardError):
+    """Exception raised when an invalid PetMountPair is created."""
+
+
 @dataclass
 class PetMountPair:
     """A pair of a pet and its mount."""
-    pet: Optional[Pet]
-    mount: Optional[Mount]
+
+    def __init__(self, *, pet: Optional[Pet],
+                 mount: Optional[Mount]):
+        """
+        Create a PetMountPair.
+        Raise an exception if the names of the pet and mount do not match.
+        """
+        if pet and mount:
+            if pet.pet_name != mount.mount_name:
+                msg = f"pet name '{pet.pet_name}' must equal mount name '{mount.mount_name}'"
+                raise InvalidPetMountPair(msg)
+
+        self.pet = pet
+        self.mount = mount
 
     def can_feed_pet(self) -> bool:
         """Return true if the pet itself is feedable and there is no mount yet."""
