@@ -4,13 +4,28 @@ import pytest
 
 from hopla.cli.groupcmds.get_user import HabiticaUser
 from hopla.hoplalib.zoo.foodmodels import Food, FeedingStatus, \
-    FoodException, FoodStockpile, FoodStockpileBuilder
+    FoodException, FoodStockpile, FoodStockpileBuilder, InvalidFeedingStatus
 
 
 class TestFeedingStatus:
+    @pytest.mark.parametrize("valid_status", [-1, 0, *range(5, 50)])
+    def test__init__ok(self, valid_status):
+        status = FeedingStatus(valid_status)
+        assert int(status) == valid_status
+
+    @pytest.mark.parametrize("invalid_status", [
+        *range(-10, -1), *range(1, 5), *range(50, 60)
+    ])
+    def test__init__fail(self, invalid_status):
+        with pytest.raises(InvalidFeedingStatus) as exec_info:
+            FeedingStatus(invalid_status)
+
+        er_msg = str(exec_info.value)
+        assert f"{invalid_status} is invalid" in er_msg
+
     @pytest.mark.parametrize(
         "feeding_status,expected_percentage",
-        [(-1, 100), (5, 10), (7, 14), (48, 96)]
+        [(-1, 100), (0, 0), (5, 10), (7, 14), (48, 96)]
     )
     def test_to_percentage_ok(self, feeding_status: int,
                               expected_percentage: int):
@@ -115,21 +130,14 @@ class TestFood:
         assert result_is_rare == is_rare_expected
 
 
-def get_empty_stockpile_dict() -> Dict[str, int]:
-    return {'Meat': 0, 'Milk': 0, 'Potatoe': 0, 'Strawberry': 0,
-            'Chocolate': 0, 'Fish': 0, 'RottenMeat': 0,
-            'CottonCandyPink': 0, 'CottonCandyBlue': 0, 'Honey': 0}
-
-
 class TestFoodStockpileBuilder:
 
-    def test_build_empty(self):
+    def test_build_empty(self, empty_stockpile_dict: Dict[str, int]):
         result_stockpile: FoodStockpile = FoodStockpileBuilder().build()
 
-        expected_stockpile = get_empty_stockpile_dict()
-        assert result_stockpile.as_dict() == expected_stockpile
+        assert result_stockpile.as_dict() == empty_stockpile_dict
 
-    def test_build(self):
+    def test_build(self, empty_stockpile_dict):
         drop_food = {"RottenMeat": 201, "CottonCandyBlue": 71, "Chocolate": 1}
         food_dict = {"items": {"food": {
             **drop_food, "Saddle": 1, "Cake_Skeleton": 1, "Pie_White": 2, "Candy_Zombie": 1}
@@ -138,12 +146,12 @@ class TestFoodStockpileBuilder:
 
         result_stockpile = FoodStockpileBuilder().user(user).build()
 
-        expected_food = get_empty_stockpile_dict()
+        expected_food = empty_stockpile_dict
         expected_food.update(drop_food)
 
         assert result_stockpile.as_dict() == expected_food
 
-    def test___repr__(self):
+    def test___repr__(self, empty_stockpile_dict):
         drop_food = {"RottenMeat": 201}
         food_dict = {"items": {"food": {**drop_food, "Saddle": 11}}}
         user = HabiticaUser(user_dict=food_dict)
@@ -151,7 +159,7 @@ class TestFoodStockpileBuilder:
         stockpile = FoodStockpileBuilder().user(user)
         result = str(stockpile)
 
-        expected_food = get_empty_stockpile_dict()
+        expected_food = empty_stockpile_dict
         expected_food.update(drop_food)
         expected_repr = f"FoodStockpileBuilder({expected_food})"
         assert result == expected_repr
@@ -162,8 +170,15 @@ class TestFoodStockpileBuilder:
         assert all(amount == 0 for amount in stockpile.as_dict().values())
 
 
+@pytest.fixture
+def empty_stockpile_dict() -> Dict[str, int]:
+    return {'Meat': 0, 'Milk': 0, 'Potatoe': 0, 'Strawberry': 0,
+            'Chocolate': 0, 'Fish': 0, 'RottenMeat': 0,
+            'CottonCandyPink': 0, 'CottonCandyBlue': 0, 'Honey': 0}
+
+
 class TestFoodStockpile:
-    def test_add_food_ok(self):
+    def test_add_food_ok(self, empty_stockpile_dict):
         stockpile: FoodStockpile = FoodStockpileBuilder.empty_stockpile()
 
         food1, amount1 = "Meat", 5
@@ -171,7 +186,7 @@ class TestFoodStockpile:
         stockpile.add_food(food1, n=amount1)
         stockpile.add_food(food2, n=amount2)
 
-        expected_food = get_empty_stockpile_dict()
+        expected_food = empty_stockpile_dict
         expected_food.update({food1: amount1, food2: amount2})
         assert stockpile.as_dict() == expected_food
         assert str(stockpile) == f"FoodStockpile({expected_food})"

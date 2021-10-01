@@ -181,12 +181,13 @@ class TestOtherPetFunctions:
 
         result = str(pet)
 
-        expected = f"Pet(self.pet_name='{pet_name}', self.feeding_status={feeding_status})"
+        expected = f"Pet({pet_name}: {feeding_status})"
         assert result == expected
 
     @pytest.mark.parametrize(
         "feeding_status,partial_expected_message", [
             (-1, f"can't feed self.pet_name='{PET_NAME}' you only have the mount"),
+            (0, f"You released {PET_NAME}, so you cannot feed it"),
             (5, f"Cannot determine if self.pet_name='{PET_NAME}' can be fed"),
             (20, f"pet_name='{PET_NAME}' can be fed")
         ]
@@ -196,7 +197,7 @@ class TestOtherPetFunctions:
         feeding_status = FeedingStatus(feeding_status)
         pet = Pet(TestOtherPetFunctions.PET_NAME, feeding_status=feeding_status)
 
-        result_explanation = pet.feeding_status_explanation()
+        result_explanation: str = pet.feeding_status_explanation()
 
         assert partial_expected_message in result_explanation
 
@@ -210,10 +211,9 @@ class TestOtherPetFunctions:
     def test_feeding_status_unfeedable_pet(self, unfeedable_pet_name: str):
         pet = Pet(unfeedable_pet_name)
 
-        result_explanation = pet.feeding_status_explanation()
+        result_explanation: str = pet.feeding_status_explanation()
 
-        assert pet.pet_name in result_explanation
-        assert "can't be fed because it is special" in result_explanation
+        assert f"{pet.pet_name} is an unfeedable pet." == result_explanation
 
     @pytest.mark.parametrize(
         "pet_name,is_gen1_expected", [
@@ -311,69 +311,7 @@ class TestOtherPetFunctions:
 
 
 class TestPetMountPair:
-    def test_feed_status_fail(self):
-        pet = Pet("LionCub-Watery", feeding_status=None)
-
-        with pytest.raises(InvalidFeedingStatus) as execinfo:
-            PetMountPair(pet,
-                         pet_available=True,
-                         mount_available=False)
-
-        err_msg = str(execinfo.value)
-        assert f"PetMountPair requires that pet={pet} has a feeding status" in err_msg
-
-    def test___repr__(self):
-        feed_status = FeedingStatus(20)
-        pet = Pet("Monkey-Skeleton", feeding_status=feed_status)
-        pet_available = True
-        mount_available = True
-
-        pair = PetMountPair(pet,
-                            pet_available=pet_available,
-                            mount_available=mount_available)
-        result = str(pair)
-
-        expected = ("PetMountPair({"
-                    "'pet': Pet(self.pet_name='Monkey-Skeleton', "
-                    "self.feeding_status=FeedingStatus(20)), "
-                    "'pet_available': True, ""'mount_available': True})")
-        assert result == expected
-
-    def test_can_feed_pet_mount_available(self):
-        # pet itself is feedable, but mount is available,
-        # so cant feed pet should return False
-        pet = Pet("Wolf-Base", feeding_status=FeedingStatus(5))
-        pair = PetMountPair(pet, pet_available=True, mount_available=True)
-
-        result = pair.can_feed_pet()
-
-        assert result is False
-
-    def test_can_feed_pet_pet_unavailable(self):
-        # pet itself is feedable, but pet is unavailable,
-        # so cant feed pet should return False
-        pet = Pet("Dragon-SolarSystem", feeding_status=FeedingStatus(-1))
-        pair = PetMountPair(pet, pet_available=False, mount_available=True)
-
-        result = pair.can_feed_pet()
-
-        assert result is False
-
-    @pytest.mark.parametrize(
-        "unfeedable_pet_name",
-        random.sample(PetData.unfeedable_pet_names, k=15)
-        # Remark: The data is not entirely realistic, this includes some
-        # mount-only animals too. However, they should also
-        # return False when can_feed_pet is called.
-    )
-    def test_can_feed_pet_pet_is_unfeedable(self, unfeedable_pet_name: str):
-        # pet itself is not feedable, so cant feed pet should return False
-        pet = Pet(unfeedable_pet_name, feeding_status=FeedingStatus(-1))
-        pair = PetMountPair(pet, pet_available=True, mount_available=False)
-
-        result = pair.can_feed_pet()
-
-        assert result is False
+    pass  # will do this next
 
 
 class TestZooBuilder:
@@ -412,21 +350,24 @@ class TestZooBuilder:
 
         assert zoo == {}
 
-    def test_build_raised_pet(self):
+    def test_build_released_zoo(self):
+        pass
+
+    def test_build_raised_pets(self):
         animal_name = "BearCub-Shadow"
         feed_status = -1  # i.e. No pet, just mount
         user: HabiticaUser = UserTestUtil.user_with_zoo(pets={animal_name: feed_status},
                                                         mounts={animal_name: True})
 
-        zoo: Zoo = ZooBuilder(user).build()
+        result_zoo: Zoo = ZooBuilder(user).build()
 
-        assert len(zoo) == 1
+        assert len(result_zoo) == 1
 
-        result_pair = zoo[animal_name]
+        result_pair: PetMountPair = result_zoo[animal_name]
         assert result_pair.pet.pet_name == animal_name
         assert result_pair.pet.feeding_status == FeedingStatus(feed_status)
-        assert result_pair.mount_available
-        assert result_pair.pet_available is False
+        assert result_pair.mount_available()
+        assert result_pair.pet_available() is False
 
     def test_build_no_pet_yes_mount(self):
         animal_name = "Aether-Invisible"
@@ -435,10 +376,10 @@ class TestZooBuilder:
         zoo: Zoo = ZooBuilder(user).build()
 
         assert len(zoo) == 1
-        result_pair = zoo[animal_name]
-        assert result_pair.pet.pet_name == animal_name
-        assert result_pair.mount_available
-        assert result_pair.pet_available is False
+        result_pair: PetMountPair = zoo[animal_name]
+        assert result_pair.pet is None
+        assert result_pair.mount_available()
+        assert result_pair.pet_available() is False
 
     def test_build_yes_pet_no_mount(self):
         animal_name = "Dragon-Skeleton"
@@ -448,11 +389,11 @@ class TestZooBuilder:
         zoo: Zoo = ZooBuilder(user).build()
 
         assert len(zoo) == 1
-        result_pair = zoo[animal_name]
+        result_pair: PetMountPair = zoo[animal_name]
         assert result_pair.pet.pet_name == animal_name
         assert result_pair.pet.feeding_status == FeedingStatus(feeding_status)
-        assert result_pair.mount_available is False
-        assert result_pair.pet_available
+        assert result_pair.mount_available() is False
+        assert result_pair.pet_available()
 
 
 class TestZooHelper:
@@ -464,14 +405,16 @@ class TestZooHelper:
 
         def predicate(pair: PetMountPair) -> bool:
             # arbitrary filter function
-            return (pair.pet.pet_name == "Parrot-Base"
-                    or pair.mount_available
-                    or int(pair.pet.feeding_status) == 27)
+            return pair.pet is not None and (
+                    pair.pet.pet_name == "Parrot-Base"
+                    or pair.mount_available()
+                    or int(pair.pet.feeding_status) == 27
+            )
 
         helper = ZooHelper(zoo)
         filtered_zoo: Zoo = helper.filter_on_pet_mount_pairs(predicate=predicate)
 
-        expected_pets = sorted(["Ferret-Red", "Parrot-Base", "BearCub-Desert"])
+        expected_pets = sorted(["Ferret-Red", "Parrot-Base"])
         assert all(expected_pet in filtered_zoo.keys() for expected_pet in expected_pets)
 
     def test_get_feedable_zoo(self):

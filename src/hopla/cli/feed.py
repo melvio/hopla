@@ -48,7 +48,7 @@ def get_feed_times_until_mount(pet_name: str, food_name: str) -> Union[int, NoRe
     pair: PetMountPair = zoo.get(pet_name)
     if pair is None:
         sys.exit(f"Can't feed pet {pet_name}. You don't have this pet.")
-    if pair.mount_available:
+    if pair.mount_available():
         sys.exit(f"Can't feed pet {pet_name}. You have the mount.")
 
     pet: Pet = pair.pet

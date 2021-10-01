@@ -21,6 +21,11 @@ class MockFeedResponse:
 
 class TestFeedCliCommand:
     # https://habitica.com/apidoc/#api-User-UserFeed
+    def test_feed_TODO(self):
+        pass
+        # runner = CliRunner()
+        # result: Result = runner.invoke(feed, ["Wolf-Base", "--until-mount"])
+        # ???
 
     @pytest.mark.parametrize(
         "pet_name,expected_favorite_food", [
