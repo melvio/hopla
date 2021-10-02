@@ -2,18 +2,46 @@
 """
 Module with code for the `hopla hatch quest-egg` command.
 """
+import logging
+
 import click
 
+from hopla.cli.groupcmds.hatch import hatch_egg
 from hopla.hoplalib.hatchery.hatchdata import EggData, HatchingPotionData
+
+log = logging.getLogger()
 
 
 @click.command()
-@click.argument("egg_name",
-                type=click.Choice(EggData.quest_egg_names))
-@click.argument("potion_name",
-                type=click.Choice(sorted(HatchingPotionData.drop_hatching_potion_names)))
+@click.argument(
+    "egg_name", metavar="QUEST_EGG_NAME",
+    type=click.Choice(EggData.quest_egg_names)
+)
+@click.argument(
+    "potion_name",
+    type=click.Choice(HatchingPotionData.drop_hatching_potion_names)
+)
 def quest_egg(egg_name: str, potion_name: str):
     """hatch a quest egg.
-    To be implemented in: https://github.com/melvio/hopla/issues/170
+
+    \b
+    QUEST_EGG_NAME =
+        Name of the quest egg. (e.g. Frog, Cow, Spider, TRex, Dolphin)
+    \b
+    POTION_NAME =
+        Name of the potion. Must be a standard drop hatching potion.
+
+    \b
+    Examples
+    -----
+    # hatch a Monkey-Shade
+    $ hopla hatch quest-egg Monkey Shade
+
+    \b
+    # hatch a Sabretooth-Base
+    $ hopla hatch quest-egg Sabretooth Base
+
     """
-    raise NotImplementedError("hopla hatch quest-egg")
+    log.debug(f"hopla hatch quest-egg {egg_name=} {potion_name=}")
+
+    hatch_egg(egg_name=egg_name, potion_name=potion_name)
