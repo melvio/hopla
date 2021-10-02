@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from click.testing import CliRunner, Result
 
-from hopla.cli.hatch.standard_egg import standard_egg
+from hopla.cli.hatch.quest_egg import quest_egg
 
 
 class MockHatchResponse:
@@ -23,15 +23,12 @@ class MockHatchRequester:
         return MockHatchResponse(self._response_json)
 
 
-class TestHatchStandardEggCliCommand:
+class TestHatchQuestEggCliCommand:
     # https://habitica.com/apidoc/#api-User-UserHatch
 
     @pytest.mark.parametrize("pet_name,potion_name", [
-        ("LionCub", "MossyStone"),
-        ("Wolf", "Shade"),
-        ("Dragon", "Ember"),
-        ("Cactus", "SolarSystem"),
-        ("PandaCub", "Veggie")
+        ("Gryphon", "Base"),
+        ("Hedgehog", "Red"),
     ])
     @patch("hopla.cli.groupcmds.hatch.HatchRequester")
     def test_standard_egg_ok(self, feed_requester_mock: MagicMock,
@@ -44,7 +41,7 @@ class TestHatchStandardEggCliCommand:
         feed_requester_mock.return_value = MockHatchRequester(response_json=json)
 
         runner = CliRunner()
-        result: Result = runner.invoke(standard_egg, [pet_name, potion_name])
+        result: Result = runner.invoke(quest_egg, [pet_name, potion_name])
 
         assert result.stdout == f"Successfully hatched a {pet_name}-{potion_name}.\n"
         assert result.exit_code == 0
@@ -60,7 +57,7 @@ class TestHatchStandardEggCliCommand:
         feed_requester_mock.return_value = MockHatchRequester(response_json=json)
 
         runner = CliRunner()
-        result: Result = runner.invoke(standard_egg, ["LionCub", "Zombie"])
+        result: Result = runner.invoke(quest_egg, ["Frog", "White"])
 
         assert result.stdout == f"{error}: {message}\n"
         assert result.exit_code == 1

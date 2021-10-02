@@ -3,12 +3,11 @@
 The module with CLI code that handles the `hopla hatch standard-egg` command.
 """
 import logging
-import sys
+from typing import NoReturn
 
 import click
-import requests
 
-from hopla.hoplalib.hatchery.hatchcontroller import HatchRequester
+from hopla.cli.groupcmds.hatch import hatch_egg
 from hopla.hoplalib.hatchery.hatchdata import EggData, HatchingPotionData
 
 log = logging.getLogger()
@@ -19,7 +18,7 @@ log = logging.getLogger()
                 type=click.Choice(EggData.drop_egg_names))
 @click.argument("potion_name", metavar="POTION_NAME",
                 type=click.Choice(HatchingPotionData.hatching_potion_names))
-def standard_egg(egg_name: str, potion_name: str) -> None:
+def standard_egg(egg_name: str, potion_name: str) -> NoReturn:
     """Hatch a standard egg.
 
     \b
@@ -28,7 +27,7 @@ def standard_egg(egg_name: str, potion_name: str) -> None:
         FlyingPig, Fox, LionCub, PandaCub, TigerCub, Wolf
     \b
     POTION_NAME =
-        Name of potion name. (e.g. White, Desert, Sunset, Windup)
+        Name of the hatching potion. (e.g. White, Desert, Sunset, Windup)
 
     \b
     Examples
@@ -36,6 +35,9 @@ def standard_egg(egg_name: str, potion_name: str) -> None:
     # hatch a Wolf-Shade
     $ hopla hatch standard-egg Wolf Shade
 
+    \b
+    # hatch a Fox-SolarSystem
+    $ hopla hatch standard-egg Fox SolarSystem
 
     \f
     [APIDOCS](https://habitica.com/apidoc/#api-User-UserHatch)
@@ -45,15 +47,4 @@ def standard_egg(egg_name: str, potion_name: str) -> None:
     """
     log.debug(f"hopla hatch standard-egg {egg_name=} {potion_name=}")
 
-    requester = HatchRequester(
-        egg_name=egg_name,
-        hatching_potion_name=potion_name
-    )
-
-    response: requests.Response = requester.post_hatch_egg()
-    json: dict = response.json()
-    if json["success"]:
-        click.echo(f"Successfully hatched a {egg_name}-{potion_name}.")
-    else:
-        click.echo(f"{json['error']}: {json['message']}")
-        sys.exit(1)
+    hatch_egg(egg_name=egg_name, potion_name=potion_name)

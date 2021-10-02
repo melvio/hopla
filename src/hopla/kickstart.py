@@ -16,7 +16,6 @@ from hopla.cli.complete import complete
 from hopla.cli.config import config
 from hopla.cli.feed import feed
 from hopla.cli.feed_all import feed_all
-from hopla.cli.hatch.standard_egg import standard_egg
 from hopla.cli.get_group import get_group
 from hopla.cli.get_user.auth import auth
 from hopla.cli.get_user.info import info
@@ -26,8 +25,10 @@ from hopla.cli.groupcmds.add import add
 from hopla.cli.groupcmds.api import api
 from hopla.cli.groupcmds.buy import buy
 from hopla.cli.groupcmds.get_user import get_user
-from hopla.cli.groupcmds.set import set  # pylint: disable=redefined-builtin
 from hopla.cli.groupcmds.hatch import hatch
+from hopla.cli.groupcmds.set import set  # pylint: disable=redefined-builtin
+from hopla.cli.hatch.quest_egg import quest_egg
+from hopla.cli.hatch.standard_egg import standard_egg
 from hopla.cli.request import request
 from hopla.cli.support_development import support_development
 from hopla.cli.version import version
@@ -108,6 +109,7 @@ def organize_cli() -> None:
 
     # hopla hatch subgroup
     hatch.add_command(standard_egg)
+    hatch.add_command(quest_egg)
 
 
 def init_hopla_config_files() -> None:
