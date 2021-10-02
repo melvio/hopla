@@ -2,6 +2,7 @@
 """
 Module with tasks models.
 """
+from dataclasses import dataclass
 import datetime
 from typing import Dict, List, Optional
 
@@ -40,6 +41,7 @@ class HabiticaChecklist:
         return [{"text": line} for line in self.checklist]
 
 
+@dataclass
 class HabiticaTodo:
     """ Habitica To-Do"""
 
@@ -52,7 +54,7 @@ class HabiticaTodo:
         self._type = "todo"
         self.difficulty = difficulty
         self.due_date = due_date
-        self.checklist: Optional[HabiticaChecklist] = checklist or HabiticaChecklist()
+        self.checklist: HabiticaChecklist = checklist or HabiticaChecklist()
 
     def difficulty_to_score(self) -> str:
         """Return score for the To-Do's difficulty.
