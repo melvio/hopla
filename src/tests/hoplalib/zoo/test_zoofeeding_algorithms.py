@@ -10,12 +10,64 @@ from hopla.hoplalib.zoo.zoofeeding_algorithms import FeedPlanItem, ZooFeedingAlg
 from tests.testutils.user_test_utils import UserTestUtil
 
 
+def plan_with_single_item(food_name: str, pet_name: str, times: int) -> ZookeeperFeedPlan:
+    plan = ZookeeperFeedPlan()
+    plan.add_to_feed_plan(pet_name=pet_name, food_name=food_name, times=times)
+    return plan
+
+
 class TestZookeeperFeedPlan:
 
     def test___init___ok(self):
         plan = ZookeeperFeedPlan()
 
         assert plan.feed_plan == []
+
+    def test__repr__empty(self):
+        plan = ZookeeperFeedPlan()
+        result: str = repr(plan)
+        assert result == "ZookeeperFeedPlan(__feed_plan=[])"
+
+    def test__repr__nonempty(self):
+        pet_name = "Wolf-White"
+        food_name = "Milk"
+        times = 2
+        plan: ZookeeperFeedPlan = plan_with_single_item(food_name, pet_name, times)
+
+        result: str = repr(plan)
+
+        assert f"{pet_name=}" in result
+        assert f"{food_name=}" in result
+        assert f"{times=}" in result
+
+    @pytest.mark.parametrize("plan,expected_empty", [
+        (plan_with_single_item("Wolf-Red", "Fish", 1), False),
+        (ZookeeperFeedPlan(), True)
+    ])
+    def test__is_empty(self, plan: ZookeeperFeedPlan, expected_empty: bool):
+        assert plan.isempty() is expected_empty
+
+    @pytest.mark.parametrize("plan,expected_len", [
+        (plan_with_single_item("Wolf-Red", "Strawberry", 3), 1),
+        (ZookeeperFeedPlan(), 0)
+    ])
+    def test__len(self, plan: ZookeeperFeedPlan, expected_len: int):
+        assert len(plan) == expected_len
+
+    def test_format_plan_empty(self):
+        result: str = ZookeeperFeedPlan().format_plan()
+        assert result == ""
+
+    def test_format_plan_non_empty(self):
+        pet_name = "Rat-Shade"
+        food_name = "Chocolate"
+        times = 8
+        plan: ZookeeperFeedPlan = plan_with_single_item(
+            pet_name=pet_name, food_name=food_name, times=times
+        )
+
+        result: str = plan.format_plan()
+        assert result == f'Pet {pet_name} will get {times} {food_name}.'
 
     def test_add_to_feed_plan_ok(self):
         plan = ZookeeperFeedPlan()
@@ -33,6 +85,20 @@ class TestZookeeperFeedPlan:
 
 
 class TestZooFeedingAlgorithm:
+
+    def test__repr__(self, feedable_pets_zoo: Zoo,
+                     filled_stockpile: FoodStockpile):
+        algorithm = ZooFeedingAlgorithm(zoo=feedable_pets_zoo, stockpile=filled_stockpile)
+
+        repr_before: str = repr(algorithm)
+        plan: ZookeeperFeedPlan = algorithm.make_plan()
+        repr_after: str = repr(algorithm)
+
+        before_expected = "ZooFeedingAlgorithm(\n  __zookeeper_plan=\n)"
+        assert repr_before == before_expected
+
+        after_expected = f"ZooFeedingAlgorithm(\n  __zookeeper_plan={plan.format_plan()}\n)"
+        assert repr_after == after_expected
 
     def test_make_plan_empty_stockpile_results_in_empty_plan_ok(self,
                                                                 empty_zoo,

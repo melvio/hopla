@@ -168,7 +168,16 @@ class Mount:
 
     def __init__(self, mount_name: str, *,
                  availability_status: Optional[bool]):
-        """__REMINDER__ check mount names before finally committing this. """
+        """
+        Create a mount.
+
+        Note that, in contrast to Pet.__init__, currently, there is no name
+        correctness checking. Related ticket:
+        https://github.com/melvio/hopla/issues/164
+
+        :param mount_name:
+        :param availability_status:
+        """
         self.mount_name = mount_name
         self._availability_status = availability_status
 
@@ -201,6 +210,9 @@ class PetMountPair:
 
         self.pet = pet
         self.mount = mount
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(pet={self.pet}, mount={self.mount})"
 
     def can_feed_pet(self) -> bool:
         """Return true if the pet itself is feedable and there is no mount yet."""

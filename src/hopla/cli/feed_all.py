@@ -35,7 +35,7 @@ def __confirm_with_user_or_abort(plan: ZookeeperFeedPlan) -> Optional[NoReturn]:
     :return: Don't return if the user wants to abort
     """
 
-    prompt_msg = f"{plan.format_plan()}Do you want to proceed?"
+    prompt_msg = f"{plan.format_plan()}\nDo you want to proceed?"
     click.confirm(text=prompt_msg, abort=True)
 
 

@@ -35,6 +35,9 @@ class ZookeeperFeedPlan:
     def __init__(self):
         self.__feed_plan: [FeedPlanItem] = []
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(__feed_plan={self.__feed_plan})"
+
     def __iter__(self):
         return iter(self.__feed_plan)
 
@@ -46,7 +49,7 @@ class ZookeeperFeedPlan:
         """Return true if the feed plan is empty."""
         return len(self) == 0
 
-    def add_to_feed_plan(self, pet_name: str, food_name: str, times: int) -> None:
+    def add_to_feed_plan(self, *, pet_name: str, food_name: str, times: int) -> None:
         """Add an item to the zookeeper's feed plan.
 
         :param pet_name: name of the pet to feed
@@ -66,14 +69,13 @@ class ZookeeperFeedPlan:
         """Return the feeding plan.
 
         :return: The feeding plan. This will be empty when
-        no FeedPlanItems have been added yet.
+        no feed plan items have been added yet.
         """
         return self.__feed_plan
 
-    def format_plan(self):
+    def format_plan(self) -> str:
         """A to string function for nice terminal output"""
-        joined_plan: str = "\n".join([item.format_item() for item in self.__feed_plan])
-        return f"{joined_plan}\n"
+        return "\n".join([item.format_item() for item in self.__feed_plan])
 
 
 @dataclass
@@ -88,6 +90,13 @@ class ZooFeedingAlgorithm:
         self.__stockpile = deepcopy(stockpile)
 
         self.__zookeeper_plan = ZookeeperFeedPlan()
+
+    def __repr__(self) -> str:
+        return (
+            f"{self.__class__.__name__}(\n"
+            f"  __zookeeper_plan={self.__zookeeper_plan.format_plan()}\n"
+            f")"
+        )
 
     @property
     def stockpile(self) -> FoodStockpile:

@@ -3,15 +3,15 @@ from typing import Dict
 import pytest
 
 from hopla.cli.groupcmds.get_user import HabiticaUser
-from hopla.hoplalib.zoo.foodmodels import Food, FeedingStatus, \
-    FoodException, FoodStockpile, FoodStockpileBuilder, InvalidFeedingStatus
+from hopla.hoplalib.zoo.foodmodels import FeedingStatus, Food, FoodException, FoodStockpile, \
+    FoodStockpileBuilder, InvalidFeedingStatus
 
 
 class TestFeedingStatus:
     valid_feeding_range = [-1, 0, *range(5, 50)]
 
     @pytest.mark.parametrize("valid_status", valid_feeding_range)
-    def test__init__ok(self, valid_status):
+    def test__init__ok(self, valid_status: int):
         status = FeedingStatus(valid_status)
         assert int(status) == valid_status
 
@@ -142,7 +142,8 @@ class TestFood:
         ("Pie_White", True),
         ("Candy_Zombie", True)
     ])
-    def test_is_rare(self, food_name: str, is_rare_expected):
+    def test_is_rare(self, food_name: str,
+                     is_rare_expected: bool):
         food = Food(food_name)
 
         result_is_rare: bool = food.is_rare_food_item()
@@ -157,7 +158,7 @@ class TestFoodStockpileBuilder:
 
         assert result_stockpile.as_dict() == empty_stockpile_dict
 
-    def test_build(self, empty_stockpile_dict):
+    def test_build(self, empty_stockpile_dict: Dict[str, int]):
         drop_food = {"RottenMeat": 201, "CottonCandyBlue": 71, "Chocolate": 1}
         food_dict = {"items": {"food": {
             **drop_food, "Saddle": 1, "Cake_Skeleton": 1, "Pie_White": 2, "Candy_Zombie": 1}
@@ -171,7 +172,7 @@ class TestFoodStockpileBuilder:
 
         assert result_stockpile.as_dict() == expected_food
 
-    def test___repr__(self, empty_stockpile_dict):
+    def test___repr__(self, empty_stockpile_dict: Dict[str, int]):
         drop_food = {"RottenMeat": 201}
         food_dict = {"items": {"food": {**drop_food, "Saddle": 11}}}
         user = HabiticaUser(user_dict=food_dict)
@@ -198,7 +199,7 @@ def empty_stockpile_dict() -> Dict[str, int]:
 
 
 class TestFoodStockpile:
-    def test_add_food_ok(self, empty_stockpile_dict):
+    def test_add_food_ok(self, empty_stockpile_dict: Dict[str, int]):
         stockpile: FoodStockpile = FoodStockpileBuilder.empty_stockpile()
 
         food1, amount1 = "Meat", 5

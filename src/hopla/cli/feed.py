@@ -47,7 +47,7 @@ def get_feed_times_until_mount(pet_name: str, food_name: str) -> Union[int, NoRe
     user: HabiticaUser = HabiticaUserRequest().request_user_data_or_exit()
     zoo: Zoo = ZooBuilder(user).build()
     pair: PetMountPair = zoo.get(pet_name)
-    if pair is None:
+    if pair is None or pair.pet_available() is False:
         sys.exit(f"Can't feed pet {pet_name}. You don't have this pet.")
     if pair.mount_available():
         sys.exit(f"Can't feed pet {pet_name}. You have the mount.")

@@ -47,7 +47,7 @@ class FeedingStatus:
         self.__feeding_status = feeding_status
 
     def __repr__(self) -> str:
-        return self.__class__.__name__ + f"({self.__feeding_status})"
+        return f"{self.__class__.__name__}({self.__feeding_status})"
 
     def __eq__(self, other):
         return isinstance(other, FeedingStatus) and int(other) == int(self)
@@ -122,7 +122,7 @@ class FoodStockpile:
     def __hash__(self):
         return hash(self.__stockpile)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.__class__.__name__ + f"({self.__stockpile})"
 
     def add_food(self, food_name: str, *, n: int) -> "FoodStockpile":
@@ -196,7 +196,7 @@ class FoodStockpileBuilder:
     def __init__(self):
         self.__stockpile: Dict[str, int] = self.__empty_stockpile()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.__class__.__name__ + f"({self.__stockpile})"
 
     def user(self, habitica_user: HabiticaUser) -> "FoodStockpileBuilder":
