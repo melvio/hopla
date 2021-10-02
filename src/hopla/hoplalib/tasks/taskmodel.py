@@ -2,23 +2,24 @@
 """
 Module with tasks models.
 """
+from dataclasses import dataclass
 import datetime
 from typing import Dict, List, Optional
 
 
-class TaskDifficulty:
-    """
-    Class with task difficulty logic.
-    """
-    DIFFICULTIES_SCORE_MAPPING = {"hard": "2", "medium": "1.5", "easy": "1", "trivial": "0.1"}
-    VALID_DIFFICULTIES = list(DIFFICULTIES_SCORE_MAPPING.keys())
+class TaskDifficultyData:
+    """Class with task difficulty data."""
+    DIFFICULTIES_SCORE_MAPPING: Dict[str, str] = {
+        "hard": "2", "medium": "1.5", "easy": "1", "trivial": "0.1"
+    }
+    VALID_DIFFICULTIES: List[str] = list(DIFFICULTIES_SCORE_MAPPING.keys())
     """Habitica task difficulties. See https://habitica.com/apidoc/#api-Task-CreateUserTasks."""
 
 
 class HabiticaChecklist:
     """ Habitica Checklist """
 
-    def __init__(self, *, checklist: Optional[list] = None):
+    def __init__(self, *, checklist: Optional[List[str]] = None):
         self.checklist = checklist or []
 
     def __repr__(self) -> object:
@@ -40,6 +41,7 @@ class HabiticaChecklist:
         return [{"text": line} for line in self.checklist]
 
 
+@dataclass
 class HabiticaTodo:
     """ Habitica To-Do"""
 
@@ -52,7 +54,7 @@ class HabiticaTodo:
         self._type = "todo"
         self.difficulty = difficulty
         self.due_date = due_date
-        self.checklist: Optional[HabiticaChecklist] = checklist or HabiticaChecklist()
+        self.checklist: HabiticaChecklist = checklist or HabiticaChecklist()
 
     def difficulty_to_score(self) -> str:
         """Return score for the To-Do's difficulty.
@@ -66,7 +68,7 @@ class HabiticaTodo:
 
         :raise KeyError in case of an invalid difficulty
         """
-        return TaskDifficulty.DIFFICULTIES_SCORE_MAPPING[self.difficulty]
+        return TaskDifficultyData.DIFFICULTIES_SCORE_MAPPING[self.difficulty]
 
     def due_date_to_date_str(self) -> str:
         """Turn the due_date into a valid ISO 8601 date format
