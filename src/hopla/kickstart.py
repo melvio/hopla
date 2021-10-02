@@ -16,6 +16,7 @@ from hopla.cli.complete import complete
 from hopla.cli.config import config
 from hopla.cli.feed import feed
 from hopla.cli.feed_all import feed_all
+from hopla.cli.hatch.standard_egg import standard_egg
 from hopla.cli.get_group import get_group
 from hopla.cli.get_user.auth import auth
 from hopla.cli.get_user.info import info
@@ -26,6 +27,7 @@ from hopla.cli.groupcmds.api import api
 from hopla.cli.groupcmds.buy import buy
 from hopla.cli.groupcmds.get_user import get_user
 from hopla.cli.groupcmds.set import set  # pylint: disable=redefined-builtin
+from hopla.cli.groupcmds.hatch import hatch
 from hopla.cli.request import request
 from hopla.cli.support_development import support_development
 from hopla.cli.version import version
@@ -73,23 +75,24 @@ def hopla():
 def organize_cli() -> None:
     """Attach the subgroups and subcommands to the top hopla group command"""
     # hopla subcommands
-    hopla.add_command(cast)
-    hopla.add_command(config)
-    hopla.add_command(complete)
-    hopla.add_command(version)
     hopla.add_command(authenticate)
+    hopla.add_command(cast)
+    hopla.add_command(complete)
+    hopla.add_command(config)
     hopla.add_command(feed)
     hopla.add_command(feed_all)
-    hopla.add_command(support_development)
-    hopla.add_command(request)
     hopla.add_command(get_group)
+    hopla.add_command(request)
+    hopla.add_command(support_development)
+    hopla.add_command(version)
 
     # hopla subgroups
     hopla.add_command(add)
     hopla.add_command(api)
-    hopla.add_command(set)
     hopla.add_command(buy)
     hopla.add_command(get_user)
+    hopla.add_command(hatch)
+    hopla.add_command(set)
 
     # hopla add subgroup
     add.add_command(todo)
@@ -102,6 +105,9 @@ def organize_cli() -> None:
     get_user.add_command(stats)
     get_user.add_command(info)
     get_user.add_command(auth)
+
+    # hopla hatch subgroup
+    hatch.add_command(standard_egg)
 
 
 def init_hopla_config_files() -> None:
