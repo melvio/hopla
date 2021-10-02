@@ -40,8 +40,11 @@ from hopla.hoplalib.hoplaversion import HoplaVersion
 def setup_logging() -> logging.Logger:
     """Setup python logging for the entire hopla project"""
 
-    parsed_loglevel = ConfigurationFileParser().get_full_config_name("cmd_all.loglevel",
-                                                                     fallback="info")
+    parsed_loglevel: str = ConfigurationFileParser().get_full_config_name(
+        "cmd_all.loglevel",
+        fallback="info"
+    )
+
     loglevel_mapping = {
         "debug": logging.DEBUG,
         "info": logging.INFO,
@@ -55,7 +58,8 @@ def setup_logging() -> logging.Logger:
         level=loglevel_mapping[parsed_loglevel],
         datefmt="%Y-%m-%dT%H:%M:%S"
     )
-    return logging.getLogger(__name__)
+
+    return logging.getLogger(__package__)
 
 
 log = setup_logging()
