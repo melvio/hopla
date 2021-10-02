@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import logging
 import re
 from re import Pattern
 
@@ -7,6 +8,7 @@ from click.testing import CliRunner, Result
 
 from hopla import hopla
 from hopla.cli.version import version
+from hopla.kickstart import setup_logging
 
 
 class TestVersionCliCommand:
@@ -43,8 +45,17 @@ class TestHoplaCommand:
     def test_hopla_base_cmd_gives_help(self):
         runner = CliRunner()
         result_hopla: Result = runner.invoke(hopla)
+        result_h: Result = runner.invoke(hopla, ["-h"])
         result_help: Result = runner.invoke(hopla, ["--help"])
 
         assert result_hopla.exit_code == 0
         assert result_help.exit_code == 0
         assert result_hopla.stdout == result_help.stdout
+        assert result_h.stdout == result_help.stdout
+
+
+class TestSetupLogging:
+    def test_setup_logging(self):
+        result_logger: logging.Logger = setup_logging()
+
+        assert result_logger.name == "hopla"
