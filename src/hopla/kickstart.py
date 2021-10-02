@@ -8,6 +8,7 @@ import sys
 
 import click
 
+from hopla.cli.add.todo import todo
 from hopla.cli.authenticate import authenticate
 from hopla.cli.buy.enchanted_armoire import enchanted_armoire
 from hopla.cli.cast import cast
@@ -89,6 +90,9 @@ def organize_cli() -> None:
     hopla.add_command(set)
     hopla.add_command(buy)
     hopla.add_command(get_user)
+
+    # hopla add subgroup
+    add.add_command(todo)
 
     # hopla buy subgroup
     buy.add_command(enchanted_armoire)
