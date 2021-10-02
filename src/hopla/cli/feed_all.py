@@ -12,7 +12,7 @@ from hopla.cli.groupcmds.get_user import HabiticaUser, HabiticaUserRequest
 from hopla.hoplalib.throttling import ApiRequestThrottler
 from hopla.hoplalib.zoo.foodmodels import FoodStockpile, FoodStockpileBuilder
 from hopla.hoplalib.zoo.petcontroller import FeedPostRequester
-from hopla.hoplalib.zoo.petmodels import Zoo, ZooBuilder
+from hopla.hoplalib.zoo.zoomodels import Zoo, ZooBuilder
 from hopla.hoplalib.zoo.zoofeeding_algorithms import ZooFeedingAlgorithm, ZookeeperFeedPlan
 
 log = logging.getLogger()
@@ -35,7 +35,7 @@ def __confirm_with_user_or_abort(plan: ZookeeperFeedPlan) -> Optional[NoReturn]:
     :return: Don't return if the user wants to abort
     """
 
-    prompt_msg = f"{plan.format_plan()}Do you want to proceed?"
+    prompt_msg = f"{plan.format_plan()}\nDo you want to proceed?"
     click.confirm(text=prompt_msg, abort=True)
 
 

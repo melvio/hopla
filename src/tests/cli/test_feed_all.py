@@ -28,12 +28,22 @@ class MockOkResponse:
 
 
 class TestFeedAllCliCommand:
+    yes_responses = ["y", "Y", "yes", "Yes", "YES"]
+    no_responses = ["n", "N", "no", "No", "NO", "", "anything else"]
+    released_zoo_users = [
+        HabiticaUser({
+            "items": {"pets": {"Seahorse-White": 0},
+                      "mounts": {"Seahorse-White": None},
+                      "food": {"Milk": 20}}
+        }),
+        HabiticaUser({
+            "items": {"pets": {"Egg-White": 0},
+                      "mounts": {"Egg-White": True},
+                      "food": {"Milk": 10}}
+        })
+    ]
 
-    @pytest.mark.parametrize(
-        "no_response", [
-            "n", "N", "no", "No", "NO", "", "anything else"
-        ]
-    )
+    @pytest.mark.parametrize("no_response", no_responses)
     @patch("hopla.cli.feed_all.HabiticaUserRequest.request_user_data_or_exit")
     def test_feed_all_pets_user_aborts(self,
                                        mock_user_request: MagicMock,
@@ -69,7 +79,7 @@ class TestFeedAllCliCommand:
         assert result.exit_code == 0
         assert result.stdout.startswith("The feed plan is empty.")
 
-    @pytest.mark.parametrize("yes_response", ["y", "Y", "yes", "Yes", "YES"])
+    @pytest.mark.parametrize("yes_response", yes_responses)
     @patch("hopla.cli.feed_all.FeedPostRequester.post_feed_request")
     @patch("hopla.cli.feed_all.HabiticaUserRequest.request_user_data_or_exit")
     def test_feed_all_ok(self,
@@ -91,6 +101,22 @@ class TestFeedAllCliCommand:
         assert feed_msg in result.stdout
         assert '"feeding_status": -1' in result.stdout
         assert result.exit_code == 0
+
+    @pytest.mark.parametrize("yes_response", yes_responses)
+    @pytest.mark.parametrize("released_zoo_user", released_zoo_users)
+    @patch("hopla.cli.feed.HabiticaUserRequest.request_user_data_or_exit")
+    def test_feed_released_pets(self, mock_user_request: MagicMock,
+                                released_zoo_user: HabiticaUser,
+                                yes_response: str):
+        mock_user_request.return_value = released_zoo_user
+
+        runner = CliRunner()
+        result: Result = runner.invoke(feed_all, input=yes_response)
+
+        expected_msg = ("The feed plan is empty. Reasons could include:\n"
+                        "1. There is insufficient food available to turn pets into mounts\n"
+                        "2. You don't have any feedable pets.")
+        assert expected_msg in result.stdout
 
     @pytest.fixture
     def user_with_feedable_pet(self) -> HabiticaUser:

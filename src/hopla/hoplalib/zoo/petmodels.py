@@ -2,13 +2,12 @@
 A helper module for Pet logic.
 """
 from dataclasses import dataclass
-from typing import Callable, Dict, NoReturn, Optional
+from typing import Optional
 
-from hopla.cli.groupcmds.get_user import HabiticaUser
 from hopla.hoplalib.common import GlobalConstants
-from hopla.hoplalib.errors import PrintableException
+from hopla.hoplalib.errors import PrintableException, YouFoundABugRewardError
 from hopla.hoplalib.zoo.fooddata import FoodData
-from hopla.hoplalib.zoo.foodmodels import FeedingStatus, InvalidFeedingStatus
+from hopla.hoplalib.zoo.foodmodels import FeedingStatus
 from hopla.hoplalib.zoo.petdata import PetData
 
 
@@ -20,6 +19,7 @@ class InvalidPet(PrintableException):
         self.pet = pet
 
 
+@dataclass
 class Pet:
     """A habitica pet"""
 
@@ -45,20 +45,23 @@ class Pet:
         self.pet_name = pet_name
         self.feeding_status = feeding_status
 
-        if pet_name in PetData.rare_pet_names:
-            self.__potion = None
-        else:
-            # This logic might break, but seems to be solid for past few years due to
-            # stabling naming convention by the Habitica API developers.
-            _, self.__potion = self.pet_name.split("-")
-
     def __repr__(self) -> str:
-        return self.__class__.__name__ + f"({self.pet_name=}, {self.feeding_status=})"
+        return f"{self.__class__.__name__}({self.pet_name}: {self.feeding_status})"
 
     @property
-    def hatching_potion(self):
+    def hatching_potion(self) -> Optional[str]:
         """The hatching potion used to hatch the egg this pet came from."""
-        return self.__potion
+        if self.pet_name in PetData.rare_pet_names:
+            return None
+
+        # This logic might break, but seems to be solid for past few years due to
+        # stabling naming convention by the Habitica API developers.
+        _, potion = self.pet_name.split("-")
+        return potion
+
+    def is_available(self) -> bool:
+        """Return True if the feeding status says that the pet is available."""
+        return self.feeding_status.is_pet_available()
 
     def is_feedable(self) -> bool:
         """Return True if a pet cannot be fed at all."""
@@ -75,7 +78,10 @@ class Pet:
     def feeding_status_explanation(self) -> str:
         """Explain the feeding status of a pet."""
         if self.is_feedable() is False:
-            return f"{self.pet_name=} can't be fed because it is special."
+            return f"{self.pet_name} is an unfeedable pet."
+        if int(self.feeding_status) == 0:
+            return f"You released {self.pet_name}, so you cannot feed it."
+
         if int(self.feeding_status) == -1:
             return f"You can't feed {self.pet_name=} you only have the mount"
 
@@ -85,8 +91,7 @@ class Pet:
             #         Users: jq .data.items.mounts
             return (f"Cannot determine if {self.pet_name=} can be fed. \n"
                     "You either have:\n"
-                    "1. Both the pet and mount. In this case, you"
-                    "   cannot feed the pet \n"
+                    "1. Both the pet and mount. In this case, you cannot feed the pet \n"
                     "2. A pet that hasn't been fed but you don't have \n"
                     "   the mount. In this case, you can feed your pet")
 
@@ -157,130 +162,70 @@ class Pet:
         return self.hatching_potion in FoodData.drop_hatching_potions
 
 
-class PetMountPair:
-    """A pair of a pet and its corresponding mount information."""
+@dataclass
+class Mount:
+    """ The model class for mounts."""
 
-    def __init__(self, pet: Pet, *,
-                 pet_available: bool,
-                 mount_available: bool):
-        """Create a Pet-Mount pair"""
-        if pet.feeding_status is None:
-            msg = f"PetMountPair requires that {pet=} has a feeding status"
-            raise InvalidFeedingStatus(msg)
+    def __init__(self, mount_name: str, *,
+                 availability_status: Optional[bool]):
+        """
+        Create a mount.
+
+        Note that, in contrast to Pet.__init__, currently, there is no name
+        correctness checking. Related ticket:
+        https://github.com/melvio/hopla/issues/164
+
+        :param mount_name:
+        :param availability_status:
+        """
+        self.mount_name = mount_name
+        self._availability_status = availability_status
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.mount_name}: {self._availability_status})"
+
+    def is_available(self) -> bool:
+        """Return true if the user has the mount right now."""
+        return self._availability_status is True
+
+
+class InvalidPetMountPair(YouFoundABugRewardError):
+    """Exception raised when an invalid PetMountPair is created."""
+
+
+@dataclass
+class PetMountPair:
+    """A pair of a pet and its mount."""
+
+    def __init__(self, *, pet: Optional[Pet],
+                 mount: Optional[Mount]):
+        """
+        Create a PetMountPair.
+        Raise an exception if the names of the pet and mount do not match.
+        """
+        if pet and mount:
+            if pet.pet_name != mount.mount_name:
+                msg = f"pet name '{pet.pet_name}' must equal mount name '{mount.mount_name}'"
+                raise InvalidPetMountPair(msg)
 
         self.pet = pet
-        self.pet_available = pet_available
-        self.mount_available = mount_available
+        self.mount = mount
 
-    def __repr__(self):
-        return self.__class__.__name__ + f"({self.__dict__})"
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(pet={self.pet}, mount={self.mount})"
 
-    def can_feed_pet(self) -> True:
+    def can_feed_pet(self) -> bool:
         """Return true if the pet itself is feedable and there is no mount yet."""
         return (
-                self.mount_available is False
-                and self.pet_available
+                self.pet_available()
                 and self.pet.is_feedable()
-                and int(self.pet.feeding_status) != -1
+                and not self.mount_available()
         )
 
+    def mount_available(self) -> bool:
+        """True if the mount is in the pair"""
+        return self.mount is not None and self.mount.is_available()
 
-Zoo = Dict[str, PetMountPair]
-"""
-Zoo is dictionary with key pet name keys for O(1) access to the
-PetMountPair.
-"""
-
-
-@dataclass(frozen=True)
-class ZooHelper:
-    """Class with helper functions for a Zoo."""
-    zoo: Zoo
-
-    def filter_on_pet_mount_pairs(self, predicate: Callable[[PetMountPair], bool]) -> Zoo:
-        """Filter the zoo on the pair. This does not change the underlying zoo.
-
-        :param predicate: Include the PetMountPair if the predicate returns True, else
-                          omit the pair.
-        :return: A filtered Zoo
-        """
-        return {
-            pet_name: pair for (pet_name, pair) in self.zoo.items() if predicate(pair)
-        }
-
-    def get_feedable_zoo(self) -> Zoo:
-        """Helper function to get only the pets that can be fed in this Zoo."""
-        return self.filter_on_pet_mount_pairs(PetMountPair.can_feed_pet)
-
-    def filter_on_pet_name(self, predicate: Callable[[str], bool]) -> Zoo:
-        """Filter the zoo on the pet name. This does not change the underlying zoo.
-
-        :param predicate: Include the PetMountPair if the predicate returns True, else
-                          omit the pair.
-        :return: A filtered zoo.
-        """
-        return {
-            pet_name: pair for (pet_name, pair) in self.zoo.items() if predicate(pet_name)
-        }
-
-    def filter_on_pet(self, predicate: Callable[[Pet], bool]) -> Zoo:
-        """Filter the zoo on the pet object. This does not change the underlying zoo.
-
-        :param predicate: Include the PetMountPair if the predicate returns True, else
-                          omit the pair.
-        :return: A filtered zoo.
-        """
-        return {
-            pet_name: pair for (pet_name, pair) in self.zoo.items() if predicate(pair.pet)
-        }
-
-
-class ZooBuilder:
-    """
-    Class that creates a Zoo from a HabiticaUser using the
-    builder design pattern.
-    """
-
-    def __init__(self, user: HabiticaUser):
-        self.pets: dict = user.get_pets()
-        self.mounts: dict = user.get_mounts()
-        self.__zoo: Zoo = {}  # empty until build() is called
-
-    def __repr__(self):
-        return self.__class__.__name__ + f"({self.__dict__})"
-
-    def build(self) -> Zoo:
-        """Create the Zoo. Return the Zoo in case of success"""
-        self.__build()
-        return self.__zoo
-
-    def __build(self) -> NoReturn:
-        self.__add_pets_to_zoo()
-        self.__add_remaining_mounts_to_zoo()
-
-    def __add_pets_to_zoo(self) -> NoReturn:
-        for pet_name in self.pets:
-            feed_status = self.pets[pet_name]
-            if self.mounts.get(pet_name) is None:
-                mount_available = False
-            else:
-                mount_available = True
-                del self.mounts[pet_name]  # found the mount!
-
-            pet_available = feed_status != -1
-            pet = Pet(pet_name, feeding_status=FeedingStatus(feed_status))
-            pair = PetMountPair(pet,
-                                pet_available=pet_available,
-                                mount_available=mount_available)
-
-            self.__zoo[pet_name] = pair
-
-    def __add_remaining_mounts_to_zoo(self) -> NoReturn:
-        for mount_name in self.mounts:
-            # Watch out: we are abusing the Pet object for mount only animals here
-            pet = Pet(mount_name)
-
-            pair = PetMountPair(pet,
-                                pet_available=False,
-                                mount_available=True)
-            self.__zoo[mount_name] = pair
+    def pet_available(self) -> bool:
+        """True if the pet is in the pair"""
+        return self.pet is not None and self.pet.is_available()

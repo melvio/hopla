@@ -4,7 +4,7 @@ A helper module for feeding logic.
 import copy
 import math
 from dataclasses import dataclass
-from typing import Dict, Optional
+from typing import Dict, Final, Optional
 
 from hopla.cli.groupcmds.get_user import HabiticaUser
 from hopla.hoplalib.errors import PrintableException
@@ -22,26 +22,32 @@ class InvalidFeedingStatus(PrintableException):
 class FeedingStatus:
     """A class implementing feeding status logic for pets.
 
-    Every pet starts at 5. 50 would turn the pet into a mount.
+    Every freshly hatched pet starts at 5.
+    50 would turn the pet into a mount, so 50 is impossible to reach.
     The feeding status of 0 means that you had the pet before, but
     you released it.
     """
-    START_FEEDING_STATE = 5
-    FULLY_FED_STATE = 50
-    FAVORITE_INCREMENT = 5
-    NON_FAVORITE_INCREMENT = 2
+    PET_GREW_UP_TO_MOUNT: Final[int] = -1
+    PET_RELEASED: Final[int] = 0
+
+    START_FEEDING_STATE: Final[int] = 5
+    MAX_FED_STATE: Final[int] = 49
+    FULLY_FED_STATE: Final[int] = 50
+
+    FAVORITE_INCREMENT: Final[int] = 5
+    NON_FAVORITE_INCREMENT: Final[int] = 2
 
     def __init__(self, feeding_status: int = START_FEEDING_STATE):
-        invalid_status = (feeding_status < -1
-                          or feeding_status in [0, 1, 2, 3, 4]
-                          or feeding_status >= 50)
+        invalid_status = (feeding_status < FeedingStatus.PET_GREW_UP_TO_MOUNT
+                          or feeding_status in [1, 2, 3, 4]
+                          or feeding_status > FeedingStatus.MAX_FED_STATE)
         if invalid_status:
             raise InvalidFeedingStatus(f"{feeding_status=} is invalid")
 
         self.__feeding_status = feeding_status
 
     def __repr__(self) -> str:
-        return self.__class__.__name__ + f"({self.__feeding_status})"
+        return f"{self.__class__.__name__}({self.__feeding_status})"
 
     def __eq__(self, other):
         return isinstance(other, FeedingStatus) and int(other) == int(self)
@@ -51,6 +57,12 @@ class FeedingStatus:
 
     def __int__(self) -> int:
         return self.__feeding_status
+
+    def is_pet_available(self):
+        """Return True if the user currently has this pet."""
+        return self.__feeding_status not in [
+            FeedingStatus.PET_GREW_UP_TO_MOUNT, FeedingStatus.PET_RELEASED
+        ]
 
     def required_food_items_to_become_mount(self, is_favorite_food: bool) -> int:
         """Return how many items of food we need to give to turn a pet into a mount."""
@@ -110,7 +122,7 @@ class FoodStockpile:
     def __hash__(self):
         return hash(self.__stockpile)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.__class__.__name__ + f"({self.__stockpile})"
 
     def add_food(self, food_name: str, *, n: int) -> "FoodStockpile":
@@ -184,7 +196,7 @@ class FoodStockpileBuilder:
     def __init__(self):
         self.__stockpile: Dict[str, int] = self.__empty_stockpile()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.__class__.__name__ + f"({self.__stockpile})"
 
     def user(self, habitica_user: HabiticaUser) -> "FoodStockpileBuilder":
