@@ -14,10 +14,14 @@ log = logging.getLogger()
 
 
 @click.command()
-@click.argument("egg_name", metavar="STANDARD_EGG_NAME",
-                type=click.Choice(EggData.drop_egg_names))
-@click.argument("potion_name", metavar="POTION_NAME",
-                type=click.Choice(HatchingPotionData.hatching_potion_names))
+@click.argument(
+    "egg_name", metavar="STANDARD_EGG_NAME",
+    type=click.Choice(EggData.drop_egg_names)
+)
+@click.argument(
+    "potion_name", metavar="POTION_NAME",
+    type=click.Choice(sorted(HatchingPotionData.hatching_potion_names))
+)
 def standard_egg(egg_name: str, potion_name: str) -> NoReturn:
     """Hatch a standard egg.
 

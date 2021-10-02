@@ -13,10 +13,14 @@ log = logging.getLogger()
 
 
 @click.command()
-@click.argument("egg_name", metavar="QUEST_EGG_NAME",
-                type=click.Choice(EggData.quest_egg_names))
-@click.argument("potion_name",
-                type=click.Choice(sorted(HatchingPotionData.drop_hatching_potion_names)))
+@click.argument(
+    "egg_name", metavar="QUEST_EGG_NAME",
+    type=click.Choice(EggData.quest_egg_names)
+)
+@click.argument(
+    "potion_name",
+    type=click.Choice(HatchingPotionData.drop_hatching_potion_names)
+)
 def quest_egg(egg_name: str, potion_name: str):
     """hatch a quest egg.
 
