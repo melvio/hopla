@@ -103,9 +103,11 @@ class HatchPlanMaker:
 
     def __init__(self, *,
                  egg_collection: EggCollection,
-                 hatch_potion_collection: HatchPotionCollection):
+                 hatch_potion_collection: HatchPotionCollection,
+                 pets: List[Pet]):
         self.__eggs = egg_collection
         self.__potions = hatch_potion_collection
+        self.__pets = pets
         self.__hatch_plan = HatchPlan()
 
     def __repr__(self) -> str:
@@ -117,13 +119,25 @@ class HatchPlanMaker:
             ")"
         )
 
+    def can_hatch_with_pets(self, *, hatch_item: HatchPlanItem) -> bool:
+        """Return true if the hatching does not collide with any of the pre-existing pets."""
+        return all(self.__safe_hatch(pet, hatch_item) for pet in self.__pets)
+
+    def __safe_hatch(self, pet: Pet, item: HatchPlanItem):
+        return (pet.is_available() is False) or (pet.name != item.result_pet_name())
+
     def make_plan(self) -> HatchPlan:
         """Given an collection of eggs and hatching potions, make a plan to hatch the eggs."""
         for egg_name in self.__eggs:
             egg: Egg = self.__eggs[egg_name]
             for potion_name in self.__potions:
                 potion: HatchPotion = self.__potions[potion_name]
-                if egg.can_be_hatched_by(potion):
+                item = HatchPlanItem(egg=egg, potion=potion)
+                can_hatch = (
+                        egg.can_be_hatched_by(potion)
+                        and self.can_hatch_with_pets(hatch_item=item)
+                )
+                if can_hatch:
                     self.__hatch_plan.add(egg=egg, potion=potion)
                     self.__eggs.remove_egg(egg)
                     self.__potions.remove_hatch_potion(potion)

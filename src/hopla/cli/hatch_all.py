@@ -43,10 +43,10 @@ def hatch_all():
     potions = HatchPotionCollection(user.get_hatch_potions())
     pets: List[Pet] = to_pet_list(user.get_pets())
 
-    plan_maker = HatchPlanMaker(egg_collection=eggs, hatch_potion_collection=potions)
-    plan: HatchPlan = plan_maker \
-        .make_plan() \
-        .remove_hatch_item_if_pet_available(pets)
+    plan_maker = HatchPlanMaker(
+        egg_collection=eggs, hatch_potion_collection=potions, pets=pets
+    )
+    plan: HatchPlan = plan_maker.make_plan()
 
     if plan.is_empty():
         click.echo("The hatch plan is empty. Do you have enough pets and hatching potions?")
