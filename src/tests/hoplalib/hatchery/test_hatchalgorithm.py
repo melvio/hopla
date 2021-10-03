@@ -142,7 +142,7 @@ class TestHatchPlan:
         assert HatchPlanItem(egg, potion) in hatch_plan
 
     def test_remove_hatching_if_pet_available_yes_available_ok(self):
-        pets: List[Pet] = [Pet("Wolf-Ghost", feeding_status=FeedStatus(5))]
+        pets: List[Pet] = [Pet("Wolf-Ghost", feed_status=FeedStatus(5))]
         egg = Egg("Wolf")
         potion = HatchingPotion("Ghost")
         hatch_plan = HatchPlan().add(egg=egg, potion=potion)
@@ -155,10 +155,10 @@ class TestHatchPlan:
     def test_remove_hatching_if_pet_available_yes_and_no_available_ok(self):
         # 1. Wolf-Ghost is available, so that one should be filtered out.
         # 2. However, even though Wolf-Base is in the list, it is not available because
-        #    feedings status is -1.
+        #    feed status is -1.
         pets: List[Pet] = [
-            Pet("Wolf-Ghost", feeding_status=FeedStatus(5)),
-            Pet("Wolf-Base", feeding_status=FeedStatus(-1))
+            Pet("Wolf-Ghost", feed_status=FeedStatus(5)),
+            Pet("Wolf-Base", feed_status=FeedStatus(-1))
         ]
         egg = Egg("Wolf")
         ghost_potion = HatchingPotion("Ghost")

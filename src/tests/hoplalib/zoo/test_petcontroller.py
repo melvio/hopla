@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from hopla.hoplalib.zoo.petcontroller import FeedPostRequester
-from hopla.hoplalib.zoo.zoofeeding_algorithms import FeedPlanItem
+from hopla.hoplalib.zoo.zoofeed_algorithms import FeedPlanItem
 
 
 class TestFeedPostRequester:

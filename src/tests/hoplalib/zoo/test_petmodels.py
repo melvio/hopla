@@ -8,7 +8,7 @@ from click import ClickException
 from hopla.hoplalib.common import GlobalConstants
 from hopla.hoplalib.errors import YouFoundABugRewardError
 from hopla.hoplalib.zoo.fooddata import FoodData
-from hopla.hoplalib.zoo.foodmodels import FeedStatus, InvalidFeedingStatus
+from hopla.hoplalib.zoo.foodmodels import FeedStatus, InvalidFeedStatus
 from hopla.hoplalib.zoo.petdata import PetData
 from hopla.hoplalib.zoo.petmodels import InvalidPet, InvalidPetMountPair, Mount, Pet, PetMountPair
 
@@ -38,27 +38,21 @@ class TestPet:
             pet = Pet(pet_name=pet_name)
             assert pet.pet_name == pet_name
 
-        @pytest.mark.parametrize(
-            "invalid_feed_status",
-            [-10, -2, 1, 3, 51, 100]
-        )
-        def test_init_raises_invalid_feeding_status_fail(self, invalid_feed_status: int):
-            with pytest.raises(InvalidFeedingStatus) as execinfo:
-                feeding_status = FeedStatus(invalid_feed_status)
-                Pet("PandaCub-IcySnow", feeding_status=feeding_status)
+        @pytest.mark.parametrize("invalid_feed_status", [-10, -2, 1, 3, 51, 100])
+        def test_init_raises_invalid_feed_status_fail(self, invalid_feed_status: int):
+            with pytest.raises(InvalidFeedStatus) as execinfo:
+                feed_status = FeedStatus(invalid_feed_status)
+                Pet("PandaCub-IcySnow", feed_status=feed_status)
 
             err_msg = str(execinfo.value)
-            assert f"feeding_status={int(invalid_feed_status)}" in err_msg
+            assert f"feed_status={int(invalid_feed_status)}" in err_msg
 
-        @pytest.mark.parametrize(
-            "valid_feed_status",
-            [5, 10, 20, -1, 49]
-        )
-        def test_init_sets_valid_feeding_status_ok(self, valid_feed_status: int):
-            feeding_status = FeedStatus(valid_feed_status)
-            pet = Pet("LionCub-Sunset", feeding_status=feeding_status)
+        @pytest.mark.parametrize("valid_feed_status", [5, 10, 20, -1, 49])
+        def test_init_sets_valid_feed_status_ok(self, valid_feed_status: int):
+            feed_status = FeedStatus(valid_feed_status)
+            pet = Pet("LionCub-Sunset", feed_status=feed_status)
 
-            assert valid_feed_status == int(pet.feeding_status)
+            assert valid_feed_status == int(pet.feed_status)
 
     class TestFavoriteFood:
         @pytest.mark.parametrize(
@@ -175,28 +169,28 @@ class TestPet:
 
         def test___repr__(self):
             pet_name = "Fox-Shadow"
-            feeding_status = FeedStatus(10)
-            pet = Pet(pet_name, feeding_status=feeding_status)
+            feed_status = FeedStatus(10)
+            pet = Pet(pet_name, feed_status=feed_status)
 
             result = str(pet)
 
-            expected = f"Pet({pet_name}: {feeding_status})"
+            expected = f"Pet({pet_name}: {feed_status})"
             assert result == expected
 
         @pytest.mark.parametrize(
-            "feeding_status,partial_expected_message", [
+            "feed_status,partial_expected_message", [
                 (-1, f"can't feed self.pet_name='{PET_NAME}' you only have the mount"),
                 (0, f"You released {PET_NAME}, so you cannot feed it"),
                 (5, f"Cannot determine if self.pet_name='{PET_NAME}' can be fed"),
                 (20, f"pet_name='{PET_NAME}' can be fed")
             ]
         )
-        def test_feeding_status_explanation_ok(self, feeding_status: int,
-                                               partial_expected_message: str):
-            feeding_status = FeedStatus(feeding_status)
-            pet = Pet(TestPet.TestOtherPetFunctions.PET_NAME, feeding_status=feeding_status)
+        def test_feed_status_explanation_ok(self, feed_status: int,
+                                            partial_expected_message: str):
+            feed_status = FeedStatus(feed_status)
+            pet = Pet(TestPet.TestOtherPetFunctions.PET_NAME, feed_status=feed_status)
 
-            result_explanation: str = pet.feeding_status_explanation()
+            result_explanation: str = pet.feed_status_explanation()
 
             assert partial_expected_message in result_explanation
 
@@ -208,10 +202,10 @@ class TestPet:
                 "Fox-Veggie", "Fox-Dessert",
             ]
         )
-        def test_feeding_status_unfeedable_pet(self, unfeedable_pet_name: str):
+        def test_feed_status_unfeedable_pet(self, unfeedable_pet_name: str):
             pet = Pet(unfeedable_pet_name)
 
-            result_explanation: str = pet.feeding_status_explanation()
+            result_explanation: str = pet.feed_status_explanation()
 
             assert f"{pet.pet_name} is an unfeedable pet." == result_explanation
 
@@ -327,13 +321,13 @@ class TestPet:
 
         @pytest.mark.parametrize(
             "pet,food_name,expected_times", [
-                (Pet("Hedgehog-Shade", feeding_status=FeedStatus(10)), "Chocolate", 8),
-                (Pet("Hedgehog-Shade", feeding_status=FeedStatus(10)), "Milk", 20),
+                (Pet("Hedgehog-Shade", feed_status=FeedStatus(10)), "Chocolate", 8),
+                (Pet("Hedgehog-Shade", feed_status=FeedStatus(10)), "Milk", 20),
                 (Pet("Egg-Base"), "Meat", 9),
                 (Pet("Egg-Zombie"), "CottonCandyPink", 23),
-                (Pet("Egg-Base", feeding_status=FeedStatus(40)), "Meat", 2),
-                (Pet("Egg-Base", feeding_status=FeedStatus(44)), "Meat", 2),
-                (Pet("Egg-Golden", feeding_status=FeedStatus(47)), "Fish", 2),
+                (Pet("Egg-Base", feed_status=FeedStatus(40)), "Meat", 2),
+                (Pet("Egg-Base", feed_status=FeedStatus(44)), "Meat", 2),
+                (Pet("Egg-Golden", feed_status=FeedStatus(47)), "Fish", 2),
             ]
         )
         def test_required_food_items_until_mount(self, pet: Pet,
@@ -368,7 +362,7 @@ class TestMount:
 class TestPetMountPair:
     empty_pair = PetMountPair(pet=None, mount=None)
 
-    phoenix_pet_only_pair = PetMountPair(pet=Pet("Phoenix-Base", feeding_status=FeedStatus(5)),
+    phoenix_pet_only_pair = PetMountPair(pet=Pet("Phoenix-Base", feed_status=FeedStatus(5)),
                                          mount=None)
 
     phoenix_mount_only_pair = PetMountPair(pet=None,
@@ -376,10 +370,10 @@ class TestPetMountPair:
 
     mount_available_pairs: List[PetMountPair] = [
         # only mount
-        PetMountPair(pet=Pet("Owl-Shade", feeding_status=FeedStatus(-1)),
+        PetMountPair(pet=Pet("Owl-Shade", feed_status=FeedStatus(-1)),
                      mount=Mount("Owl-Shade", availability_status=True)),
         # pet is there, and mount as well
-        PetMountPair(pet=Pet("Egg-White", feeding_status=FeedStatus(5)),
+        PetMountPair(pet=Pet("Egg-White", feed_status=FeedStatus(5)),
                      mount=Mount("Egg-White", availability_status=True)),
         phoenix_mount_only_pair
     ]
@@ -390,7 +384,7 @@ class TestPetMountPair:
         # cannot feed pet if there is a mount
         *mount_available_pairs,
         # released pet
-        PetMountPair(pet=Pet("Wolf-Base", feeding_status=FeedStatus(0)),
+        PetMountPair(pet=Pet("Wolf-Base", feed_status=FeedStatus(0)),
                      mount=None),
         # unfeedable pet
         phoenix_pet_only_pair,
@@ -400,10 +394,10 @@ class TestPetMountPair:
 
     feedable_pairs: List[PetMountPair] = [
         # only pet
-        PetMountPair(pet=Pet("Rat-CottonCandyBlue", feeding_status=FeedStatus(10)),
+        PetMountPair(pet=Pet("Rat-CottonCandyBlue", feed_status=FeedStatus(10)),
                      mount=None),
         # mount was released
-        PetMountPair(pet=Pet("Rat-CottonCandyPink", feeding_status=FeedStatus(5)),
+        PetMountPair(pet=Pet("Rat-CottonCandyPink", feed_status=FeedStatus(5)),
                      mount=Mount("Rat-CottonCandyPink", availability_status=None)),
     ]
 
@@ -414,7 +408,7 @@ class TestPetMountPair:
 
         if pet is not None:
             assert pet.pet_name is not None
-            assert pet.feeding_status is not None
+            assert pet.feed_status is not None
 
         if mount is not None:
             assert mount.mount_name is not None

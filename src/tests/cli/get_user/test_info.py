@@ -56,7 +56,7 @@ def get_test_user() -> HabiticaUser:
     * long lists have been cut down significantly to remove the duplication
       of data that is largely similar in syntax (.g. finished quests).
       The was to keep the original range of data intact (e.g. at least
-      keep a large value, negative value, and default value for feeding
+      keep a large value, negative value, and default value for feed
       status of pets. e.g. within 'history' dates came in multiple formats,
       (millis and iso dates) so both formats were kept).
     * care was taken to not modify the underlying structure and

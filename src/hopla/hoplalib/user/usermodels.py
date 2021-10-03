@@ -51,7 +51,7 @@ class HabiticaUser:
     def get_pets(self) -> Dict[str, int]:
         """Return the pets of a user.
 
-        :return: A dictionary with pet_name as key and feeding_status as value.
+        :return: A dictionary with pet_name as key and feed_status as value.
         For example: {"Spider-Base": -1, "TRex-Skeleton": 5}
         """
         return self.get_inventory()["pets"]

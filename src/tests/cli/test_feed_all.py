@@ -99,7 +99,7 @@ class TestFeedAllCliCommand:
         assert "Pet Velociraptor-Skeleton will get 8 Fish.\n" in result.stdout
         assert f"Do you want to proceed? [y/N]: {yes_response}\n" in result.stdout
         assert feed_msg in result.stdout
-        assert '"feeding_status": -1' in result.stdout
+        assert '"feed_status": -1' in result.stdout
         assert result.exit_code == 0
 
     @pytest.mark.parametrize("yes_response", yes_responses)

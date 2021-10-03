@@ -13,25 +13,25 @@ from hopla.hoplalib.throttling import ApiRequestThrottler
 from hopla.hoplalib.zoo.foodmodels import FoodStockpile, FoodStockpileBuilder
 from hopla.hoplalib.zoo.petcontroller import FeedPostRequester
 from hopla.hoplalib.zoo.zoomodels import Zoo, ZooBuilder
-from hopla.hoplalib.zoo.zoofeeding_algorithms import ZooFeedingAlgorithm, ZookeeperFeedPlan
+from hopla.hoplalib.zoo.zoofeed_algorithms import ZooFeedAlgorithm, ZookeeperFeedPlan
 
 log = logging.getLogger()
 
 
-def __get_feeding_plan_or_exit() -> Union[NoReturn, ZookeeperFeedPlan]:
+def __get_feed_plan_or_exit() -> Union[NoReturn, ZookeeperFeedPlan]:
     """Get the user and build the zookeeper plan"""
     user: HabiticaUser = HabiticaUserRequest().request_user_data_or_exit()
     stockpile: FoodStockpile = FoodStockpileBuilder().user(user).build()
     zoo: Zoo = ZooBuilder(user).build()
 
-    algorithm = ZooFeedingAlgorithm(zoo=zoo, stockpile=stockpile)
+    algorithm = ZooFeedAlgorithm(zoo=zoo, stockpile=stockpile)
     return algorithm.make_plan()
 
 
 def __confirm_with_user_or_abort(plan: ZookeeperFeedPlan) -> Optional[NoReturn]:
     """Ask the user to confirm the specified plan.
 
-    :param plan: the zookeeper feeding plan to display
+    :param plan: the zookeeper feed plan to display
     :return: Don't return if the user wants to abort
     """
 
@@ -41,7 +41,7 @@ def __confirm_with_user_or_abort(plan: ZookeeperFeedPlan) -> Optional[NoReturn]:
 
 def feed_all_pets_and_exit() -> NoReturn:
     """Feed all the pets"""
-    plan: ZookeeperFeedPlan = __get_feeding_plan_or_exit()
+    plan: ZookeeperFeedPlan = __get_feed_plan_or_exit()
     if plan.isempty():
         click.echo(
             "The feed plan is empty. Reasons could include:\n"
@@ -69,7 +69,7 @@ def feed_all():
     This command will first feed normal pets, then your quest pets, and
     finally all your pets that were hatched with magic hatching potions.
 
-    Not this command will first show you the feeding plan, and for safety,
+    Not this command will first show you the feed plan, and for safety,
     ask for your confirmation. Pets will only if you confirm this prompt.
     """
     log.debug("hopla feed-all")

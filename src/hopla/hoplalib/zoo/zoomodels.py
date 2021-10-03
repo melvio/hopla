@@ -78,7 +78,7 @@ class ZooBuilder:
 
         # loop through the pets
         for pet_name, feed_status in self.pets.items():
-            pet = Pet(pet_name, feeding_status=FeedStatus(feed_status))
+            pet = Pet(pet_name, feed_status=FeedStatus(feed_status))
 
             if self.mounts.get(pet_name) is not None:
                 mount = Mount(

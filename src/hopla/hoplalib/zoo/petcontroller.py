@@ -6,8 +6,8 @@ from typing import NoReturn, Optional, Union
 import requests
 
 from hopla.hoplalib.http import HabiticaRequest, UrlBuilder
-from hopla.hoplalib.zoo.feeding_clickhelper import get_feed_data_or_exit
-from hopla.hoplalib.zoo.zoofeeding_algorithms import FeedPlanItem
+from hopla.hoplalib.zoo.feed_clickhelper import get_feed_data_or_exit
+from hopla.hoplalib.zoo.zoofeed_algorithms import FeedPlanItem
 
 
 class FeedPostRequester(HabiticaRequest):
@@ -49,7 +49,7 @@ class FeedPostRequester(HabiticaRequest):
     def post_feed_request_get_data_or_exit(self) -> Union[NoReturn, dict]:
         """
         Performs the feed pet post requests and return
-        the feeding response if successful. Else exit
+        the feed response if successful. Else exit
 
         :return:
         """

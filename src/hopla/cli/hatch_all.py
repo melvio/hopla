@@ -77,5 +77,5 @@ def _hatch_eggs(plan: HatchPlan) -> None:
 def to_pet_list(pets: Dict[str, int]) -> List[Pet]:
     """Helper method that takes a pet_dict and returns a List[Pet]."""
     return [
-        Pet(name, feeding_status=FeedStatus(n)) for (name, n) in pets.items()
+        Pet(name, feed_status=FeedStatus(n)) for (name, n) in pets.items()
     ]

@@ -118,9 +118,9 @@ class TestToPetList:
         result: List[Pet] = to_pet_list(pets)
 
         expected: List[Pet] = [
-            Pet(pet1, feeding_status=FeedStatus(feed_status1)),
-            Pet(pet2, feeding_status=FeedStatus(feed_status2)),
-            Pet(pet3, feeding_status=FeedStatus(feed_status3)),
-            Pet(pet4, feeding_status=FeedStatus(feed_status4))
+            Pet(pet1, feed_status=FeedStatus(feed_status1)),
+            Pet(pet2, feed_status=FeedStatus(feed_status2)),
+            Pet(pet3, feed_status=FeedStatus(feed_status3)),
+            Pet(pet4, feed_status=FeedStatus(feed_status4))
         ]
         assert result == expected
