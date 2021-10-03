@@ -43,21 +43,21 @@ class Pet:
                              "* Is your pet relatively new? If so, please raise\n"
                              f" an issue at {GlobalConstants.NEW_ISSUE_URL}")
 
-        self.pet_name = pet_name
+        self.name = pet_name
         self.feed_status = feed_status
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}({self.pet_name}: {self.feed_status})"
+        return f"{self.__class__.__name__}({self.name}: {self.feed_status})"
 
     @property
     def hatch_potion_name(self) -> Optional[str]:
         """The hatching potion used to hatch the egg this pet came from."""
-        if self.pet_name in PetData.rare_pet_names:
+        if self.name in PetData.rare_pet_names:
             return None
 
         # This logic might break, but seems to be solid for past few years due to
         # stabling naming convention by the Habitica API developers.
-        _, potion = self.pet_name.split("-")
+        _, potion = self.name.split("-")
         return potion
 
     def is_available(self) -> bool:
@@ -66,38 +66,38 @@ class Pet:
 
     def is_feedable(self) -> bool:
         """Return True if a pet cannot be fed at all."""
-        return self.pet_name not in PetData.unfeedable_pet_names
+        return self.name not in PetData.unfeedable_pet_names
 
     def has_just_1_favorite_food(self) -> bool:
         """Return True if this pet likes only 1 type of food."""
-        return self.pet_name in PetData.only_1favorite_food_pet_names
+        return self.name in PetData.only_1favorite_food_pet_names
 
     def likes_all_food(self) -> bool:
         """Return True if this pet prefers all food."""
-        return self.pet_name in PetData.magic_potion_pet_names
+        return self.name in PetData.magic_potion_pet_names
 
     def feed_status_explanation(self) -> str:
         """Explain the feed status of a pet."""
         if self.is_feedable() is False:
-            return f"{self.pet_name} is an unfeedable pet."
+            return f"{self.name} is an unfeedable pet."
         if int(self.feed_status) == 0:
-            return f"You released {self.pet_name}, so you cannot feed it."
+            return f"You released {self.name}, so you cannot feed it."
 
         if int(self.feed_status) == -1:
-            return f"You can't feed {self.pet_name=} you only have the mount"
+            return f"You can't feed {self.name=} you only have the mount"
 
         if int(self.feed_status) == 5:
             # remark: if we really want to know more, we can query the
-            #         API to check if we have the self.pet_name in the
+            #         API to check if we have the self.name in the
             #         Users: jq .data.items.mounts
-            return (f"Cannot determine if {self.pet_name=} can be fed. \n"
+            return (f"Cannot determine if {self.name=} can be fed. \n"
                     "You either have:\n"
                     "1. Both the pet and mount. In this case, you cannot feed the pet \n"
                     "2. A pet that hasn't been fed but you don't have \n"
                     "   the mount. In this case, you can feed your pet")
 
         if int(self.feed_status) < 50:
-            return f"{self.pet_name=} can be fed"
+            return f"{self.name=} can be fed"
 
         raise InvalidPet(f"Did not expect {self.feed_status=}. \n"
                          f"Looks like we failed to validate the Pet properly.",
@@ -110,14 +110,14 @@ class Pet:
         if self.is_feedable() is False:
             return default_value_for_unfeedable
 
-        if self.pet_name in PetData.magic_potion_pet_names:
+        if self.name in PetData.magic_potion_pet_names:
             return default_value_for_all_favorite_food
 
         if self.has_just_1_favorite_food():
             return (FoodData.hatch_potion_favorite_food_mapping
                     .get(self.hatch_potion_name))
 
-        raise InvalidPet(f"Could not find the feed habits of this {self.pet_name=}",
+        raise InvalidPet(f"Could not find the feed habits of this {self.name=}",
                          pet=self)  # pragma: no cover
 
     def is_favorite_food(self, food_name: str) -> bool:
@@ -129,7 +129,7 @@ class Pet:
         if self.has_just_1_favorite_food():
             return self.favorite_food() == food_name
 
-        raise InvalidPet(f"Unable to determine if {food_name=} is {self.pet_name=}'s favorite.",
+        raise InvalidPet(f"Unable to determine if {food_name=} is {self.name=}'s favorite.",
                          pet=self)  # pragma: no cover
 
     def required_food_items_until_mount(self, food_name: str) -> int:
@@ -142,18 +142,18 @@ class Pet:
 
     def is_generation1_pet(self) -> bool:
         """Return True if this pet is from the generation 1 pet"""
-        return self.pet_name in PetData.generation1_pet_names
+        return self.name in PetData.generation1_pet_names
 
     def is_quest_pet(self) -> bool:
         """
         Return True if this pet is a quest pet. This doesn't include
         special pets such as world event related pets.
         """
-        return self.pet_name in PetData.quest_pet_names
+        return self.name in PetData.quest_pet_names
 
     def is_magic_hatch_pet(self) -> bool:
         """Return True if this pet is hatched from a magic potion."""
-        return self.pet_name in PetData.magic_potion_pet_names
+        return self.name in PetData.magic_potion_pet_names
 
     def is_from_drop_hatch_potions(self) -> bool:
         """
@@ -205,8 +205,8 @@ class PetMountPair:
         Raise an exception if the names of the pet and mount do not match.
         """
         if pet and mount:
-            if pet.pet_name != mount.mount_name:
-                msg = f"pet name '{pet.pet_name}' must equal mount name '{mount.mount_name}'"
+            if pet.name != mount.mount_name:
+                msg = f"pet name '{pet.name}' must equal mount name '{mount.mount_name}'"
                 raise InvalidPetMountPair(msg)
 
         self.pet = pet

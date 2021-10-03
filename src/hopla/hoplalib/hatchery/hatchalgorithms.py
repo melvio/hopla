@@ -86,8 +86,7 @@ class HatchPlan:
         :param pets: list of pets to check for clashes with the hatching
         :return: self for chaining
         """
-        pet_names: List[str] = [pet.pet_name for pet in pets
-                                if pet.is_available()]
+        pet_names: List[str] = [pet.name for pet in pets if pet.is_available()]
 
         self.plan = [hatch_item for hatch_item in self.plan
                      if hatch_item.result_pet_name() not in pet_names]

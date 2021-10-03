@@ -36,7 +36,7 @@ class TestPet:
         )
         def test_init_valid_pet_name_ok(self, pet_name: str):
             pet = Pet(pet_name=pet_name)
-            assert pet.pet_name == pet_name
+            assert pet.name == pet_name
 
         @pytest.mark.parametrize("invalid_feed_status", [-10, -2, 1, 3, 51, 100])
         def test_init_raises_invalid_feed_status_fail(self, invalid_feed_status: int):
@@ -179,10 +179,10 @@ class TestPet:
 
         @pytest.mark.parametrize(
             "feed_status,partial_expected_message", [
-                (-1, f"can't feed self.pet_name='{PET_NAME}' you only have the mount"),
+                (-1, f"can't feed self.name='{PET_NAME}' you only have the mount"),
                 (0, f"You released {PET_NAME}, so you cannot feed it"),
-                (5, f"Cannot determine if self.pet_name='{PET_NAME}' can be fed"),
-                (20, f"pet_name='{PET_NAME}' can be fed")
+                (5, f"Cannot determine if self.name='{PET_NAME}' can be fed"),
+                (20, f"name='{PET_NAME}' can be fed")
             ]
         )
         def test_feed_status_explanation_ok(self, feed_status: int,
@@ -207,7 +207,7 @@ class TestPet:
 
             result_explanation: str = pet.feed_status_explanation()
 
-            assert f"{pet.pet_name} is an unfeedable pet." == result_explanation
+            assert f"{pet.name} is an unfeedable pet." == result_explanation
 
         @pytest.mark.parametrize(
             "pet_name,is_gen1_expected", [
@@ -407,7 +407,7 @@ class TestPetMountPair:
         mount: Mount = pair.mount
 
         if pet is not None:
-            assert pet.pet_name is not None
+            assert pet.name is not None
             assert pet.feed_status is not None
 
         if mount is not None:

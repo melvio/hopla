@@ -53,7 +53,7 @@ class TestZooBuilder:
         assert len(result_zoo) == 1
 
         result_pair: PetMountPair = result_zoo[animal_name]
-        assert result_pair.pet.pet_name == animal_name
+        assert result_pair.pet.name == animal_name
         assert result_pair.pet.feed_status == FeedStatus(feed_status)
         assert result_pair.mount_available()
         assert result_pair.pet_available() is False
@@ -79,7 +79,7 @@ class TestZooBuilder:
 
         assert len(zoo) == 1
         result_pair: PetMountPair = zoo[animal_name]
-        assert result_pair.pet.pet_name == animal_name
+        assert result_pair.pet.name == animal_name
         assert result_pair.pet.feed_status == FeedStatus(feed_status)
         assert result_pair.mount_available() is False
         assert result_pair.pet_available()
@@ -95,7 +95,7 @@ class TestZooHelper:
         def predicate(pair: PetMountPair) -> bool:
             # arbitrary filter function
             return pair.pet is not None and (
-                    pair.pet.pet_name == "Parrot-Base"
+                    pair.pet.name == "Parrot-Base"
                     or pair.mount_available()
                     or int(pair.pet.feed_status) == 27
             )
