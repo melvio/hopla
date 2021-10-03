@@ -39,6 +39,26 @@ class HatchPlanItem:
             f"A {self.egg.name} egg will be hatched by a {self.potion.name} potion.\n"
         )
 
+    def can_hatch_with_pet(self, pet: Pet) -> bool:
+        """
+        Return True if we can hatch this item without clashing with the given pet.
+        If the hatching would clash, return False
+
+        :param pet: The pet to check against.
+        :return: True if we can safely hatch if we only had this pet.
+        """
+        return (pet.is_available() is False) or (pet.name != self.result_pet_name())
+
+    def can_hatch_with_pets(self, pets: List[Pet]) -> bool:
+        """
+        Return True if we can hatch this item without clashing with the given pets.
+        If any of the hatchings would clash, return False
+
+        :param pets: The pets to check against.
+        :return: True if we can safely hatch even if we had all these pets.
+        """
+        return all(self.can_hatch_with_pet(pet) for pet in pets)
+
 
 @dataclass
 class HatchPlan:
@@ -103,9 +123,11 @@ class HatchPlanMaker:
 
     def __init__(self, *,
                  egg_collection: EggCollection,
-                 hatch_potion_collection: HatchPotionCollection):
+                 hatch_potion_collection: HatchPotionCollection,
+                 pets: List[Pet]):
         self.__eggs = egg_collection
         self.__potions = hatch_potion_collection
+        self.__pets = pets
         self.__hatch_plan = HatchPlan()
 
     def __repr__(self) -> str:
@@ -123,7 +145,12 @@ class HatchPlanMaker:
             egg: Egg = self.__eggs[egg_name]
             for potion_name in self.__potions:
                 potion: HatchPotion = self.__potions[potion_name]
-                if egg.can_be_hatched_by(potion):
+                item = HatchPlanItem(egg=egg, potion=potion)
+                can_hatch: bool = (
+                        egg.can_be_hatched_by(potion)
+                        and item.can_hatch_with_pets(self.__pets)
+                )
+                if can_hatch:
                     self.__hatch_plan.add(egg=egg, potion=potion)
                     self.__eggs.remove_egg(egg)
                     self.__potions.remove_hatch_potion(potion)
