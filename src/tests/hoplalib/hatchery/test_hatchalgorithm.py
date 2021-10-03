@@ -6,7 +6,7 @@ import pytest
 from hopla.hoplalib.hatchery.eggmodels import Egg, EggCollection
 from hopla.hoplalib.hatchery.hatchalgorithms import HatchPlan, HatchPlanItem, HatchPlanMaker
 from hopla.hoplalib.hatchery.hatchpotionmodels import HatchingPotion, HatchingPotionCollection
-from hopla.hoplalib.zoo.foodmodels import FeedingStatus
+from hopla.hoplalib.zoo.foodmodels import FeedStatus
 from hopla.hoplalib.zoo.petmodels import Pet
 
 
@@ -142,7 +142,7 @@ class TestHatchPlan:
         assert HatchPlanItem(egg, potion) in hatch_plan
 
     def test_remove_hatching_if_pet_available_yes_available_ok(self):
-        pets: List[Pet] = [Pet("Wolf-Ghost", feeding_status=FeedingStatus(5))]
+        pets: List[Pet] = [Pet("Wolf-Ghost", feeding_status=FeedStatus(5))]
         egg = Egg("Wolf")
         potion = HatchingPotion("Ghost")
         hatch_plan = HatchPlan().add(egg=egg, potion=potion)
@@ -157,8 +157,8 @@ class TestHatchPlan:
         # 2. However, even though Wolf-Base is in the list, it is not available because
         #    feedings status is -1.
         pets: List[Pet] = [
-            Pet("Wolf-Ghost", feeding_status=FeedingStatus(5)),
-            Pet("Wolf-Base", feeding_status=FeedingStatus(-1))
+            Pet("Wolf-Ghost", feeding_status=FeedStatus(5)),
+            Pet("Wolf-Base", feeding_status=FeedStatus(-1))
         ]
         egg = Egg("Wolf")
         ghost_potion = HatchingPotion("Ghost")

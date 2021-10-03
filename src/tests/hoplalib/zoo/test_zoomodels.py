@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from hopla.cli.groupcmds.get_user import HabiticaUser
-from hopla.hoplalib.zoo.foodmodels import FeedingStatus
+from hopla.hoplalib.zoo.foodmodels import FeedStatus
 from hopla.hoplalib.zoo.petmodels import Pet, PetMountPair
 from hopla.hoplalib.zoo.zoomodels import Zoo, ZooBuilder, ZooHelper
 from tests.testutils.user_test_utils import UserTestUtil
@@ -57,7 +57,7 @@ class TestZooBuilder:
 
         result_pair: PetMountPair = result_zoo[animal_name]
         assert result_pair.pet.pet_name == animal_name
-        assert result_pair.pet.feeding_status == FeedingStatus(feed_status)
+        assert result_pair.pet.feeding_status == FeedStatus(feed_status)
         assert result_pair.mount_available()
         assert result_pair.pet_available() is False
 
@@ -83,7 +83,7 @@ class TestZooBuilder:
         assert len(zoo) == 1
         result_pair: PetMountPair = zoo[animal_name]
         assert result_pair.pet.pet_name == animal_name
-        assert result_pair.pet.feeding_status == FeedingStatus(feeding_status)
+        assert result_pair.pet.feeding_status == FeedStatus(feeding_status)
         assert result_pair.mount_available() is False
         assert result_pair.pet_available()
 

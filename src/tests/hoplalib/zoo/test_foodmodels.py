@@ -3,7 +3,7 @@ from typing import Dict
 import pytest
 
 from hopla.cli.groupcmds.get_user import HabiticaUser
-from hopla.hoplalib.zoo.foodmodels import FeedingStatus, Food, FoodException, FoodStockpile, \
+from hopla.hoplalib.zoo.foodmodels import FeedStatus, Food, FoodException, FoodStockpile, \
     FoodStockpileBuilder, InvalidFeedingStatus
 
 
@@ -12,7 +12,7 @@ class TestFeedingStatus:
 
     @pytest.mark.parametrize("valid_status", valid_feeding_range)
     def test__init__ok(self, valid_status: int):
-        status = FeedingStatus(valid_status)
+        status = FeedStatus(valid_status)
         assert int(status) == valid_status
 
     @pytest.mark.parametrize("invalid_status", [
@@ -20,15 +20,15 @@ class TestFeedingStatus:
     ])
     def test__init__fail(self, invalid_status: int):
         with pytest.raises(InvalidFeedingStatus) as exec_info:
-            FeedingStatus(invalid_status)
+            FeedStatus(invalid_status)
 
         er_msg = str(exec_info.value)
         assert f"{invalid_status} is invalid" in er_msg
 
     @pytest.mark.parametrize("valid_status", valid_feeding_range)
     def test__repr__ok(self, valid_status: int):
-        result: str = repr(FeedingStatus(valid_status))
-        assert result == f"FeedingStatus({valid_status})"
+        result: str = repr(FeedStatus(valid_status))
+        assert result == f"FeedStatus({valid_status})"
 
     @pytest.mark.parametrize(
         "feeding_status,expected_percentage",
@@ -36,7 +36,7 @@ class TestFeedingStatus:
     )
     def test_to_percentage_ok(self, feeding_status: int,
                               expected_percentage: int):
-        feeding_status = FeedingStatus(feeding_status)
+        feeding_status = FeedStatus(feeding_status)
 
         result_percentage = feeding_status.to_percentage()
 
@@ -49,7 +49,7 @@ class TestFeedingStatus:
     )
     def test_is_pet_available(self, feeding_status: int,
                               expected_available: bool):
-        status = FeedingStatus(feeding_status)
+        status = FeedStatus(feeding_status)
 
         result: bool = status.is_pet_available()
 
@@ -67,7 +67,7 @@ class TestFeedingStatus:
     def test_required_food_items_to_become_mount_favorite(self,
                                                           start_status: int,
                                                           expected_food_items: int):
-        feeding_status = FeedingStatus(start_status)
+        feeding_status = FeedStatus(start_status)
 
         is_favorite = True
         result = feeding_status.required_food_items_to_become_mount(is_favorite)
@@ -88,7 +88,7 @@ class TestFeedingStatus:
     def test_required_food_items_to_become_mount_not_favorite(self,
                                                               start_status: int,
                                                               expected_food_items: int):
-        feeding_status = FeedingStatus(start_status)
+        feeding_status = FeedStatus(start_status)
 
         is_favorite = False
         result = feeding_status.required_food_items_to_become_mount(is_favorite)
@@ -98,25 +98,25 @@ class TestFeedingStatus:
 
 class TestFeedingStatusHash:
     _feeding_statuses = [
-        FeedingStatus(-1), FeedingStatus(), FeedingStatus(5),
-        FeedingStatus(20), FeedingStatus(35), FeedingStatus(49)
+        FeedStatus(-1), FeedStatus(), FeedStatus(5),
+        FeedStatus(20), FeedStatus(35), FeedStatus(49)
     ]
 
     @pytest.mark.parametrize("feeding_status", _feeding_statuses)
-    def test__hash__same_object(self, feeding_status: FeedingStatus):
-        # A minimal requirement for __hash__ is that if 2 FeedingStatus objects are
+    def test__hash__same_object(self, feeding_status: FeedStatus):
+        # A minimal requirement for __hash__ is that if 2 FeedStatus objects are
         # identical, they MUST have the same hash.
         assert hash(feeding_status) == hash(feeding_status)
 
     @pytest.mark.parametrize(
         "feeding_status,equal_feeding_status",
-        list(zip(_feeding_statuses + [FeedingStatus()],
-                 _feeding_statuses + [FeedingStatus(5)]))
+        list(zip(_feeding_statuses + [FeedStatus()],
+                 _feeding_statuses + [FeedStatus(5)]))
     )
     def test__hash__same_valued_object(self,
-                                       feeding_status: FeedingStatus,
-                                       equal_feeding_status: FeedingStatus):
-        # A minimal requirement for __hash__ if 2 FeedingStatus objects
+                                       feeding_status: FeedStatus,
+                                       equal_feeding_status: FeedStatus):
+        # A minimal requirement for __hash__ if 2 FeedStatus objects
         # are equal (__eq__) , they MUST have the same hash.
         assert feeding_status == equal_feeding_status
         assert hash(feeding_status) == hash(equal_feeding_status)

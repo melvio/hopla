@@ -8,7 +8,7 @@ from click import ClickException
 from hopla.hoplalib.common import GlobalConstants
 from hopla.hoplalib.errors import YouFoundABugRewardError
 from hopla.hoplalib.zoo.fooddata import FoodData
-from hopla.hoplalib.zoo.foodmodels import FeedingStatus, InvalidFeedingStatus
+from hopla.hoplalib.zoo.foodmodels import FeedStatus, InvalidFeedingStatus
 from hopla.hoplalib.zoo.petdata import PetData
 from hopla.hoplalib.zoo.petmodels import InvalidPet, InvalidPetMountPair, Mount, Pet, PetMountPair
 
@@ -44,7 +44,7 @@ class TestPet:
         )
         def test_init_raises_invalid_feeding_status_fail(self, invalid_feed_status: int):
             with pytest.raises(InvalidFeedingStatus) as execinfo:
-                feeding_status = FeedingStatus(invalid_feed_status)
+                feeding_status = FeedStatus(invalid_feed_status)
                 Pet("PandaCub-IcySnow", feeding_status=feeding_status)
 
             err_msg = str(execinfo.value)
@@ -55,7 +55,7 @@ class TestPet:
             [5, 10, 20, -1, 49]
         )
         def test_init_sets_valid_feeding_status_ok(self, valid_feed_status: int):
-            feeding_status = FeedingStatus(valid_feed_status)
+            feeding_status = FeedStatus(valid_feed_status)
             pet = Pet("LionCub-Sunset", feeding_status=feeding_status)
 
             assert valid_feed_status == int(pet.feeding_status)
@@ -175,7 +175,7 @@ class TestPet:
 
         def test___repr__(self):
             pet_name = "Fox-Shadow"
-            feeding_status = FeedingStatus(10)
+            feeding_status = FeedStatus(10)
             pet = Pet(pet_name, feeding_status=feeding_status)
 
             result = str(pet)
@@ -193,7 +193,7 @@ class TestPet:
         )
         def test_feeding_status_explanation_ok(self, feeding_status: int,
                                                partial_expected_message: str):
-            feeding_status = FeedingStatus(feeding_status)
+            feeding_status = FeedStatus(feeding_status)
             pet = Pet(TestPet.TestOtherPetFunctions.PET_NAME, feeding_status=feeding_status)
 
             result_explanation: str = pet.feeding_status_explanation()
@@ -327,13 +327,13 @@ class TestPet:
 
         @pytest.mark.parametrize(
             "pet,food_name,expected_times", [
-                (Pet("Hedgehog-Shade", feeding_status=FeedingStatus(10)), "Chocolate", 8),
-                (Pet("Hedgehog-Shade", feeding_status=FeedingStatus(10)), "Milk", 20),
+                (Pet("Hedgehog-Shade", feeding_status=FeedStatus(10)), "Chocolate", 8),
+                (Pet("Hedgehog-Shade", feeding_status=FeedStatus(10)), "Milk", 20),
                 (Pet("Egg-Base"), "Meat", 9),
                 (Pet("Egg-Zombie"), "CottonCandyPink", 23),
-                (Pet("Egg-Base", feeding_status=FeedingStatus(40)), "Meat", 2),
-                (Pet("Egg-Base", feeding_status=FeedingStatus(44)), "Meat", 2),
-                (Pet("Egg-Golden", feeding_status=FeedingStatus(47)), "Fish", 2),
+                (Pet("Egg-Base", feeding_status=FeedStatus(40)), "Meat", 2),
+                (Pet("Egg-Base", feeding_status=FeedStatus(44)), "Meat", 2),
+                (Pet("Egg-Golden", feeding_status=FeedStatus(47)), "Fish", 2),
             ]
         )
         def test_required_food_items_until_mount(self, pet: Pet,
@@ -368,7 +368,7 @@ class TestMount:
 class TestPetMountPair:
     empty_pair = PetMountPair(pet=None, mount=None)
 
-    phoenix_pet_only_pair = PetMountPair(pet=Pet("Phoenix-Base", feeding_status=FeedingStatus(5)),
+    phoenix_pet_only_pair = PetMountPair(pet=Pet("Phoenix-Base", feeding_status=FeedStatus(5)),
                                          mount=None)
 
     phoenix_mount_only_pair = PetMountPair(pet=None,
@@ -376,10 +376,10 @@ class TestPetMountPair:
 
     mount_available_pairs: List[PetMountPair] = [
         # only mount
-        PetMountPair(pet=Pet("Owl-Shade", feeding_status=FeedingStatus(-1)),
+        PetMountPair(pet=Pet("Owl-Shade", feeding_status=FeedStatus(-1)),
                      mount=Mount("Owl-Shade", availability_status=True)),
         # pet is there, and mount as well
-        PetMountPair(pet=Pet("Egg-White", feeding_status=FeedingStatus(5)),
+        PetMountPair(pet=Pet("Egg-White", feeding_status=FeedStatus(5)),
                      mount=Mount("Egg-White", availability_status=True)),
         phoenix_mount_only_pair
     ]
@@ -390,7 +390,7 @@ class TestPetMountPair:
         # cannot feed pet if there is a mount
         *mount_available_pairs,
         # released pet
-        PetMountPair(pet=Pet("Wolf-Base", feeding_status=FeedingStatus(0)),
+        PetMountPair(pet=Pet("Wolf-Base", feeding_status=FeedStatus(0)),
                      mount=None),
         # unfeedable pet
         phoenix_pet_only_pair,
@@ -400,10 +400,10 @@ class TestPetMountPair:
 
     feedable_pairs: List[PetMountPair] = [
         # only pet
-        PetMountPair(pet=Pet("Rat-CottonCandyBlue", feeding_status=FeedingStatus(10)),
+        PetMountPair(pet=Pet("Rat-CottonCandyBlue", feeding_status=FeedStatus(10)),
                      mount=None),
         # mount was released
-        PetMountPair(pet=Pet("Rat-CottonCandyPink", feeding_status=FeedingStatus(5)),
+        PetMountPair(pet=Pet("Rat-CottonCandyPink", feeding_status=FeedStatus(5)),
                      mount=Mount("Rat-CottonCandyPink", availability_status=None)),
     ]
 

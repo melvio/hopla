@@ -19,7 +19,7 @@ class InvalidFeedingStatus(PrintableException):
         self.pet = pet
 
 
-class FeedingStatus:
+class FeedStatus:
     """A class implementing feeding status logic for pets.
 
     Every freshly hatched pet starts at 5.
@@ -38,9 +38,9 @@ class FeedingStatus:
     NON_FAVORITE_INCREMENT: Final[int] = 2
 
     def __init__(self, feeding_status: int = START_FEEDING_STATE):
-        invalid_status = (feeding_status < FeedingStatus.PET_GREW_UP_TO_MOUNT
+        invalid_status = (feeding_status < FeedStatus.PET_GREW_UP_TO_MOUNT
                           or feeding_status in [1, 2, 3, 4]
-                          or feeding_status > FeedingStatus.MAX_FED_STATE)
+                          or feeding_status > FeedStatus.MAX_FED_STATE)
         if invalid_status:
             raise InvalidFeedingStatus(f"{feeding_status=} is invalid")
 
@@ -50,7 +50,7 @@ class FeedingStatus:
         return f"{self.__class__.__name__}({self.__feeding_status})"
 
     def __eq__(self, other):
-        return isinstance(other, FeedingStatus) and int(other) == int(self)
+        return isinstance(other, FeedStatus) and int(other) == int(self)
 
     def __hash__(self):
         return hash(self.__feeding_status)
@@ -61,16 +61,16 @@ class FeedingStatus:
     def is_pet_available(self):
         """Return True if the user currently has this pet."""
         return self.__feeding_status not in [
-            FeedingStatus.PET_GREW_UP_TO_MOUNT, FeedingStatus.PET_RELEASED
+            FeedStatus.PET_GREW_UP_TO_MOUNT, FeedStatus.PET_RELEASED
         ]
 
     def required_food_items_to_become_mount(self, is_favorite_food: bool) -> int:
         """Return how many items of food we need to give to turn a pet into a mount."""
-        target = FeedingStatus.FULLY_FED_STATE - self.__feeding_status
+        target = FeedStatus.FULLY_FED_STATE - self.__feeding_status
         if is_favorite_food:
-            required_food = math.ceil(target / FeedingStatus.FAVORITE_INCREMENT)
+            required_food = math.ceil(target / FeedStatus.FAVORITE_INCREMENT)
         else:
-            required_food = math.ceil(target / FeedingStatus.NON_FAVORITE_INCREMENT)
+            required_food = math.ceil(target / FeedStatus.NON_FAVORITE_INCREMENT)
         return required_food
 
     def to_percentage(self) -> int:

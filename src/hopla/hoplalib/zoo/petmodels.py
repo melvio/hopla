@@ -7,7 +7,7 @@ from typing import Optional
 from hopla.hoplalib.common import GlobalConstants
 from hopla.hoplalib.errors import PrintableException, YouFoundABugRewardError
 from hopla.hoplalib.zoo.fooddata import FoodData
-from hopla.hoplalib.zoo.foodmodels import FeedingStatus
+from hopla.hoplalib.zoo.foodmodels import FeedStatus
 from hopla.hoplalib.zoo.petdata import PetData
 
 
@@ -34,7 +34,7 @@ class Pet:
     #################################################################
 
     def __init__(self, pet_name: str, *,
-                 feeding_status: FeedingStatus = FeedingStatus(5)):
+                 feeding_status: FeedStatus = FeedStatus(5)):
         if pet_name not in PetData.pet_names:
             raise InvalidPet(f"{pet_name=} is not recognized by hopla.\n"
                              "Potential causes: \n"

@@ -6,7 +6,7 @@ from click.testing import CliRunner, Result
 
 from hopla.cli.hatch_all import hatch_all, to_pet_list
 from hopla.hoplalib.user.usermodels import HabiticaUser
-from hopla.hoplalib.zoo.foodmodels import FeedingStatus
+from hopla.hoplalib.zoo.foodmodels import FeedStatus
 from hopla.hoplalib.zoo.petmodels import Pet
 
 
@@ -118,9 +118,9 @@ class TestToPetList:
         result: List[Pet] = to_pet_list(pets)
 
         expected: List[Pet] = [
-            Pet(pet1, feeding_status=FeedingStatus(feed_status1)),
-            Pet(pet2, feeding_status=FeedingStatus(feed_status2)),
-            Pet(pet3, feeding_status=FeedingStatus(feed_status3)),
-            Pet(pet4, feeding_status=FeedingStatus(feed_status4))
+            Pet(pet1, feeding_status=FeedStatus(feed_status1)),
+            Pet(pet2, feeding_status=FeedStatus(feed_status2)),
+            Pet(pet3, feeding_status=FeedStatus(feed_status3)),
+            Pet(pet4, feeding_status=FeedStatus(feed_status4))
         ]
         assert result == expected

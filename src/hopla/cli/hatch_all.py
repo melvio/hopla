@@ -14,7 +14,7 @@ from hopla.hoplalib.hatchery.hatchpotionmodels import HatchingPotionCollection
 from hopla.hoplalib.throttling import ApiRequestThrottler
 from hopla.hoplalib.user.usercontroller import HabiticaUserRequest
 from hopla.hoplalib.user.usermodels import HabiticaUser
-from hopla.hoplalib.zoo.foodmodels import FeedingStatus
+from hopla.hoplalib.zoo.foodmodels import FeedStatus
 from hopla.hoplalib.zoo.petmodels import Pet
 
 
@@ -77,5 +77,5 @@ def _hatch_eggs(plan: HatchPlan) -> None:
 def to_pet_list(pets: Dict[str, int]) -> List[Pet]:
     """Helper method that takes a pet_dict and returns a List[Pet]."""
     return [
-        Pet(name, feeding_status=FeedingStatus(n)) for (name, n) in pets.items()
+        Pet(name, feeding_status=FeedStatus(n)) for (name, n) in pets.items()
     ]
