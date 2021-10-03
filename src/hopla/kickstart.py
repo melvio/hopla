@@ -29,6 +29,7 @@ from hopla.cli.groupcmds.hatch import hatch
 from hopla.cli.groupcmds.set import set  # pylint: disable=redefined-builtin
 from hopla.cli.hatch.quest_egg import quest_egg
 from hopla.cli.hatch.standard_egg import standard_egg
+from hopla.cli.hatch_all import hatch_all
 from hopla.cli.request import request
 from hopla.cli.support_development import support_development
 from hopla.cli.version import version
@@ -79,47 +80,72 @@ def hopla():
 
 def organize_cli() -> None:
     """Attach the subgroups and subcommands to the top hopla group command"""
-    # hopla subcommands
+    # pylint: disable=too-many-statements
+
+    # authenticate
     hopla.add_command(authenticate)
-    hopla.add_command(cast)
-    hopla.add_command(complete)
-    hopla.add_command(config)
-    hopla.add_command(feed)
-    hopla.add_command(feed_all)
-    hopla.add_command(get_group)
-    hopla.add_command(request)
-    hopla.add_command(support_development)
-    hopla.add_command(version)
 
-    # hopla subgroups
+    # add
     hopla.add_command(add)
-    hopla.add_command(api)
-    hopla.add_command(buy)
-    hopla.add_command(get_user)
-    hopla.add_command(hatch)
-    hopla.add_command(set)
-
-    # hopla add subgroup
     add.add_command(todo)
 
-    # hopla buy subgroup
+    # api
+    hopla.add_command(api)
+
+    # buy
+    hopla.add_command(buy)
     buy.add_command(enchanted_armoire)
 
-    # hopla get-user subgroup
+    # cast
+    hopla.add_command(cast)
+
+    # complete
+    hopla.add_command(complete)
+
+    # config
+    hopla.add_command(config)
+
+    # feed
+    hopla.add_command(feed)
+
+    # feed-all
+    hopla.add_command(feed_all)
+
+    # get-group
+    hopla.add_command(get_group)
+
+    # get-user
+    hopla.add_command(get_user)
     get_user.add_command(inventory)
     get_user.add_command(stats)
     get_user.add_command(info)
     get_user.add_command(auth)
 
-    # hopla hatch subgroup
+    # hatch
+    hopla.add_command(hatch)
     hatch.add_command(standard_egg)
     hatch.add_command(quest_egg)
+
+    # hatch-all
+    hopla.add_command(hatch_all)
+
+    # request
+    hopla.add_command(request)
+
+    # support-development
+    hopla.add_command(support_development)
+
+    # version
+    hopla.add_command(version)
+
+    # set
+    hopla.add_command(set)
 
 
 def init_hopla_config_files() -> None:
     """Setup the config file."""
     had_to_create_new_config_file: bool = ConfigInitializer().initialize_before_running_cmds()
-    if had_to_create_new_config_file:
+    if had_to_create_new_config_file is True:
         click.echo(f"Thank you for trying out {GlobalConstants.APPLICATION_NAME}")
         click.echo(
             "Bug reports, pull requests, and feature requests are welcomed over at:  "

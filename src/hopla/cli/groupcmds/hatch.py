@@ -26,7 +26,7 @@ def hatch_egg(*, egg_name: str, potion_name: str) -> NoReturn:
         egg_name=egg_name,
         hatching_potion_name=potion_name
     )
-    response: requests.Response = requester.post_hatch_egg()
+    response: requests.Response = requester.post_hatch_egg_request()
     json: dict = response.json()
     if json["success"] is True:
         click.echo(f"Successfully hatched a {egg_name}-{potion_name}.")

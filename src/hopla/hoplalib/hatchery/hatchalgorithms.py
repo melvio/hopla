@@ -36,7 +36,7 @@ class HatchPlanItem:
     def format_item(self) -> str:
         """Terminal-printable representation of this HatchPlanItem."""
         return (
-            f"The '{self.egg.name}' egg will be hatched by the '{self.potion.name}' potion."
+            f"A {self.egg.name} egg will be hatched by a {self.potion.name} potion.\n"
         )
 
 
@@ -52,14 +52,22 @@ class HatchPlan:
             return False
         return self.plan == other.plan
 
-    def __len__(self) -> int:
-        return len(self.plan)
-
     def __iter__(self):
         return iter(self.plan)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.plan if len(self.plan) > 0 else 'empty'})"
+
+    def __len__(self) -> int:
+        return len(self.plan)
+
+    def is_empty(self) -> bool:
+        """Return true if there no items in the hatch plan."""
+        return len(self.plan) == 0
+
+    def format_plan(self) -> str:
+        """Terminal-printable representation of this HatchPlan."""
+        return "".join([item.format_item() for item in self.plan])
 
     def add(self, *, egg: Egg, potion: HatchingPotion) -> "HatchPlan":
         """Make the plan to hatch the egg with the specified potion.
@@ -72,7 +80,7 @@ class HatchPlan:
         self.plan.append(hatch_plan_item)
         return self
 
-    def remove_hatch_if_pets_available(self, pets: List[Pet]) -> "HatchPlan":
+    def remove_hatching_if_pet_available(self, pets: List[Pet]) -> "HatchPlan":
         """Remove the hatching plan items for pets that are available.
 
         :param pets: list of pets to check for clashes with the hatching
