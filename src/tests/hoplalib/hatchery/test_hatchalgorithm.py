@@ -5,6 +5,7 @@ import pytest
 
 from hopla.hoplalib.hatchery.eggmodels import Egg, EggCollection
 from hopla.hoplalib.hatchery.hatchalgorithms import HatchPlan, HatchPlanItem, HatchPlanMaker
+from hopla.hoplalib.hatchery.hatchdata import EggData
 from hopla.hoplalib.hatchery.hatchpotionmodels import HatchPotion, HatchPotionCollection
 from hopla.hoplalib.zoo.foodmodels import FeedStatus
 from hopla.hoplalib.zoo.petmodels import Pet
@@ -74,6 +75,65 @@ class TestHatchPlanItem:
         expected = f"A {egg_name} egg will be hatched by a {potion_name} potion.\n"
         assert result == expected
 
+    @pytest.mark.parametrize("no_clash_pets", [
+        Pet("Wolf-Bronze"),
+        Pet("Fox-Base"),
+        Pet("Wolf-Base", feed_status=FeedStatus(-1)),
+        Pet("Wolf-Base", feed_status=FeedStatus(0))
+    ])
+    def test_can_hatch_with_pet_true(self, no_clash_pets: Pet):
+        hatch_item = HatchPlanItem(egg=Egg("Wolf"), potion=HatchPotion("Base"))
+
+        result = hatch_item.can_hatch_with_pet(no_clash_pets)
+
+        assert result is True
+
+    def test_can_hatch_with_pet_false(self):
+        clash_pet = Pet("Wolf-Bronze")
+        hatch_item = HatchPlanItem(egg=Egg("Wolf"), potion=HatchPotion("Bronze"))
+
+        result = hatch_item.can_hatch_with_pet(clash_pet)
+
+        assert result is False
+
+    @pytest.mark.parametrize("hatch_item", [
+        HatchPlanItem(Egg("Wolf"), HatchPotion("Bronze")),
+        HatchPlanItem(Egg("Cactus"), HatchPotion("Amber")),
+        HatchPlanItem(Egg("Horse"), HatchPotion("Shade"))
+    ])
+    def test_can_hatch_with_pets_no_pets_always_true(self, hatch_item: HatchPlanItem):
+        result = hatch_item.can_hatch_with_pets([])
+        assert result is True
+
+    @pytest.mark.parametrize("hatch_item", [
+        HatchPlanItem(Egg("Wolf"), HatchPotion("Bronze")),
+        HatchPlanItem(Egg("Cactus"), HatchPotion("Amber")),
+        HatchPlanItem(Egg("Horse"), HatchPotion("Shade")),
+        HatchPlanItem(Egg("Wolf"), HatchPotion("Base")),
+    ])
+    def test_can_hatch_with_pets_no_clash_true(self, hatch_item: HatchPlanItem):
+        no_clash_pets: List[Pet] = [
+            Pet("Wolf-Base", feed_status=FeedStatus(0)),
+            Pet("Cactus-Shade"),
+            Pet("Seahorse-White"),
+            Pet("Horse-Shade", feed_status=FeedStatus(-1))
+        ]
+        result = hatch_item.can_hatch_with_pets(no_clash_pets)
+        assert result is True
+
+    @pytest.mark.parametrize("hatch_item", [
+        HatchPlanItem(Egg("Wolf"), HatchPotion("Bronze")),
+        HatchPlanItem(Egg("Cactus"), HatchPotion("Amber")),
+        HatchPlanItem(Egg("Horse"), HatchPotion("Shade")),
+        HatchPlanItem(Egg("Wolf"), HatchPotion("Base")),
+    ])
+    def test_can_hatch_with_pets_clash_false(self, hatch_item: HatchPlanItem):
+        clash_pets: List[Pet] = [
+            Pet("Wolf-Bronze"), Pet("Cactus-Amber"), Pet("Horse-Shade"), Pet("Wolf-Base")
+        ]
+        result = hatch_item.can_hatch_with_pets(clash_pets)
+        assert result is False
+
 
 class TestHatchPlan:
     def test__init__(self):
@@ -130,49 +190,6 @@ class TestHatchPlan:
         assert len(hatch_plan) == 1
         assert HatchPlanItem(egg, potion) in hatch_plan
 
-    def test_remove_hatch_item_if_pet_available_empty_ok(self):
-        empty: List[Pet] = []
-        egg = Egg("Wolf")
-        potion = HatchPotion("Ghost")
-        hatch_plan = HatchPlan().add(egg=egg, potion=potion)
-
-        hatch_plan.remove_hatch_item_if_pet_available(empty)
-
-        assert len(hatch_plan) == 1
-        assert HatchPlanItem(egg, potion) in hatch_plan
-
-    def test_remove_hatch_item_if_pet_available_yes_available_ok(self):
-        pets: List[Pet] = [Pet("Wolf-Ghost", feed_status=FeedStatus(5))]
-        egg = Egg("Wolf")
-        potion = HatchPotion("Ghost")
-        hatch_plan = HatchPlan().add(egg=egg, potion=potion)
-
-        hatch_plan.remove_hatch_item_if_pet_available(pets)
-
-        assert len(hatch_plan) == 0
-        assert HatchPlanItem(egg, potion) not in hatch_plan
-
-    def test_remove_hatch_item_if_pet_available_yes_and_no_available_ok(self):
-        # 1. Wolf-Ghost is available, so that one should be filtered out.
-        # 2. However, even though Wolf-Base is in the list, it is not available because
-        #    feed status is -1.
-        pets: List[Pet] = [
-            Pet("Wolf-Ghost", feed_status=FeedStatus(5)),
-            Pet("Wolf-Base", feed_status=FeedStatus(-1))
-        ]
-        egg = Egg("Wolf")
-        ghost_potion = HatchPotion("Ghost")
-        base_potion = HatchPotion("Base")
-        hatch_plan = HatchPlan() \
-            .add(egg=egg, potion=ghost_potion) \
-            .add(egg=egg, potion=base_potion)
-
-        hatch_plan.remove_hatch_item_if_pet_available(pets)
-
-        assert len(hatch_plan) == 1
-        assert HatchPlanItem(egg, base_potion) in hatch_plan
-        assert HatchPlanItem(egg, ghost_potion) not in hatch_plan
-
     def test__iter__(self):
         egg1, egg2 = Egg("Wolf"), Egg("Egg")
         ghost_potion = HatchPotion("Ghost")
@@ -192,7 +209,7 @@ class TestHatchPlanMaker:
     def test__repr__(self):
         eggs = EggCollection({"Wolf": 1, "Whale": 2})
         potions = HatchPotionCollection({"Base": 1, "Ember": 2})
-        plan_maker = HatchPlanMaker(egg_collection=eggs, hatch_potion_collection=potions)
+        plan_maker = HatchPlanMaker(egg_collection=eggs, hatch_potion_collection=potions, pets=[])
 
         result: str = repr(plan_maker)
 
@@ -208,7 +225,11 @@ class TestHatchPlanMaker:
         empty_eggs = EggCollection()
         potions = HatchPotionCollection({"Zombie": 1})
 
-        plan_maker = HatchPlanMaker(egg_collection=empty_eggs, hatch_potion_collection=potions)
+        plan_maker = HatchPlanMaker(
+            egg_collection=empty_eggs,
+            hatch_potion_collection=potions,
+            pets=[]
+        )
 
         result: HatchPlan = plan_maker.make_plan()
 
@@ -218,7 +239,11 @@ class TestHatchPlanMaker:
     def test_make_plan_no_hatch_potions(self):
         eggs = EggCollection({"Owl": 1})
         empty_potions = HatchPotionCollection()
-        plan_maker = HatchPlanMaker(egg_collection=eggs, hatch_potion_collection=empty_potions)
+        plan_maker = HatchPlanMaker(
+            egg_collection=eggs,
+            hatch_potion_collection=empty_potions,
+            pets=[]
+        )
 
         result: HatchPlan = plan_maker.make_plan()
 
@@ -228,7 +253,11 @@ class TestHatchPlanMaker:
     def test_make_plan_1potion_1egg_ok(self):
         eggs = EggCollection({"Owl": 1})
         potions = HatchPotionCollection({"Base": 1})
-        plan_maker = HatchPlanMaker(egg_collection=eggs, hatch_potion_collection=potions)
+        plan_maker = HatchPlanMaker(
+            egg_collection=eggs,
+            hatch_potion_collection=potions,
+            pets=[]
+        )
 
         result: HatchPlan = plan_maker.make_plan()
 
@@ -238,7 +267,11 @@ class TestHatchPlanMaker:
     def test_make_plan_1magic_potion_1quest_egg_ok(self):
         eggs = EggCollection({"Owl": 1})
         magic_potions = HatchPotionCollection({"Thunderstorm": 1})
-        plan_maker = HatchPlanMaker(egg_collection=eggs, hatch_potion_collection=magic_potions)
+        plan_maker = HatchPlanMaker(
+            egg_collection=eggs,
+            hatch_potion_collection=magic_potions,
+            pets=[]
+        )
 
         result: HatchPlan = plan_maker.make_plan()
 
@@ -248,7 +281,11 @@ class TestHatchPlanMaker:
     def test_make_plan_1magic_potion_2normal_1quest_egg_ok(self):
         eggs = EggCollection({"Owl": 1, "Fox": 2})
         magic_potions = HatchPotionCollection({"Thunderstorm": 1})
-        plan_maker = HatchPlanMaker(egg_collection=eggs, hatch_potion_collection=magic_potions)
+        plan_maker = HatchPlanMaker(
+            egg_collection=eggs,
+            hatch_potion_collection=magic_potions,
+            pets=[]
+        )
 
         result: HatchPlan = plan_maker.make_plan()
 
@@ -261,7 +298,11 @@ class TestHatchPlanMaker:
         potions = HatchPotionCollection(
             {"SolarSystem": 2, "Zombie": 1, "Base": 1, "Fluorite": 1, "Shade": 3}
         )
-        plan_maker = HatchPlanMaker(egg_collection=eggs, hatch_potion_collection=potions)
+        plan_maker = HatchPlanMaker(
+            egg_collection=eggs,
+            hatch_potion_collection=potions,
+            pets=[]
+        )
 
         result: HatchPlan = plan_maker.make_plan()
 
@@ -272,3 +313,67 @@ class TestHatchPlanMaker:
             # ^ Can't hatch same Cactus twice with same potion
 
         assert result == expected
+
+    def test_make_plan_with_pets(self):
+        eggs = EggCollection({"Horse": 1, "Cactus": 3})
+        potions = HatchPotionCollection(
+            {"SolarSystem": 2, "Zombie": 1, "Base": 1, "Fluorite": 1, "Shade": 3}
+        )
+        pets: List[Pet] = [
+            # This pet blocks hatching another Cactus-SolarSystem
+            Pet("Cactus-SolarSystem"),
+            # No blocking by Horse-Zombie pet. -1 means pet is not available.
+            Pet("Horse-Zombie", feed_status=FeedStatus(-1))
+        ]
+        plan_maker = HatchPlanMaker(
+            egg_collection=eggs,
+            hatch_potion_collection=potions,
+            pets=pets
+        )
+
+        result: HatchPlan = plan_maker.make_plan()
+
+        expected = HatchPlan() \
+            .add(egg=Egg("Horse"), potion=HatchPotion("Zombie")) \
+            .add(egg=Egg("Cactus"), potion=HatchPotion("Base")) \
+            .add(egg=Egg("Cactus"), potion=HatchPotion("Fluorite")) \
+            .add(egg=Egg("Cactus"), potion=HatchPotion("Shade"))
+
+        assert result == expected
+
+    def test_make_plan_with_lots_of_pets_and_few_potions_ok(self):
+        # case emulating the bug from: https://github.com/melvio/hopla/issues/184
+        # Here there are lots of pets, lots of eggs, and only 3 vampire potions.
+        # There are also only 3 pets available for hatching with those vampire potions.
+
+        # lots of Eggs
+        eggs = EggCollection(eggs={egg_name: 20 for egg_name in EggData.egg_names})
+        # 3 vampire potions
+        potions = HatchPotionCollection(potions={"Vampire": 3})
+        # lots of vampire pets, only 3 hatch-able
+        hatchable1, hatchable2, hatchable3 = "FlyingPig", "LionCub", "PandaCub"
+        pets: List[Pet] = [
+            Pet("BearCub-Vampire", feed_status=FeedStatus(5)),
+            Pet("Cactus-Vampire", feed_status=FeedStatus(5)),
+            Pet("Dragon-Vampire", feed_status=FeedStatus(5)),
+            Pet(hatchable1 + "-Vampire", feed_status=FeedStatus(-1)),
+            Pet("Fox-Vampire", feed_status=FeedStatus(5)),
+            Pet(hatchable2 + "-Vampire", feed_status=FeedStatus(-1)),
+            Pet(hatchable3 + "-Vampire", feed_status=FeedStatus(-1)),
+            Pet("TigerCub-Vampire", feed_status=FeedStatus(5)),
+            Pet("Wolf-Vampire", feed_status=FeedStatus(5)),
+        ]
+
+        plan_maker = HatchPlanMaker(
+            egg_collection=eggs,
+            hatch_potion_collection=potions,
+            pets=pets
+        )
+
+        plan: HatchPlan = plan_maker.make_plan()
+        expected_plan = HatchPlan() \
+            .add(egg=Egg(hatchable1), potion=HatchPotion("Vampire")) \
+            .add(egg=Egg(hatchable2), potion=HatchPotion("Vampire")) \
+            .add(egg=Egg(hatchable3), potion=HatchPotion("Vampire"))
+
+        assert plan == expected_plan

@@ -39,6 +39,26 @@ class HatchPlanItem:
             f"A {self.egg.name} egg will be hatched by a {self.potion.name} potion.\n"
         )
 
+    def can_hatch_with_pet(self, pet: Pet) -> bool:
+        """
+        Return True if we can hatch this item without clashing with the given pet.
+        If the hatching would clash, return False
+
+        :param pet: The pet to check against.
+        :return: True if we can safely hatch if we only had this pet.
+        """
+        return (pet.is_available() is False) or (pet.name != self.result_pet_name())
+
+    def can_hatch_with_pets(self, pets: List[Pet]) -> bool:
+        """
+        Return True if we can hatch this item without clashing with the given pets.
+        If any of the hatchings would clash, return False
+
+        :param pets: The pets to check against.
+        :return: True if we can safely hatch even if we had all these pets.
+        """
+        return all(self.can_hatch_with_pet(pet) for pet in pets)
+
 
 @dataclass
 class HatchPlan:
@@ -119,13 +139,6 @@ class HatchPlanMaker:
             ")"
         )
 
-    def can_hatch_with_pets(self, *, hatch_item: HatchPlanItem) -> bool:
-        """Return true if the hatching does not collide with any of the pre-existing pets."""
-        return all(self.__safe_hatch(pet, hatch_item) for pet in self.__pets)
-
-    def __safe_hatch(self, pet: Pet, item: HatchPlanItem):
-        return (pet.is_available() is False) or (pet.name != item.result_pet_name())
-
     def make_plan(self) -> HatchPlan:
         """Given an collection of eggs and hatching potions, make a plan to hatch the eggs."""
         for egg_name in self.__eggs:
@@ -133,9 +146,9 @@ class HatchPlanMaker:
             for potion_name in self.__potions:
                 potion: HatchPotion = self.__potions[potion_name]
                 item = HatchPlanItem(egg=egg, potion=potion)
-                can_hatch = (
+                can_hatch: bool = (
                         egg.can_be_hatched_by(potion)
-                        and self.can_hatch_with_pets(hatch_item=item)
+                        and item.can_hatch_with_pets(self.__pets)
                 )
                 if can_hatch:
                     self.__hatch_plan.add(egg=egg, potion=potion)
