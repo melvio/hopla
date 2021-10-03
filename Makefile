@@ -24,6 +24,9 @@ validate_docs_for_pypi:
 send_package_to_pypi:
 	python -m twine upload dist/*
 
+tag_commit:
+	git tag --annotate "release/$$(hopla version)"
+
 
 # This works like running: "make flake && make lint && make unittest"
 test: flake lint unittest
