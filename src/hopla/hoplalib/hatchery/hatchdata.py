@@ -65,10 +65,13 @@ class HatchingPotionData:
     """Wacky hatching potions. This list was retrieved by using:
            hopla api content | jq '.wackyHatchingPotions|keys'
     """
+    non_drop_hatching_potion_names: List[str] = (
+            magic_hatching_potion_names
+            + wacky_hatching_potion_names
+    )
 
     hatching_potion_names: List[str] = (
             drop_hatching_potion_names
-            + magic_hatching_potion_names
-            + wacky_hatching_potion_names
+            + non_drop_hatching_potion_names
     )
     """All potion names in habitica."""
