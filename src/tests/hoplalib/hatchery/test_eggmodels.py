@@ -102,16 +102,17 @@ class TestEgg:
 
 
 class TestEggCollection:
+    def test__init__empty__ok(self):
+        collection = EggCollection()
+        assert len(collection) == 0
+
     def test__init__ok(self):
-        # "Wolf" should be filtered because we don't have that egg.
-        egg_dict = {"Wolf": 0, "Whale": 42, "Horse": 2}
+        collection = EggCollection({"Wolf": 0, "Whale": 42, "Horse": 2})
 
-        collection = EggCollection(egg_dict)
-
+        assert len(collection) == 3
+        assert collection["Wolf"] == Egg("Wolf", quantity=0)
         assert collection["Whale"] == Egg("Whale", quantity=42)
         assert collection["Horse"] == Egg("Horse", quantity=2)
-        with pytest.raises(KeyError):
-            _ = collection["Wolf"]
 
     def test__iter__ok(self):
         collection = EggCollection({"Wolf": 1, "Whale": 42, "Horse": 2})
@@ -146,17 +147,14 @@ class TestEggCollection:
         collection.remove_egg(Egg(egg2_name))
         collection.remove_egg(Egg(egg3_name))
 
+        assert collection[egg1_name] == Egg(egg1_name, quantity=egg1_quantity - 1)
         assert collection[egg2_name] == Egg(egg2_name, quantity=egg2_quantity - 1)
         assert collection[egg3_name] == Egg(egg3_name, quantity=egg3_quantity - 1)
-        with pytest.raises(KeyError):
-            # Wolf should have been removed because quantity was 1 and
-            # after removing 1, no Wolf eggs should remain.
-            _ = collection[egg1_name]
 
     def test_get_standard_egg_collection_ok(self):
         egg1_name, egg1_quantity = "Wolf", 1
         egg2_name, egg2_quantity = "Whale", 42  # quest egg
-        egg3_name, egg3_quantity = "Fox", 0  # 0 quantity
+        egg3_name, egg3_quantity = "Fox", 0
         egg4_name, egg4_quantity = "PandaCub", 69
         collection = EggCollection({
             egg1_name: egg1_quantity,
@@ -167,12 +165,15 @@ class TestEggCollection:
 
         result: EggCollection = collection.get_quest_egg_collection()
 
-        assert result == EggCollection({egg1_name: egg1_quantity, egg4_name: egg4_quantity})
+        expected = EggCollection({
+            egg1_name: egg1_quantity, egg3_name: egg3_quantity, egg4_name: egg4_quantity
+        })
+        assert result == expected
 
     def test_get_quest_egg_collection_ok(self):
         egg1_name, egg1_quantity = "Wolf", 1  # not quest egg
         egg2_name, egg2_quantity = "Whale", 42
-        egg3_name, egg3_quantity = "Horse", 0  # 0 quantity
+        egg3_name, egg3_quantity = "Horse", 0
         egg4_name, egg4_quantity = "Axolotl", 69
         collection = EggCollection({
             egg1_name: egg1_quantity,
@@ -183,4 +184,7 @@ class TestEggCollection:
 
         result: EggCollection = collection.get_quest_egg_collection()
 
-        assert result == EggCollection({egg2_name: egg2_quantity, egg4_name: egg4_quantity})
+        expected = EggCollection({
+            egg2_name: egg2_quantity, egg3_name: egg3_quantity, egg4_name: egg4_quantity
+        })
+        assert result == expected

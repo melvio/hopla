@@ -40,6 +40,8 @@ class Egg:
 
     def can_be_hatched_by(self, potion: HatchingPotion) -> bool:
         """Return true if the specified potion can hatch this egg."""
+        if potion.quantity == 0 or self.quantity == 0:
+            return False
         if self.is_quest_egg():
             return potion.is_standard_hatching_potion()
         return True
@@ -47,18 +49,17 @@ class Egg:
 
 @dataclass
 class EggCollection:
-    """Collection of eggs backed by a Dict[str, Egg].
+    """Collection of eggs, backed by a Dict[str, Egg]."""
 
-    This data structure guarantees that the eggs in the collection have at least
-    a quantity that is larger than 0. When the all the eggs of a certain type
-    are removed, then egg will be removed from the collection in its entirely.
-    """
-
-    def __init__(self, eggs: Dict[str, int]):
+    def __init__(self, eggs: Dict[str, int] = None):
+        if eggs is None:
+            eggs = {}
         self.__eggs: Dict[str, Egg] = {
             name: Egg(name, quantity=quantity) for (name, quantity) in eggs.items()
-            if quantity > 0
         }
+
+    def __len__(self) -> int:
+        return len(self.__eggs)
 
     def __iter__(self):
         return iter(self.__eggs)
@@ -77,10 +78,10 @@ class EggCollection:
         """
         if self.__eggs.get(egg.name) is None:
             raise EggException(f"{egg.name} was not in the collection {self.__eggs}")
+        if self.__eggs[egg.name].quantity == 0:
+            raise EggException(f"We had 0 {egg.name} in the collection. Cannot remove any more.")
 
         self.__eggs[egg.name].quantity -= 1
-        if self.__eggs[egg.name].quantity == 0:
-            del self.__eggs[egg.name]
 
         return self
 

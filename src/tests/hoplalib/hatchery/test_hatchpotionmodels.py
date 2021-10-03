@@ -86,16 +86,18 @@ class TestHatchingPotion:
 
 
 class TestHatchingPotionCollection:
+    def test__init__empty_ok(self):
+        collection = HatchingPotionCollection()
+        assert len(collection) == 0
+
     def test__init__ok(self):
-        # "Base" should be filtered because we don't have that potion.
         potion_dict = {"Base": 0, "Moonglow": 42, "Sunset": 2}
 
         collection = HatchingPotionCollection(potion_dict)
 
+        assert collection["Base"] == HatchingPotion("Base", quantity=0)
         assert collection["Moonglow"] == HatchingPotion("Moonglow", quantity=42)
         assert collection["Sunset"] == HatchingPotion("Sunset", quantity=2)
-        with pytest.raises(KeyError):
-            _ = collection["Base"]
 
     def test__iter__ok(self):
         collection = HatchingPotionCollection({"Base": 1, "Moonglow": 42, "Sunset": 2})
@@ -113,28 +115,28 @@ class TestHatchingPotionCollection:
 
         assert collection["Base"] == HatchingPotion("Base", quantity=1)
         assert collection["Moonglow"] == HatchingPotion("Moonglow", quantity=42)
-        with pytest.raises(KeyError):
-            # Sunset should have been removed because quantity=0
-            _ = collection["Sunset"]
+        assert collection["Sunset"] == HatchingPotion("Sunset", quantity=0)
 
     def test_remove_hatching_potion_ok(self):
-        base_quantity = 3
-        moonglow_quantity = 42
-        collection = HatchingPotionCollection(
-            {"Base": base_quantity, "Moonglow": moonglow_quantity, "Sunset": 1})
+        potion1_quantity = 3
+        potion2_quantity = 42
+        potion3_name, potion3_quantity = "Sunset", 1
+        collection = HatchingPotionCollection({
+            "Base": potion1_quantity,
+            "Moonglow": potion2_quantity,
+            potion3_name: potion3_quantity
+        })
 
         collection.remove_hatching_potion(HatchingPotion("Base"))
         collection.remove_hatching_potion(HatchingPotion("Moonglow"))
-        collection.remove_hatching_potion(HatchingPotion("Sunset"))
+        collection.remove_hatching_potion(HatchingPotion(potion3_name))
 
         assert collection["Base"] == HatchingPotion("Base",
-                                                    quantity=base_quantity - 1)
+                                                    quantity=potion1_quantity - 1)
         assert collection["Moonglow"] == HatchingPotion("Moonglow",
-                                                        quantity=moonglow_quantity - 1)
-        with pytest.raises(KeyError):
-            # Sunset should have been removed because quantity was 1 and
-            # after removing 1, no Sunset potions should remain.
-            _ = collection["Sunset"]
+                                                        quantity=potion2_quantity - 1)
+        assert collection[potion3_name] == HatchingPotion(potion3_name,
+                                                          quantity=potion3_quantity - 1)
 
     def test_remove_hatching_potion_not_available_faile(self):
         collection = HatchingPotionCollection({"Base": 1})

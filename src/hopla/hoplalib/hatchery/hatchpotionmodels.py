@@ -44,18 +44,17 @@ class HatchingPotion:
 
 @dataclass
 class HatchingPotionCollection:
-    """A collection of hatching potions backed by a Dict[str, Egg].
+    """A collection of hatching potions, backed by a Dict[str, Egg]."""
 
-    This data structure guarantees that the potion in the collection have at least
-    a quantity that is larger than 0. When the all the potions of a certain type
-    are removed, then the potion will be removed from the collection in its entirely.
-    """
-
-    def __init__(self, potions: Dict[str, int]):
+    def __init__(self, potions: Dict[str, int] = None):
+        if potions is None:
+            potions = {}
         self.__potions: Dict[str, HatchingPotion] = {
             name: HatchingPotion(name, quantity=quantity) for (name, quantity) in potions.items()
-            if quantity > 0
         }
+
+    def __len__(self) -> int:
+        return len(self.__potions)
 
     def __iter__(self):
         return iter(self.__potions)
@@ -76,8 +75,10 @@ class HatchingPotionCollection:
             raise HatchingPotionException(
                 f"{potion.name} was not in the collection {self.__potions}"
             )
-        self.__potions[potion.name].quantity -= 1
-        if self.__potions[potion.name].quantity == 0:
-            del self.__potions[potion.name]
+        if self.__potions.get(potion.name).quantity == 0:
+            raise HatchingPotionException(
+                f"We had 0 {potion.name} in the collection. Cannot remove any more."
+            )
 
+        self.__potions[potion.name].quantity -= 1
         return self
