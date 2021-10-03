@@ -66,6 +66,9 @@ class EggCollection:
     def __getitem__(self, name: str) -> Egg:
         return self.__eggs[name]
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.__eggs=})"
+
     def remove_egg(self, egg: Egg) -> "EggCollection":
         """Remove a single eggs from the EggCollection.
 

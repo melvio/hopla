@@ -63,6 +63,9 @@ class HatchingPotionCollection:
     def __getitem__(self, name: str) -> HatchingPotion:
         return self.__potions[name]
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.__potions=})"
+
     def remove_hatching_potion(self, potion: HatchingPotion) -> "HatchingPotionCollection":
         """Remove a single hatching potion from this collection.
 
