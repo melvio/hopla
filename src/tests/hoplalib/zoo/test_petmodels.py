@@ -411,7 +411,7 @@ class TestPetMountPair:
             assert pet.feed_status is not None
 
         if mount is not None:
-            assert mount.mount_name is not None
+            assert mount.name is not None
             assert mount.is_available() in [True, False, None]
 
     def test__init__pet_mount_diff_names_fail(self):

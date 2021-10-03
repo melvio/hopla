@@ -179,11 +179,11 @@ class Mount:
         :param mount_name:
         :param availability_status:
         """
-        self.mount_name = mount_name
+        self.name = mount_name
         self._availability_status = availability_status
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}({self.mount_name}: {self._availability_status})"
+        return f"{self.__class__.__name__}({self.name}: {self._availability_status})"
 
     def is_available(self) -> bool:
         """Return true if the user has the mount right now."""
@@ -205,8 +205,8 @@ class PetMountPair:
         Raise an exception if the names of the pet and mount do not match.
         """
         if pet and mount:
-            if pet.name != mount.mount_name:
-                msg = f"pet name '{pet.name}' must equal mount name '{mount.mount_name}'"
+            if pet.name != mount.name:
+                msg = f"pet name '{pet.name}' must equal mount name '{mount.name}'"
                 raise InvalidPetMountPair(msg)
 
         self.pet = pet

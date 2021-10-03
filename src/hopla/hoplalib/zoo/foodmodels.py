@@ -95,17 +95,17 @@ class FoodException(PrintableException):
 @dataclass(frozen=True)
 class Food:
     """A stockpile food item."""
-    food_name: str
+    name: str
 
     def __repr__(self) -> str:
-        return self.__class__.__name__ + f"({self.food_name})"
+        return self.__class__.__name__ + f"({self.name})"
 
     def is_rare_food_item(self) -> bool:
         """
         Return False if the food_item item is a drop food.
         Otherwise, return True.
         """
-        return self.food_name not in FoodData.drop_food_names
+        return self.name not in FoodData.drop_food_names
 
 
 @dataclass
