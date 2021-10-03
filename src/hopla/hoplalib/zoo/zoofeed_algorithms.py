@@ -66,9 +66,9 @@ class ZookeeperFeedPlan:
 
     @property
     def feed_plan(self) -> List[FeedPlanItem]:
-        """Return the feeding plan.
+        """Return the feed plan.
 
-        :return: The feeding plan. This will be empty when
+        :return: The feed plan. This will be empty when
         no feed plan items have been added yet.
         """
         return self.__feed_plan
@@ -79,7 +79,7 @@ class ZookeeperFeedPlan:
 
 
 @dataclass
-class ZooFeedingAlgorithm:
+class ZooFeedAlgorithm:
     """
     This class contains an algorithm that makes a plan to distribute food
     from a food stockpile over pets in a zoo.
@@ -114,13 +114,13 @@ class ZooFeedingAlgorithm:
     def make_plan(self) -> ZookeeperFeedPlan:
         """Make the plan.
 
-        This function removes food from the stockpile and adds feeding items
-        to the feeding plan.
+        This function removes food from the stockpile and adds feed items
+        to the feed plan.
         """
         helper = ZooHelper(self.__zoo)
         gen1_zoo: Zoo = helper.filter_on_pet(Pet.is_generation1_pet)
         quest_zoo: Zoo = helper.filter_on_pet(Pet.is_quest_pet)
-        magic_zoo: Zoo = helper.filter_on_pet(Pet.is_magic_hatching_pet)
+        magic_zoo: Zoo = helper.filter_on_pet(Pet.is_magic_hatch_pet)
 
         self.__make_plan(gen1_zoo)
         self.__make_plan(quest_zoo)

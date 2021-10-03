@@ -8,7 +8,7 @@ from typing import NoReturn
 import click
 
 from hopla.cli.groupcmds.hatch import hatch_egg
-from hopla.hoplalib.hatchery.hatchdata import EggData, HatchingPotionData
+from hopla.hoplalib.hatchery.hatchdata import EggData, HatchPotionData
 
 log = logging.getLogger()
 
@@ -20,7 +20,7 @@ log = logging.getLogger()
 )
 @click.argument(
     "potion_name", metavar="POTION_NAME",
-    type=click.Choice(sorted(HatchingPotionData.hatching_potion_names))
+    type=click.Choice(sorted(HatchPotionData.hatch_potion_names))
 )
 def standard_egg(egg_name: str, potion_name: str) -> NoReturn:
     """Hatch a standard egg.

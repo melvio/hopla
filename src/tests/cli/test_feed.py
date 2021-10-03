@@ -47,9 +47,9 @@ class TestFeedCliCommand:
         pet_name = "Wolf-Zombie"
         food_name = "RottenMeat"
 
-        feeding_status_expected = 15
+        feed_status_expected = 15
         message_expected = f"{pet_name} really likes the Rotten Meat!"
-        response_content = {"success": True, "data": feeding_status_expected,
+        response_content = {"success": True, "data": feed_status_expected,
                             "message": message_expected, "userV": 59173,
                             "appVersion": "4.205.1"}
 
@@ -60,7 +60,7 @@ class TestFeedCliCommand:
 
         mock_feed_api_call.assert_called_once_with()  # no args
         assert result.exit_code == 0
-        assert f'"feeding_status": {feeding_status_expected},' in result.output
+        assert f'"feed_status": {feed_status_expected},' in result.output
         assert f'"message": "{message_expected}"' in result.output
 
     @pytest.mark.parametrize(
@@ -76,13 +76,13 @@ class TestFeedCliCommand:
     def test_feed_pet_with_favorite_food_ok(self, mock_feed_api_call: MagicMock,
                                             pet_name: str,
                                             expected_favorite_food: str):
-        feeding_status_expected = 10
+        feed_status_expected = 10
         # Side note: This message_expected variable is not perfect because the user' 'text'
         # naming for pets and foods differs often slightly from their 'key'
         # values (e.g. RottenMeat vs. Rotten Meat, DolphinRed vs. Red Dolphin). But that
         # is not relevant here, so we are happy anyways.
         message_expected = f'{pet_name} really likes the {expected_favorite_food}!'
-        response_content = {'success': True, 'data': feeding_status_expected,
+        response_content = {'success': True, 'data': feed_status_expected,
                             'message': message_expected}
         mock_feed_api_call.return_value = MockFeedResponse(json=response_content)
 
@@ -91,7 +91,7 @@ class TestFeedCliCommand:
 
         mock_feed_api_call.assert_called_once_with()  # no args
         assert result.exit_code == 0
-        assert f'"feeding_status": {feeding_status_expected},' in result.output
+        assert f'"feed_status": {feed_status_expected},' in result.output
         assert f'"message": "{message_expected}"' in result.output
 
     @patch("hopla.cli.feed.HabiticaUserRequest.request_user_data_or_exit")
@@ -118,7 +118,7 @@ class TestFeedCliCommand:
         result: Result = runner.invoke(feed, [magic_pet_name])
 
         assert result.exit_code == 0
-        assert f'"feeding_status": {expected_feed_data}' in result.stdout
+        assert f'"feed_status": {expected_feed_data}' in result.stdout
         assert f'"message": "{expected_msg}"' in result.stdout
 
     @patch("hopla.cli.feed.FeedPostRequester.post_feed_request")
@@ -191,7 +191,7 @@ class TestFeedCliCommand:
         )
         assert result.exit_code == 0
         assert response_msg in result.stdout
-        assert f'"feeding_status": {response_data}' in result.stdout
+        assert f'"feed_status": {response_data}' in result.stdout
 
 
 class TestPrintFavoriteFood:

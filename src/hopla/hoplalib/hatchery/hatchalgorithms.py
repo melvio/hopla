@@ -6,8 +6,8 @@ from dataclasses import dataclass
 from typing import Any, List
 
 from hopla.hoplalib.hatchery.eggmodels import Egg, EggCollection
-from hopla.hoplalib.hatchery.hatchpotionmodels import HatchingPotion, \
-    HatchingPotionCollection
+from hopla.hoplalib.hatchery.hatchpotionmodels import HatchPotion, \
+    HatchPotionCollection
 from hopla.hoplalib.zoo.petmodels import Pet
 
 
@@ -15,7 +15,7 @@ from hopla.hoplalib.zoo.petmodels import Pet
 class HatchPlanItem:
     """Plan to hatch a specific egg with a specified potion."""
     egg: Egg
-    potion: HatchingPotion
+    potion: HatchPotion
 
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, HatchPlanItem) is False:
@@ -69,7 +69,7 @@ class HatchPlan:
         """Terminal-printable representation of this HatchPlan."""
         return "".join([item.format_item() for item in self.plan])
 
-    def add(self, *, egg: Egg, potion: HatchingPotion) -> "HatchPlan":
+    def add(self, *, egg: Egg, potion: HatchPotion) -> "HatchPlan":
         """Make the plan to hatch the egg with the specified potion.
 
         :param egg:
@@ -80,14 +80,13 @@ class HatchPlan:
         self.plan.append(hatch_plan_item)
         return self
 
-    def remove_hatching_if_pet_available(self, pets: List[Pet]) -> "HatchPlan":
+    def remove_hatch_item_if_pet_available(self, pets: List[Pet]) -> "HatchPlan":
         """Remove the hatching plan items for pets that are available.
 
         :param pets: list of pets to check for clashes with the hatching
         :return: self for chaining
         """
-        pet_names: List[str] = [pet.pet_name for pet in pets
-                                if pet.is_available()]
+        pet_names: List[str] = [pet.name for pet in pets if pet.is_available()]
 
         self.plan = [hatch_item for hatch_item in self.plan
                      if hatch_item.result_pet_name() not in pet_names]
@@ -104,7 +103,7 @@ class HatchPlanMaker:
 
     def __init__(self, *,
                  egg_collection: EggCollection,
-                 hatch_potion_collection: HatchingPotionCollection):
+                 hatch_potion_collection: HatchPotionCollection):
         self.__eggs = egg_collection
         self.__potions = hatch_potion_collection
         self.__hatch_plan = HatchPlan()
@@ -123,10 +122,10 @@ class HatchPlanMaker:
         for egg_name in self.__eggs:
             egg: Egg = self.__eggs[egg_name]
             for potion_name in self.__potions:
-                potion: HatchingPotion = self.__potions[potion_name]
+                potion: HatchPotion = self.__potions[potion_name]
                 if egg.can_be_hatched_by(potion):
                     self.__hatch_plan.add(egg=egg, potion=potion)
                     self.__eggs.remove_egg(egg)
-                    self.__potions.remove_hatching_potion(potion)
+                    self.__potions.remove_hatch_potion(potion)
 
         return self.__hatch_plan

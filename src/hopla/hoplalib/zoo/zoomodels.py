@@ -6,7 +6,7 @@ from typing import Callable, Dict
 from dataclasses import dataclass
 
 from hopla.cli.groupcmds.get_user import HabiticaUser
-from hopla.hoplalib.zoo.foodmodels import FeedingStatus
+from hopla.hoplalib.zoo.foodmodels import FeedStatus
 from hopla.hoplalib.zoo.petmodels import Mount, Pet, PetMountPair
 
 Zoo = Dict[str, PetMountPair]
@@ -78,7 +78,7 @@ class ZooBuilder:
 
         # loop through the pets
         for pet_name, feed_status in self.pets.items():
-            pet = Pet(pet_name, feeding_status=FeedingStatus(feed_status))
+            pet = Pet(pet_name, feed_status=FeedStatus(feed_status))
 
             if self.mounts.get(pet_name) is not None:
                 mount = Mount(

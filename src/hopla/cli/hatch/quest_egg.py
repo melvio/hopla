@@ -7,7 +7,7 @@ import logging
 import click
 
 from hopla.cli.groupcmds.hatch import hatch_egg
-from hopla.hoplalib.hatchery.hatchdata import EggData, HatchingPotionData
+from hopla.hoplalib.hatchery.hatchdata import EggData, HatchPotionData
 
 log = logging.getLogger()
 
@@ -19,7 +19,7 @@ log = logging.getLogger()
 )
 @click.argument(
     "potion_name",
-    type=click.Choice(HatchingPotionData.drop_hatching_potion_names)
+    type=click.Choice(HatchPotionData.drop_hatch_potion_names)
 )
 def quest_egg(egg_name: str, potion_name: str):
     """hatch a quest egg.

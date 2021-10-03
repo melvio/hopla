@@ -15,12 +15,12 @@ from hopla.hoplalib.outputformatter import JsonFormatter
 def get_feed_data_or_exit(feed_response: requests.Response) -> Union[NoReturn, dict]:
     """
     Given a feed response, if the API request was successful, return interesting
-    feeding information. On failure, exit with an error message.
+    feed information. On failure, exit with an error message.
     """
     response_json = feed_response.json()
     if response_json["success"]:
         feed_data = {
-            "feeding_status": response_json["data"],
+            "feed_status": response_json["data"],
             "message": response_json["message"]
         }
 

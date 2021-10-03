@@ -6,8 +6,8 @@ import pytest
 
 from hopla.hoplalib.errors import YouFoundABugRewardError
 from hopla.hoplalib.hatchery.eggmodels import Egg, EggCollection, EggException
-from hopla.hoplalib.hatchery.hatchdata import EggData, HatchingPotionData
-from hopla.hoplalib.hatchery.hatchpotionmodels import HatchingPotion
+from hopla.hoplalib.hatchery.hatchdata import EggData, HatchPotionData
+from hopla.hoplalib.hatchery.hatchpotionmodels import HatchPotion
 
 _SAMPLE_SIZE = 9
 
@@ -60,12 +60,12 @@ class TestEgg:
     @pytest.mark.parametrize(
         "egg_name,potion_name",
         list(zip(EggData.drop_egg_names,
-                 HatchingPotionData.hatching_potion_names))
+                 HatchPotionData.hatch_potion_names))
     )
     def test_can_be_hatched_by_standard_egg_true(self, egg_name: str,
                                                  potion_name: str):
         egg = Egg(egg_name)
-        potion = HatchingPotion(potion_name)
+        potion = HatchPotion(potion_name)
 
         # standard eggs can be hatched by any potion
         assert egg.can_be_hatched_by(potion) is True
@@ -73,13 +73,13 @@ class TestEgg:
     @pytest.mark.parametrize(
         "egg_name,potion_name",
         list(zip(EggData.quest_egg_names,
-                 HatchingPotionData.drop_hatching_potion_names))
+                 HatchPotionData.drop_hatch_potion_names))
     )
     def test_can_be_hatched_by_magic_egg_drop_potion_true(self,
                                                           egg_name: str,
                                                           potion_name: str):
         egg = Egg(egg_name)
-        potion = HatchingPotion(potion_name)
+        potion = HatchPotion(potion_name)
 
         # quest eggs can be hatched by standard potion
         assert egg.can_be_hatched_by(potion) is True
@@ -88,14 +88,14 @@ class TestEgg:
         "egg_name,potion_name",
         list(zip(
             random.sample(EggData.quest_egg_names, k=_SAMPLE_SIZE),
-            random.sample(HatchingPotionData.non_drop_hatching_potion_names, k=_SAMPLE_SIZE)
+            random.sample(HatchPotionData.non_drop_hatch_potion_names, k=_SAMPLE_SIZE)
         ))
     )
     def test_can_be_hatched_by_magic_egg_non_drop_potion_false(self,
                                                                egg_name: str,
                                                                potion_name: str):
         egg = Egg(egg_name)
-        potion = HatchingPotion(potion_name)
+        potion = HatchPotion(potion_name)
 
         # quest eggs cannot be hatched by non standard potion
         assert egg.can_be_hatched_by(potion) is False

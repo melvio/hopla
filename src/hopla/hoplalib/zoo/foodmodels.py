@@ -11,7 +11,7 @@ from hopla.hoplalib.errors import PrintableException
 from hopla.hoplalib.zoo.fooddata import FoodData
 
 
-class InvalidFeedingStatus(PrintableException):
+class InvalidFeedStatus(PrintableException):
     """Exception raised when a pet is invalid."""
 
     def __init__(self, msg: str, *, pet=None):
@@ -19,69 +19,69 @@ class InvalidFeedingStatus(PrintableException):
         self.pet = pet
 
 
-class FeedingStatus:
-    """A class implementing feeding status logic for pets.
+class FeedStatus:
+    """A class implementing feed status logic for pets.
 
     Every freshly hatched pet starts at 5.
     50 would turn the pet into a mount, so 50 is impossible to reach.
-    The feeding status of 0 means that you had the pet before, but
+    The feed status of 0 means that you had the pet before, but
     you released it.
     """
     PET_GREW_UP_TO_MOUNT: Final[int] = -1
     PET_RELEASED: Final[int] = 0
 
-    START_FEEDING_STATE: Final[int] = 5
+    START_FEED_STATE: Final[int] = 5
     MAX_FED_STATE: Final[int] = 49
     FULLY_FED_STATE: Final[int] = 50
 
     FAVORITE_INCREMENT: Final[int] = 5
     NON_FAVORITE_INCREMENT: Final[int] = 2
 
-    def __init__(self, feeding_status: int = START_FEEDING_STATE):
-        invalid_status = (feeding_status < FeedingStatus.PET_GREW_UP_TO_MOUNT
-                          or feeding_status in [1, 2, 3, 4]
-                          or feeding_status > FeedingStatus.MAX_FED_STATE)
+    def __init__(self, feed_status: int = START_FEED_STATE):
+        invalid_status = (feed_status < FeedStatus.PET_GREW_UP_TO_MOUNT
+                          or feed_status in [1, 2, 3, 4]
+                          or feed_status > FeedStatus.MAX_FED_STATE)
         if invalid_status:
-            raise InvalidFeedingStatus(f"{feeding_status=} is invalid")
+            raise InvalidFeedStatus(f"{feed_status=} is invalid")
 
-        self.__feeding_status = feeding_status
+        self.__feed_status = feed_status
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}({self.__feeding_status})"
+        return f"{self.__class__.__name__}({self.__feed_status})"
 
     def __eq__(self, other):
-        return isinstance(other, FeedingStatus) and int(other) == int(self)
+        return isinstance(other, FeedStatus) and int(other) == int(self)
 
     def __hash__(self):
-        return hash(self.__feeding_status)
+        return hash(self.__feed_status)
 
     def __int__(self) -> int:
-        return self.__feeding_status
+        return self.__feed_status
 
     def is_pet_available(self):
         """Return True if the user currently has this pet."""
-        return self.__feeding_status not in [
-            FeedingStatus.PET_GREW_UP_TO_MOUNT, FeedingStatus.PET_RELEASED
+        return self.__feed_status not in [
+            FeedStatus.PET_GREW_UP_TO_MOUNT, FeedStatus.PET_RELEASED
         ]
 
     def required_food_items_to_become_mount(self, is_favorite_food: bool) -> int:
         """Return how many items of food we need to give to turn a pet into a mount."""
-        target = FeedingStatus.FULLY_FED_STATE - self.__feeding_status
+        target = FeedStatus.FULLY_FED_STATE - self.__feed_status
         if is_favorite_food:
-            required_food = math.ceil(target / FeedingStatus.FAVORITE_INCREMENT)
+            required_food = math.ceil(target / FeedStatus.FAVORITE_INCREMENT)
         else:
-            required_food = math.ceil(target / FeedingStatus.NON_FAVORITE_INCREMENT)
+            required_food = math.ceil(target / FeedStatus.NON_FAVORITE_INCREMENT)
         return required_food
 
     def to_percentage(self) -> int:
         """
-        Turn feeding status into percentage understandable by the
+        Turn feed status into percentage understandable by the
         website user.
         <https://habitica.fandom.com/wiki/Food_Preferences>
         """
-        if self.__feeding_status == -1:
+        if self.__feed_status == -1:
             return 100  # The pet is now a mount
-        return self.__feeding_status * 2
+        return self.__feed_status * 2
 
 
 class FoodException(PrintableException):
@@ -95,17 +95,17 @@ class FoodException(PrintableException):
 @dataclass(frozen=True)
 class Food:
     """A stockpile food item."""
-    food_name: str
+    name: str
 
     def __repr__(self) -> str:
-        return self.__class__.__name__ + f"({self.food_name})"
+        return self.__class__.__name__ + f"({self.name})"
 
     def is_rare_food_item(self) -> bool:
         """
         Return False if the food_item item is a drop food.
         Otherwise, return True.
         """
-        return self.food_name not in FoodData.drop_food_names
+        return self.name not in FoodData.drop_food_names
 
 
 @dataclass

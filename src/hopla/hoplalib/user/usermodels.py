@@ -51,7 +51,7 @@ class HabiticaUser:
     def get_pets(self) -> Dict[str, int]:
         """Return the pets of a user.
 
-        :return: A dictionary with pet_name as key and feeding_status as value.
+        :return: A dictionary with pet_name as key and feed_status as value.
         For example: {"Spider-Base": -1, "TRex-Skeleton": 5}
         """
         return self.get_inventory()["pets"]
@@ -64,10 +64,10 @@ class HabiticaUser:
         """
         return self.get_inventory()["eggs"]
 
-    def get_hatching_potions(self) -> Dict[str, int]:
+    def get_hatch_potions(self) -> Dict[str, int]:
         """Return the hatching potions of a user.
 
-        :return: A dict with hatching_potion_names as keys and amount as value.
+        :return: A dict with hatch_potion_names as keys and amount as value.
         For example: { "Desert": 456, "Glow": 0}
         """
         return self.get_inventory()["hatchingPotions"]

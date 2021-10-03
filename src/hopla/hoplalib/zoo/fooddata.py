@@ -9,7 +9,7 @@ class FoodData:
     the relationship between them.
     """
 
-    hatching_potion_favorite_food_mapping = {
+    hatch_potion_favorite_food_mapping = {
         "Base": "Meat",
         "White": "Milk",
         "Desert": "Potatoe",
@@ -38,10 +38,7 @@ class FoodData:
     * hopla api content | jq. wackyHatchingPotions
     """
 
-    drop_hatching_potions = list(hatching_potion_favorite_food_mapping.keys())
-    """A list of the non magic, non special hatching potions"""
-
-    drop_food_names = list(hatching_potion_favorite_food_mapping.values())
+    drop_food_names = list(hatch_potion_favorite_food_mapping.values())
     """A list of food items that can be dropped by doing tasks.
 
     These dont include cakes etc., those are rare collectibles.

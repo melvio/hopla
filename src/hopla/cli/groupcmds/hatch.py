@@ -24,7 +24,7 @@ def hatch_egg(*, egg_name: str, potion_name: str) -> NoReturn:
     """
     requester = HatchRequester(
         egg_name=egg_name,
-        hatching_potion_name=potion_name
+        hatch_potion_name=potion_name
     )
     response: requests.Response = requester.post_hatch_egg_request()
     json: dict = response.json()

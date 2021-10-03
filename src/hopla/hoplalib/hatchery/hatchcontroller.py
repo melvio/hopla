@@ -16,12 +16,12 @@ class HatchRequester(HabiticaRequest):
     [APIDOCS](https://habitica.com/apidoc/#api-User-UserHatch)
     """
     egg_name: str
-    hatching_potion_name: str
+    hatch_potion_name: str
 
     @property
     def url(self) -> str:
-        """Hatch endpoint with egg and hatching_potion as path params."""
-        path_extension = f"/user/hatch/{self.egg_name}/{self.hatching_potion_name}"
+        """Hatch endpoint with egg and hatch_potion_name as path params."""
+        path_extension = f"/user/hatch/{self.egg_name}/{self.hatch_potion_name}"
         return UrlBuilder(path_extension=path_extension).url
 
     def post_hatch_egg_request(self) -> requests.Response:
@@ -35,5 +35,5 @@ class HatchRequester(HabiticaRequest):
         response: requests.Response = self.post_hatch_egg_request()
         response_json: Dict[str, Any] = response.json()
         if response_json["success"] is True:
-            return f"Successfully hatched a {self.egg_name}-{self.hatching_potion_name}."
+            return f"Successfully hatched a {self.egg_name}-{self.hatch_potion_name}."
         return f"{response_json['error']}: {response_json['message']}"

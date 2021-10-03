@@ -11,7 +11,7 @@ import requests
 
 from hopla.cli.groupcmds.get_user import HabiticaUser, HabiticaUserRequest
 from hopla.hoplalib.errors import YouFoundABugRewardError
-from hopla.hoplalib.zoo.feeding_clickhelper import get_feed_data_or_exit
+from hopla.hoplalib.zoo.feed_clickhelper import get_feed_data_or_exit
 from hopla.hoplalib.zoo.fooddata import FoodData
 from hopla.hoplalib.zoo.foodmodels import FoodStockpile, FoodStockpileBuilder
 from hopla.hoplalib.zoo.petcontroller import FeedPostRequester
@@ -55,7 +55,7 @@ def get_feed_times_until_mount(pet_name: str, food_name: str) -> Union[int, NoRe
     pet: Pet = pair.pet
     if pair.can_feed_pet() is False:
         sys.exit(f"Can't feed pet {pet_name}. "
-                 + pet.feeding_status_explanation())
+                 + pet.feed_status_explanation())
 
     return pet.required_food_items_until_mount(food_name)
 
