@@ -71,7 +71,7 @@ class TestHatchPlanItem:
 
         result: str = item.format_item()
 
-        expected = f"The '{egg_name}' egg will be hatched by the '{potion_name}' potion."
+        expected = f"A {egg_name} egg will be hatched by a {potion_name} potion.\n"
         assert result == expected
 
 
@@ -97,6 +97,30 @@ class TestHatchPlan:
 
         assert result == f"HatchPlan([HatchPlanItem({egg_name}: {potion_name})])"
 
+    def test_format_plan(self):
+        plan = HatchPlan() \
+            .add(egg=Egg("Fox"), potion=HatchingPotion("Dessert")) \
+            .add(egg=Egg("Seahorse"), potion=HatchingPotion("Desert"))
+
+        result: str = plan.format_plan()
+
+        expected: str = (
+            "A Fox egg will be hatched by a Dessert potion.\n"
+            "A Seahorse egg will be hatched by a Desert potion.\n"
+        )
+
+        assert result == expected
+
+    def test_is_empty_true(self):
+        plan = HatchPlan()
+        assert plan.is_empty() is True
+        assert len(plan) == 0
+
+    def test_is_empty_false(self):
+        plan = HatchPlan().add(egg=Egg("Egg"), potion=HatchingPotion("Red"))
+        assert plan.is_empty() is False
+        assert len(plan) == 1
+
     def test_add_ok(self):
         hatch_plan = HatchPlan()
         egg = Egg("Seahorse")
@@ -106,29 +130,29 @@ class TestHatchPlan:
         assert len(hatch_plan) == 1
         assert HatchPlanItem(egg, potion) in hatch_plan
 
-    def test_remove_hatch_if_pets_available_empty_ok(self):
+    def test_remove_hatching_if_pet_available_empty_ok(self):
         empty: List[Pet] = []
         egg = Egg("Wolf")
         potion = HatchingPotion("Ghost")
         hatch_plan = HatchPlan().add(egg=egg, potion=potion)
 
-        hatch_plan.remove_hatch_if_pets_available(empty)
+        hatch_plan.remove_hatching_if_pet_available(empty)
 
         assert len(hatch_plan) == 1
         assert HatchPlanItem(egg, potion) in hatch_plan
 
-    def test_remove_hatch_if_pets_available_yes_available_ok(self):
+    def test_remove_hatching_if_pet_available_yes_available_ok(self):
         pets: List[Pet] = [Pet("Wolf-Ghost", feeding_status=FeedingStatus(5))]
         egg = Egg("Wolf")
         potion = HatchingPotion("Ghost")
         hatch_plan = HatchPlan().add(egg=egg, potion=potion)
 
-        hatch_plan.remove_hatch_if_pets_available(pets)
+        hatch_plan.remove_hatching_if_pet_available(pets)
 
         assert len(hatch_plan) == 0
         assert HatchPlanItem(egg, potion) not in hatch_plan
 
-    def test_remove_hatch_if_pets_available_yes_and_no_available_ok(self):
+    def test_remove_hatching_if_pet_available_yes_and_no_available_ok(self):
         # 1. Wolf-Ghost is available, so that one should be filtered out.
         # 2. However, even though Wolf-Base is in the list, it is not available because
         #    feedings status is -1.
@@ -143,7 +167,7 @@ class TestHatchPlan:
             .add(egg=egg, potion=ghost_potion) \
             .add(egg=egg, potion=base_potion)
 
-        hatch_plan.remove_hatch_if_pets_available(pets)
+        hatch_plan.remove_hatching_if_pet_available(pets)
 
         assert len(hatch_plan) == 1
         assert HatchPlanItem(egg, base_potion) in hatch_plan

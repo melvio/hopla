@@ -19,7 +19,7 @@ class MockHatchRequester:
     def __init__(self, response_json):
         self._response_json = response_json
 
-    def post_hatch_egg(self):
+    def post_hatch_egg_request(self):
         return MockHatchResponse(self._response_json)
 
 
