@@ -104,6 +104,7 @@ class TestEgg:
 class TestEggCollection:
     def test__init__empty__ok(self):
         collection = EggCollection()
+        assert collection == EggCollection({})
         assert len(collection) == 0
 
     def test__init__ok(self):

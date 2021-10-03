@@ -88,6 +88,7 @@ class TestHatchingPotion:
 class TestHatchingPotionCollection:
     def test__init__empty_ok(self):
         collection = HatchingPotionCollection()
+        assert collection == HatchingPotionCollection({})
         assert len(collection) == 0
 
     def test__init__ok(self):
