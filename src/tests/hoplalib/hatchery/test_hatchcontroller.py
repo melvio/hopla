@@ -12,7 +12,7 @@ class TestHatchRequester:
         ("Fox", "Polkadot")
     ])
     def test_url(self, egg_name: str, potion_name: str):
-        requester = HatchRequester(egg_name=egg_name, hatching_potion_name=potion_name)
+        requester = HatchRequester(egg_name=egg_name, hatch_potion_name=potion_name)
 
         result_url: str = requester.url
 

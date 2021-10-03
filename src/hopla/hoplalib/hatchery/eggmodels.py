@@ -7,7 +7,7 @@ from typing import Dict
 
 from hopla.hoplalib.errors import YouFoundABugRewardError
 from hopla.hoplalib.hatchery.hatchdata import EggData
-from hopla.hoplalib.hatchery.hatchpotionmodels import HatchingPotion
+from hopla.hoplalib.hatchery.hatchpotionmodels import HatchPotion
 
 
 class EggException(YouFoundABugRewardError):
@@ -38,12 +38,12 @@ class Egg:
         """Return True if this is a quest egg. Else False"""
         return self.name in EggData.quest_egg_names
 
-    def can_be_hatched_by(self, potion: HatchingPotion) -> bool:
+    def can_be_hatched_by(self, potion: HatchPotion) -> bool:
         """Return true if the specified potion can hatch this egg."""
         if potion.quantity == 0 or self.quantity == 0:
             return False
         if self.is_quest_egg():
-            return potion.is_standard_hatching_potion()
+            return potion.is_standard_hatch_potion()
         return True
 
 

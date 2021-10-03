@@ -120,7 +120,7 @@ class ZooFeedAlgorithm:
         helper = ZooHelper(self.__zoo)
         gen1_zoo: Zoo = helper.filter_on_pet(Pet.is_generation1_pet)
         quest_zoo: Zoo = helper.filter_on_pet(Pet.is_quest_pet)
-        magic_zoo: Zoo = helper.filter_on_pet(Pet.is_magic_hatching_pet)
+        magic_zoo: Zoo = helper.filter_on_pet(Pet.is_magic_hatch_pet)
 
         self.__make_plan(gen1_zoo)
         self.__make_plan(quest_zoo)

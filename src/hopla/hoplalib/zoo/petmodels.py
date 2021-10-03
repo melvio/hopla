@@ -6,6 +6,7 @@ from typing import Optional
 
 from hopla.hoplalib.common import GlobalConstants
 from hopla.hoplalib.errors import PrintableException, YouFoundABugRewardError
+from hopla.hoplalib.hatchery.hatchdata import HatchPotionData
 from hopla.hoplalib.zoo.fooddata import FoodData
 from hopla.hoplalib.zoo.foodmodels import FeedStatus
 from hopla.hoplalib.zoo.petdata import PetData
@@ -49,7 +50,7 @@ class Pet:
         return f"{self.__class__.__name__}({self.pet_name}: {self.feed_status})"
 
     @property
-    def hatching_potion(self) -> Optional[str]:
+    def hatch_potion_name(self) -> Optional[str]:
         """The hatching potion used to hatch the egg this pet came from."""
         if self.pet_name in PetData.rare_pet_names:
             return None
@@ -113,8 +114,8 @@ class Pet:
             return default_value_for_all_favorite_food
 
         if self.has_just_1_favorite_food():
-            return (FoodData.hatching_potion_favorite_food_mapping
-                    .get(self.hatching_potion))
+            return (FoodData.hatch_potion_favorite_food_mapping
+                    .get(self.hatch_potion_name))
 
         raise InvalidPet(f"Could not find the feed habits of this {self.pet_name=}",
                          pet=self)  # pragma: no cover
@@ -150,16 +151,16 @@ class Pet:
         """
         return self.pet_name in PetData.quest_pet_names
 
-    def is_magic_hatching_pet(self) -> bool:
+    def is_magic_hatch_pet(self) -> bool:
         """Return True if this pet is hatched from a magic potion."""
         return self.pet_name in PetData.magic_potion_pet_names
 
-    def is_from_drop_hatching_potions(self) -> bool:
+    def is_from_drop_hatch_potions(self) -> bool:
         """
         Return True if the pet was hatched from one of the 'ordinary'
         potions. (Such as: Base, Desert, ...).
         """
-        return self.hatching_potion in FoodData.drop_hatching_potions
+        return self.hatch_potion_name in HatchPotionData.drop_hatch_potion_names
 
 
 @dataclass

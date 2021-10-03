@@ -10,7 +10,7 @@ import click
 from hopla.hoplalib.hatchery.eggmodels import EggCollection
 from hopla.hoplalib.hatchery.hatchalgorithms import HatchPlan, HatchPlanMaker
 from hopla.hoplalib.hatchery.hatchcontroller import HatchRequester
-from hopla.hoplalib.hatchery.hatchpotionmodels import HatchingPotionCollection
+from hopla.hoplalib.hatchery.hatchpotionmodels import HatchPotionCollection
 from hopla.hoplalib.throttling import ApiRequestThrottler
 from hopla.hoplalib.user.usercontroller import HabiticaUserRequest
 from hopla.hoplalib.user.usermodels import HabiticaUser
@@ -23,9 +23,9 @@ def hatch_all():
     """Hatch all the available eggs.
 
     \b
-    hopla hatch-all - Print all possible egg-hatchings that are possible, and,
-                      if the user confirms, hatches the available eggs
-                      with the available hatching potions.
+    hopla hatch-all - Print the possible hatchings, and, if the user
+                      confirms, hatch all the available eggs
+                      with all the available hatching potions.
 
     \b
     Examples:
@@ -40,13 +40,13 @@ def hatch_all():
     """
     user: HabiticaUser = HabiticaUserRequest().request_user_data_or_exit()
     eggs = EggCollection(user.get_eggs())
-    potions = HatchingPotionCollection(user.get_hatching_potions())
+    potions = HatchPotionCollection(user.get_hatch_potions())
     pets: List[Pet] = to_pet_list(user.get_pets())
 
     plan_maker = HatchPlanMaker(egg_collection=eggs, hatch_potion_collection=potions)
     plan: HatchPlan = plan_maker \
         .make_plan() \
-        .remove_hatching_if_pet_available(pets)
+        .remove_hatch_item_if_pet_available(pets)
 
     if plan.is_empty():
         click.echo("The hatch plan is empty. Do you have enough pets and hatching potions?")

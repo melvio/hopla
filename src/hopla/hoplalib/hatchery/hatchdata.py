@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Module with hatching data (i.e. eggs and hatching potions data)
+Module with egg and hatch potion data.
 """
 from typing import List
 
@@ -35,9 +35,9 @@ class EggData:
     """All eggs in habitica."""
 
 
-class HatchingPotionData:
+class HatchPotionData:
     """Class with data about hatching potions."""
-    drop_hatching_potion_names = [
+    drop_hatch_potion_names = [
         "Base", "CottonCandyBlue", "CottonCandyPink", "Desert", "Golden",
         "Red", "Shade", "Skeleton", "White", "Zombie"
     ]
@@ -46,7 +46,7 @@ class HatchingPotionData:
     hopla api content | jq.dropHatchingPotions | jq keys
     """
 
-    magic_hatching_potion_names = [
+    magic_hatch_potion_names = [
         "Amber", "Aquatic", "Aurora", "AutumnLeaf", "BirchBark", "BlackPearl",
         "Bronze", "Celestial", "Cupid", "Ember", "Fairy", "Floral",
         "Fluorite", "Frost", "Ghost", "Glass", "Glow", "Holly", "IcySnow",
@@ -61,17 +61,14 @@ class HatchingPotionData:
     hopla api content | jq .premiumHatchingPotions | jq keys
     """
 
-    wacky_hatching_potion_names = ["Dessert", "Veggie"]
+    wacky_hatch_potion_names = ["Dessert", "Veggie"]
     """Wacky hatching potions. This list was retrieved by using:
            hopla api content | jq '.wackyHatchingPotions|keys'
     """
-    non_drop_hatching_potion_names: List[str] = (
-            magic_hatching_potion_names
-            + wacky_hatching_potion_names
+    non_drop_hatch_potion_names: List[str] = (
+            magic_hatch_potion_names
+            + wacky_hatch_potion_names
     )
 
-    hatching_potion_names: List[str] = (
-            drop_hatching_potion_names
-            + non_drop_hatching_potion_names
-    )
+    hatch_potion_names: List[str] = drop_hatch_potion_names + non_drop_hatch_potion_names
     """All potion names in habitica."""

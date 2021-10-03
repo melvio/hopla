@@ -80,10 +80,10 @@ class TestHabiticaUser:
         user = HabiticaUser(user_dict={"items": {"food": food}})
         assert user.get_food() == food
 
-    def test_get_hatching_potions(self):
-        hatching_potions = {"Base": 10, "SolarSystem": 1009}
-        user = HabiticaUser(user_dict={"items": {"hatchingPotions": hatching_potions}})
-        assert user.get_hatching_potions() == hatching_potions
+    def test_get_hatch_potions(self):
+        hatch_potions = {"Base": 10, "SolarSystem": 1009}
+        user = HabiticaUser(user_dict={"items": {"hatchingPotions": hatch_potions}})
+        assert user.get_hatch_potions() == hatch_potions
 
     def test_get_eggs(self):
         eggs = {"Fox": 1001, "Nudibranch": 9}

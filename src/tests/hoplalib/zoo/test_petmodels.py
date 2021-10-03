@@ -155,10 +155,10 @@ class TestPet:
                 ("Hippo-Golden", "CottonCandyBlue", False),
             ]
         )
-        def test_is_favorite_food_for_hatching_pets(self,
-                                                    pet_name: str,
-                                                    food_name: str,
-                                                    expected_result: bool):
+        def test_is_favorite_food_for_hatch_pets(self,
+                                                 pet_name: str,
+                                                 food_name: str,
+                                                 expected_result: bool):
             pet = Pet(pet_name)
             result = pet.is_favorite_food(food_name)
             assert result is expected_result
@@ -262,7 +262,7 @@ class TestPet:
             assert result is likes_all_food_expected
 
         @pytest.mark.parametrize(
-            "pet_name,expected_from_drop_hatching_potion", [
+            "pet_name,expected_from_drop_hatch_potion", [
                 ("Fox-Golden", True),
                 ("Dragon-Shade", True),
                 ("LionCub-Holly", False),
@@ -277,13 +277,13 @@ class TestPet:
                 ("Gryphon-Gryphatrice", False),
             ]
         )
-        def test_is_from_drop_hatching_potion(self, pet_name: str,
-                                              expected_from_drop_hatching_potion: bool):
+        def test_is_from_drop_hatch_potion(self, pet_name: str,
+                                           expected_from_drop_hatch_potion: bool):
             pet = Pet(pet_name)
 
-            result = pet.is_from_drop_hatching_potions()
+            result = pet.is_from_drop_hatch_potions()
 
-            assert result is expected_from_drop_hatching_potion
+            assert result is expected_from_drop_hatch_potion
 
         @pytest.mark.parametrize(
             "pet_name", random.sample(PetData.quest_pet_names, k=_SAMPLE_SIZE)
@@ -305,9 +305,9 @@ class TestPet:
             "pet_name",
             random.sample(PetData.magic_potion_pet_names, k=_SAMPLE_SIZE)
         )
-        def test_is_magic_hatching_potion_true(self, pet_name: str):
+        def test_is_magic_hatch_potion_true(self, pet_name: str):
             pet = Pet(pet_name)
-            assert pet.is_magic_hatching_pet() is True
+            assert pet.is_magic_hatch_pet() is True
 
         @pytest.mark.parametrize(
             "pet_name",
@@ -315,9 +315,9 @@ class TestPet:
                           PetData.quest_pet_names,
                           k=_SAMPLE_SIZE)
         )
-        def test_is_magic_hatching_potion_false(self, pet_name: str):
+        def test_is_magic_hatch_potion_false(self, pet_name: str):
             pet = Pet(pet_name)
-            assert pet.is_magic_hatching_pet() is False
+            assert pet.is_magic_hatch_pet() is False
 
         @pytest.mark.parametrize(
             "pet,food_name,expected_times", [
