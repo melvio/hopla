@@ -2,7 +2,7 @@
 """
 Module with models for hatching potions.
 """
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Dict
 
 from hopla.hoplalib.errors import YouFoundABugRewardError
@@ -16,15 +16,14 @@ class HatchPotionException(YouFoundABugRewardError):
 @dataclass
 class HatchPotion:
     """A habitica hatching potion."""
+    name: str
+    quantity: int = 1
 
-    def __init__(self, name: str, *, quantity: int = 1):
-        if name not in HatchPotionData.hatch_potion_names:
-            raise HatchPotionException(f"{name} is not a valid hatching potion name.")
-        if quantity < 0:
-            raise HatchPotionException(f"{quantity} is below 0.")
-
-        self.name = name
-        self.quantity = quantity
+    def __post_init__(self):
+        if self.name not in HatchPotionData.hatch_potion_names:
+            raise HatchPotionException(f"{self.name} is not a valid hatching potion name.")
+        if self.quantity < 0:
+            raise HatchPotionException(f"{self.quantity} is below 0.")
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.name}: {self.quantity})"
@@ -46,11 +45,14 @@ class HatchPotion:
 class HatchPotionCollection:
     """A collection of hatching potions, backed by a Dict[str, Egg]."""
 
-    def __init__(self, potions: Dict[str, int] = None):
-        if potions is None:
-            potions = {}
+    potions: Dict[str, int] = field(init=True, compare=False, default_factory=dict)
+    __potions: Dict[str, HatchPotion] = field(init=False)
+
+    def __post_init__(self):
+        """Use the given potions to create __potions."""
         self.__potions: Dict[str, HatchPotion] = {
-            name: HatchPotion(name, quantity=quantity) for (name, quantity) in potions.items()
+            name: HatchPotion(name, quantity=quantity)
+            for (name, quantity) in self.potions.items()
         }
 
     def __len__(self) -> int:
@@ -64,6 +66,11 @@ class HatchPotionCollection:
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.__potions=})"
+
+    def values(self):
+        """Like dict.values but for an HatchPotionCollection."""
+        for potion in self.__potions.values():
+            yield potion
 
     def remove_hatch_potion(self, potion: HatchPotion) -> "HatchPotionCollection":
         """Remove a single hatching potion from this collection.

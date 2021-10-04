@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import random
+from typing import List
 
 import click
 import pytest
@@ -32,6 +33,17 @@ class TestEgg:
 
         assert str(exec_info.value).startswith(f"{quantity} is below 0.")
         assert exec_info.errisinstance((YouFoundABugRewardError, click.ClickException))
+
+    @pytest.mark.parametrize("egg1,egg2,expected_equals", [
+        (Egg("Horse"), Egg("Horse"), True),
+        (Egg("Seahorse", quantity=1), Egg("Seahorse"), True),
+        (Egg("Snake", quantity=1), Egg("Snake", quantity=2), False),
+        (Egg("Whale"), Egg("Rat"), False),
+        (Egg("Rooster", quantity=0), Egg("TRex", quantity=0), False),
+        (Egg("Penguin", quantity=1), Egg("Owl", quantity=4), False),
+    ])
+    def test__eq__(self, egg1: Egg, egg2: Egg, expected_equals: bool):
+        assert (egg1 == egg2) is expected_equals
 
     def test__repr__(self):
         name, quantity = "Dolphin", 9
@@ -115,6 +127,34 @@ class TestEggCollection:
         assert collection["Whale"] == Egg("Whale", quantity=42)
         assert collection["Horse"] == Egg("Horse", quantity=2)
 
+    def test__eq__(self):
+        assert EggCollection() == EggCollection()
+        assert EggCollection() == EggCollection({})
+        assert EggCollection({"Cow": 1}) == EggCollection({"Cow": 1})
+        assert EggCollection({"Cow": 1}) != EggCollection({"Cow": 2})
+        assert EggCollection({"Cow": 1}) != EggCollection({"Rat": 1})
+        assert EggCollection() != EggCollection({"Ferret": 1})
+
+    def test_values_ok(self):
+        collection = EggCollection({"Wolf": 1, "Whale": 41, "Horse": 2})
+
+        generator = collection.values()
+        assert next(generator) == Egg("Wolf", quantity=1)
+        assert next(generator) == Egg("Whale", quantity=41)
+        assert next(generator) == Egg("Horse", quantity=2)
+        with pytest.raises(StopIteration):
+            _ = next(generator)
+
+    def test_values_as_list_ok(self):
+        collection = EggCollection({"Wolf": 1, "Whale": 41, "Horse": 2})
+
+        result: List[Egg] = list(collection.values())
+
+        expected: List[Egg] = [
+            Egg("Wolf", quantity=1), Egg("Whale", quantity=41), Egg("Horse", quantity=2)
+        ]
+        assert result == expected
+
     def test__iter__ok(self):
         collection = EggCollection({"Wolf": 1, "Whale": 42, "Horse": 2})
 
@@ -164,7 +204,7 @@ class TestEggCollection:
             egg4_name: egg4_quantity
         })
 
-        result: EggCollection = collection.get_quest_egg_collection()
+        result: EggCollection = collection.get_standard_egg_collection()
 
         expected = EggCollection({
             egg1_name: egg1_quantity, egg3_name: egg3_quantity, egg4_name: egg4_quantity
