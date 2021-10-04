@@ -2,13 +2,14 @@
 """
 Module with the command for the `hopla add todo` command.
 """
+import datetime
 import logging
 import sys
-from datetime import datetime, timedelta
-from typing import Final, List
+from typing import List
 
 import click
 
+from hopla.hoplalib.clickhelper import EnhancedDate
 from hopla.hoplalib.outputformatter import JsonFormatter
 from hopla.hoplalib.tasks.taskcontroller import AddTodoRequest
 from hopla.hoplalib.tasks.taskmodel import HabiticaChecklist, HabiticaTodo, TaskDifficultyData
@@ -20,7 +21,7 @@ def create_habitica_todo(*,
                          checklist_editor: bool,
                          checklist_file,
                          difficulty: str,
-                         due_date: datetime,
+                         due_date: datetime.datetime,
                          todo_name: str) -> HabiticaTodo:
     """Create a HabiticaTodo object from the provided parameters"""
     habitica_checklist: HabiticaChecklist = get_checklist(
@@ -28,12 +29,9 @@ def create_habitica_todo(*,
     )
     if todo_name is None:
         todo_name: str = click.prompt("Please provide a name for your todo")
-    return HabiticaTodo(
-        todo_name=todo_name,
-        difficulty=difficulty,
-        due_date=due_date,
-        checklist=habitica_checklist
-    )
+    habitica_todo = HabiticaTodo(todo_name=todo_name, difficulty=difficulty,
+                                 due_date=due_date, checklist=habitica_checklist)
+    return habitica_todo
 
 
 def get_checklist(checklist_file, checklist_editor: bool) -> HabiticaChecklist:
@@ -72,52 +70,32 @@ def get_checklist_with_editor(checklist_file) -> HabiticaChecklist:
     sys.exit("editor exited")
 
 
-_DUE_DATE_OPTION_NAME: Final[str] = "--due-date"
-_DUE_DATE_TODAY_FLAG: Final[str] = "--today"
-_DUE_DATE_TOMORROW_FLAG: Final[str] = "--tomorrow"
-__DUE_DATE_FEATURE_FLAG_PARAM: Final[str] = "due_date"
-
-date_formats = ["%Y-%m-%d", "%d-%m-%Y"]
-TODAY = datetime.today()
-TOMORROW = TODAY + timedelta(days=1)
-
-
 @click.command()
 @click.option(
-    "--difficulty",
-    type=click.Choice(TaskDifficultyData.VALID_DIFFICULTIES),
+    "--difficulty", type=click.Choice(TaskDifficultyData.VALID_DIFFICULTIES),
     default="easy",
     show_default=True,
     help="the priority of the To-Do"
 )
 @click.option(
-    _DUE_DATE_OPTION_NAME, "--deadline", __DUE_DATE_FEATURE_FLAG_PARAM,
-    type=click.DateTime(formats=date_formats),
-    help="Due date of the To-Do in format YYYY-MM-DD or DD-MM-YYYY."
+    "--due-date", "--deadline",
+    type=EnhancedDate(),
+    help="due date of the To-Do in format YYYY-MM-DD or DD-MM-YYYY."
+         "The special keywords 'today' and 'tomorrow' specify the "
+         "current day, or tomorrow."
 )
-@click.option(
-    _DUE_DATE_TODAY_FLAG, __DUE_DATE_FEATURE_FLAG_PARAM, flag_value=TODAY,
-    type=click.DateTime(formats=date_formats),
-    help="Use today as the due date."
-)
-@click.option(
-    _DUE_DATE_TOMORROW_FLAG, __DUE_DATE_FEATURE_FLAG_PARAM, flag_value=TOMORROW,
-    type=click.DateTime(formats=date_formats),
-    help="Use tomorrow as the due date.")
 @click.option(
     "--checklist", "checklist_file",
     type=click.File(),
-    help="Every line in FILENAME will be an item of the checklist."
-)
+    help="Every line in FILENAME will be an item of the checklist.")
 @click.option(
-    "--editor", "checklist_editor", is_flag=True,
-    default=False,
+    "--editor/--no-editor", "checklist_editor", default=False,
     help="Open up an editor to create a checklist interactively",
     show_default=True
 )
 @click.argument("todo_name", required=False)
 def todo(difficulty: str,
-         due_date: datetime,
+         due_date: datetime.datetime,
          checklist_file,
          checklist_editor: bool,
          todo_name: str):
@@ -154,9 +132,9 @@ def todo(difficulty: str,
 
 
     \b
-    # Use the 'today' or 'tomorrow' to set the due date to today/tomorrow.
-    $ hopla add todo --today "Feed pet"
-    $ hopla add todo --tomorrow "Feed pet Again"
+    # You can use the 'today' or 'tomorrow' special keywords instead
+    # of a date format.
+    $ hopla add todo --due-date today "Feed pet"
 
     \b
     # You can use cool shell tricks to provide checklists on the fly.
@@ -194,9 +172,8 @@ def todo(difficulty: str,
     :return:
 
     """
-    log.debug(f"habitica add todo name={todo_name}\n"
-              f"   difficulty={difficulty}, "
-              f"   due_date={due_date},"
+    log.debug(f"habitica add todo name={todo_name}"
+              f"   difficulty={difficulty} , due_date={due_date}"
               f"   checklist ={checklist_file}, editor={checklist_editor}")
 
     habitica_todo: HabiticaTodo = create_habitica_todo(
