@@ -24,22 +24,22 @@ hopla_add_simple_prompt_for_todo_name:
 
 # the '--today' and '--tomorrow' keyword will use today and tomorrow as the due date
 hopla_add_todo_hard_now_without_checklist:
-	hopla add todo --difficulty hard --tomorrow "my todo thingy here" \
-	&& hopla add todo --difficulty hard --tomorrow "task for tomorrow "
+	hopla add todo --difficulty hard --due-date=tomorrow "my todo thingy here" \
+	&& hopla add todo --difficulty hard --due-date=tomorrow "task for tomorrow "
 
 # GNU date: iso-date for tomorrow: YYYY-MM-DD
 tomorrow="$$(date --iso-8601 --date=tomorrow)"
 
 # --due-date supports the 'tomorrow' keyword which will use tomorrow as the due date
 hopla_add_todo_use_editor_for_checklist_tomorrow:
-	hopla add todo --difficulty medium --tomorrow --editor "$(tomorrow) checklist"
+	hopla add todo --difficulty medium --due-date=tomorrow --editor "$(tomorrow) checklist"
 
 hopla_add_todo_use_file_as_checklist:
-	hopla add todo --difficulty=hard --tomorrow --checklist ~/todo/todo_list/roll60.md "$(tomorrow) studies"
+	hopla add todo --difficulty=hard --due-date=tomorrow --checklist ~/todo/todo_list/roll60.md "$(tomorrow) studies"
 
 today="$$(date --iso-8601)"
 hopla_add_todo_checklist_today:
-	hopla add todo --difficulty trivial --today --checklist ~/todo/todo_list/today.md "$(today) checklist"
+	hopla add todo --difficulty trivial --due-date=today --checklist ~/todo/todo_list/today.md "$(today) checklist"
 
 hopla_add_todo_in_1_week_provide_editor_checklist:
 	hopla add todo --due-date $$(date '+%F' --date='+1 week') --editor weekly-study-goal
