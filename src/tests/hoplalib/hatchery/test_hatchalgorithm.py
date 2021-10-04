@@ -22,6 +22,22 @@ class TestHatchPlanItem:
 
         assert result == f"HatchPlanItem({egg_name}: {potion_name})"
 
+    @pytest.mark.parametrize("egg,potion", [
+        (Egg("Wolf"), HatchPotion("Silver")),
+        (Egg("Fox"), HatchPotion("Moonglow")),
+        (Egg("Cactus"), HatchPotion("Watery")),
+        (Egg("LionCub"), HatchPotion("Shade")),
+        (Egg("PandaCub"), HatchPotion("Ruby")),
+        (Egg("Whale"), HatchPotion("Base")),
+        (Egg("Horse"), HatchPotion("Golden")),
+        (Egg("Fox"), HatchPotion("Red"))
+    ])
+    def test__post_init_ok(self, egg: Egg, potion: HatchPotion):
+        try:
+            HatchPlanItem(egg=egg, potion=potion)
+        except Exception:
+            pytest.fail(f"Expected {egg.name} and {potion.name} to match.")
+
     def test__eq__should_eq_self_ok(self):
         egg_name, potion_name = "Snake", "Base"
         egg = Egg(egg_name)
@@ -139,6 +155,13 @@ class TestHatchPlan:
     def test__init__(self):
         hatch_plan = HatchPlan()
         assert hatch_plan.plan == []
+
+    def test__eq__empty(self):
+        assert HatchPlan() == HatchPlan()
+
+    def test__eq__false(self):
+        plan = HatchPlan().add(egg=Egg("Whale"), potion=HatchPotion("Golden"))
+        assert plan != HatchPlan()
 
     def test__repr__empty(self):
         hatch_plan = HatchPlan()

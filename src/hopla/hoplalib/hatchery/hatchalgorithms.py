@@ -2,10 +2,10 @@
 """
 Module with algorithms for hatching many eggs.
 """
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, List
 
-from hopla.hoplalib.hatchery.eggmodels import Egg, EggCollection
+from hopla.hoplalib.hatchery.eggmodels import Egg, EggCollection, EggException
 from hopla.hoplalib.hatchery.hatchpotionmodels import HatchPotion, \
     HatchPotionCollection
 from hopla.hoplalib.zoo.petmodels import Pet
@@ -16,6 +16,11 @@ class HatchPlanItem:
     """Plan to hatch a specific egg with a specified potion."""
     egg: Egg
     potion: HatchPotion
+
+    def __post_init__(self):
+        if self.egg.can_be_hatched_by(potion=self.potion) is False:
+            msg = f"Cannot hatch {self.egg.name} with {self.potion.name} potion"
+            raise EggException(msg)
 
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, HatchPlanItem) is False:
@@ -64,13 +69,7 @@ class HatchPlanItem:
 class HatchPlan:
     """Plan to hatch a specific eggs with specified potions."""
 
-    def __init__(self):
-        self.plan: List[HatchPlanItem] = []
-
-    def __eq__(self, other: Any) -> bool:
-        if isinstance(other, HatchPlan) is False:
-            return False
-        return self.plan == other.plan
+    plan: List[HatchPlanItem] = field(init=False, default_factory=list)
 
     def __iter__(self):
         return iter(self.plan)
@@ -141,14 +140,11 @@ class HatchPlanMaker:
 
     def make_plan(self) -> HatchPlan:
         """Given an collection of eggs and hatching potions, make a plan to hatch the eggs."""
-        for egg_name in self.__eggs:
-            egg: Egg = self.__eggs[egg_name]
-            for potion_name in self.__potions:
-                potion: HatchPotion = self.__potions[potion_name]
-                item = HatchPlanItem(egg=egg, potion=potion)
+        for egg in self.__eggs.values():
+            for potion in self.__potions.values():
                 can_hatch: bool = (
                         egg.can_be_hatched_by(potion)
-                        and item.can_hatch_with_pets(self.__pets)
+                        and HatchPlanItem(egg, potion).can_hatch_with_pets(self.__pets)
                 )
                 if can_hatch:
                     self.__hatch_plan.add(egg=egg, potion=potion)

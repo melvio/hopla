@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import random
+from typing import List
 
 import click
 import pytest
@@ -44,6 +45,12 @@ class TestHatchPotion:
         result: str = repr(potion)
 
         assert result == f"HatchPotion({potion_name}: {quantity})"
+
+    def test__eq__(self):
+        assert HatchPotion("Red") == HatchPotion("Red")
+        assert HatchPotion("Shimmer", quantity=1) == HatchPotion("Shimmer")
+        assert HatchPotion("Silver") != HatchPotion("Silver", quantity=2)
+        assert HatchPotion("Watery") != HatchPotion("Glow")
 
     @pytest.mark.parametrize("potion_name,quantity", [
         ("Base", 10),
@@ -100,6 +107,16 @@ class TestHatchPotionCollection:
         assert collection["Moonglow"] == HatchPotion("Moonglow", quantity=42)
         assert collection["Sunset"] == HatchPotion("Sunset", quantity=2)
 
+    def test__eq__ok(self):
+        left = HatchPotionCollection({"Frost": 1, "Glow": 1})
+        right = HatchPotionCollection({"Glow": 1, "Frost": 2})
+        assert left != right
+
+        assert HatchPotionCollection() == HatchPotionCollection()
+        assert HatchPotionCollection({"StarryNight": 1}) != HatchPotionCollection()
+        assert HatchPotionCollection({"Windup": 2}) == HatchPotionCollection({"Windup": 2})
+        assert HatchPotionCollection({"Frost": 1}) != HatchPotionCollection({"Frost": 2})
+
     def test__iter__ok(self):
         collection = HatchPotionCollection({"Base": 1, "Moonglow": 42, "Sunset": 2})
 
@@ -117,6 +134,38 @@ class TestHatchPotionCollection:
         assert collection["Base"] == HatchPotion("Base", quantity=1)
         assert collection["Moonglow"] == HatchPotion("Moonglow", quantity=42)
         assert collection["Sunset"] == HatchPotion("Sunset", quantity=0)
+
+    def test_values_ok(self):
+        potion1, quantity1 = "Dessert", 10
+        potion2, quantity2 = "MossyStone", 1
+        potion3, quantity3 = "StainedGlass", 2
+        collection = HatchPotionCollection({
+            potion1: quantity1, potion2: quantity2, potion3: quantity3
+        })
+
+        generator = collection.values()
+        assert next(generator) == HatchPotion(potion1, quantity=quantity1)
+        assert next(generator) == HatchPotion(potion2, quantity=quantity2)
+        assert next(generator) == HatchPotion(potion3, quantity=quantity3)
+        with pytest.raises(StopIteration):
+            _ = next(generator)
+
+    def test_values_as_list_ok(self):
+        potion1, quantity1 = "Golden", 1
+        potion2, quantity2 = "Sunshine", 41
+        potion3, quantity3 = "Vampire", 3
+        collection = HatchPotionCollection({
+            potion1: quantity1, potion2: quantity2, potion3: quantity3
+        })
+
+        result: List[HatchPotion] = list(collection.values())
+
+        expected: List[HatchPotion] = [
+            HatchPotion(potion1, quantity=quantity1),
+            HatchPotion(potion2, quantity=quantity2),
+            HatchPotion(potion3, quantity=quantity3)
+        ]
+        assert result == expected
 
     def test_remove_hatch_potion_ok(self):
         potion1_quantity = 3

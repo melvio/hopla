@@ -2,8 +2,8 @@
 """
 Module with models for eggs.
 """
-from dataclasses import dataclass
-from typing import Dict
+from dataclasses import dataclass, field
+from typing import Any, Dict
 
 from hopla.hoplalib.errors import YouFoundABugRewardError
 from hopla.hoplalib.hatchery.hatchdata import EggData
@@ -26,6 +26,12 @@ class Egg:
 
         self.name = name
         self.quantity = quantity
+
+    def __eq__(self, other: Any) -> bool:
+        """Return True if both eggs have the same name and same quantity."""
+        if isinstance(other, Egg) is False:
+            return False
+        return self.name == other.name and self.quantity == other.quantity
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.name}: {self.quantity})"
@@ -51,11 +57,13 @@ class Egg:
 class EggCollection:
     """Collection of eggs, backed by a Dict[str, Egg]."""
 
-    def __init__(self, eggs: Dict[str, int] = None):
-        if eggs is None:
-            eggs = {}
+    eggs: Dict[str, int] = field(init=True, compare=False, default_factory=dict)
+    __eggs: Dict[str, Egg] = field(init=False)
+
+    def __post_init__(self):
+        """Use the given eggs to create __eggs."""
         self.__eggs: Dict[str, Egg] = {
-            name: Egg(name, quantity=quantity) for (name, quantity) in eggs.items()
+            name: Egg(name, quantity=quantity) for (name, quantity) in self.eggs.items()
         }
 
     def __len__(self) -> int:
@@ -69,6 +77,11 @@ class EggCollection:
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.__eggs=})"
+
+    def values(self):
+        """Like dict.values but for an EggCollection."""
+        for egg in self.__eggs.values():
+            yield egg
 
     def remove_egg(self, egg: Egg) -> "EggCollection":
         """Remove a single eggs from the EggCollection.
