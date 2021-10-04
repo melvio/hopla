@@ -27,6 +27,8 @@ send_package_to_pypi:
 tag_commit:
 	git tag --annotate "release/$$(hopla version)"
 
+tag_push:
+	git push --tags
 
 # This works like running: "make flake && make lint && make unittest"
 test: flake lint unittest

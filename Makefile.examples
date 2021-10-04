@@ -22,7 +22,7 @@ hopla_add_simple_todo:
 hopla_add_simple_prompt_for_todo_name:
 	hopla add todo
 
-# the 'today' and 'tomorrow' keyword will use today and tomorrow as the due date
+# the '--today' and '--tomorrow' keyword will use today and tomorrow as the due date
 hopla_add_todo_hard_now_without_checklist:
 	hopla add todo --difficulty hard --tomorrow "my todo thingy here" \
 	&& hopla add todo --difficulty hard --tomorrow "task for tomorrow "
