@@ -35,7 +35,7 @@ class TestHatchAllCliCommand:
 
         assert result.exit_code == 1
         assert result.stdout == (
-            "The hatch plan is empty. Do you have enough pets and hatching potions?\n"
+            "The hatch plan is empty. Do you have enough eggs and hatching potions?\n"
             "Exiting\n"
         )
 
