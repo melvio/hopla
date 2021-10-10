@@ -32,6 +32,7 @@ tag_push:
 	git push --tags
 
 
+
 # This works like running: "make flake && make lint && make unittest"
 test: flake lint unittest
 
@@ -45,3 +46,6 @@ lint:
 
 unittest:
 	pytest -c ./.github/workflows/pytest.ini
+
+
+release: test clean_build develop validate_docs_for_pypi send_package_to_pypi tag_commit tag_push
