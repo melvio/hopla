@@ -20,15 +20,28 @@ class TestSpellData:
 
 class TestSpell:
     def test_class_name_ok(self):
-        assert Spell("mpheal").class_name == "mage"
+        assert Spell("mpheal").class_name == "wizard"
         assert Spell("heal").class_name == "healer"
         assert Spell("stealth").class_name == "rogue"
         assert Spell("intimidate").class_name == "warrior"
+
+    def test_mana_required_ok(self):
+        assert Spell("mpheal").mana_required == 30
+        assert Spell("toolsOfTrade").mana_required == 25
+        assert Spell("valorousPresence").mana_required == 20
+        assert Spell("healAll").mana_required == 25
+
+    def test__eq__(self):
+        mpheal_spell = Spell("mpheal")
+        assert mpheal_spell == Spell("mpheal")
+        assert mpheal_spell != Spell("healAll")
 
     @pytest.mark.parametrize("spell_name", SpellData.single_arg_spells)
     def test__init__ok(self, spell_name: str):
         spell = Spell(spell_name=spell_name)
         assert spell.spell_name == spell_name
+        assert 15 <= spell.mana_required <= 45
+        assert spell.class_name in ["wizard", "healer", "rogue", "warrior"]
         assert spell.target_id is None  # not supported for now
 
     def test__init__fail(self):
