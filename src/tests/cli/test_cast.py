@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-from typing import Optional
-from unittest.mock import MagicMock, patch
+from typing import List, Optional
+from unittest.mock import _Call, call, MagicMock, patch
 
 import pytest
 from click.testing import CliRunner, Result
@@ -95,6 +95,45 @@ class TestCastCliCommand:
         assert f'"error": "{error_name}"' in result.stdout
 
         assert result.exit_code == 1
+
+    @patch("hopla.cli.cast.PostCastRequest")
+    def test_cast_until_out_of_mana_once_ok(self, mock_cast_request: MagicMock):
+        mana_left = 1.1
+        spell_name = "toolsOfTrade"
+        mock_cast_request.return_value = MockCastRequest(success=True,
+                                                         remaining_user_mana=mana_left)
+
+        runner = CliRunner()
+        result: Result = runner.invoke(cast, [spell_name, "--until-out-of-mana"])
+
+        expected_spell = Spell(spell_name)
+        assert mock_cast_request.call_args_list == [call(spell=expected_spell)]
+
+        assert result.exit_code == 0
+
+    @pytest.mark.parametrize("spell_name,mana_left,num_expected_calls", [
+        ("toolsOfTrade", 26.1, 2),
+        ("stealth", 12.0, 1),
+        ("earth", 69., 2),
+        ("earth", 71.1, 3)
+    ])
+    @patch("hopla.cli.cast.PostCastRequest")
+    def test_cast_until_out_of_mana_multiple_times_ok(self, mock_cast_request: MagicMock,
+                                                      spell_name: str,
+                                                      mana_left: float,
+                                                      num_expected_calls: int):
+        mock_cast_request.return_value = MockCastRequest(success=True,
+                                                         remaining_user_mana=mana_left)
+
+        runner = CliRunner()
+        result: Result = runner.invoke(cast, [spell_name, "-u"])
+
+        expected_call_list: List[_Call] = [
+            call(spell=Spell(spell_name)) for _ in range(num_expected_calls)
+        ]
+        assert mock_cast_request.call_args_list == expected_call_list
+
+        assert result.exit_code == 0
 
 
 class TestCastHelpers:

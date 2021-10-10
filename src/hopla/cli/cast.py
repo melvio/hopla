@@ -18,9 +18,9 @@ log = logging.getLogger()
 
 @click.command()
 @click.argument("spell_name", type=click.Choice(SpellData.single_arg_spells))
-@click.option("--until-out-of-mana", is_flag=True, default=False,
+@click.option("--until-out-of-mana", "-u", is_flag=True, default=False,
               help="Keep casting the specified spell until there is insufficient mana left.")
-def cast(spell_name: str, until_out_of_mana: bool):
+def cast(spell_name: str, until_out_of_mana: bool) -> None:
     """Cast a spell.
 
     SPELL_NAME the name of the spell to cast
@@ -31,12 +31,16 @@ def cast(spell_name: str, until_out_of_mana: bool):
     \b
     Examples:
     ---
-    # cast healAll.
+    # Cast heal all.
     $ hopla cast heallAll
 
     \b
-    # cast toolsOfTrade until you don't have enough mana left to continue casting.
+    # Cast tools of trade until you don't have enough mana left to continue casting.
     $ hopla cast toolsOfTrade --until-out-of-mana
+
+    \b
+    # Cast earthquake until you don't have enough mana left to continue casting.
+    $ hopla cast -u earth
 
     \f
     [APIDOCS](https://habitica.com/apidoc/#api-User-UserCast)
