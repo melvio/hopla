@@ -91,3 +91,11 @@ class TestBuyEnchantedArmoireCliCommand:
         assert result.exit_code == 0
         assert '"type": "experience",' in result.stdout
         assert f'"value": {exp}' in result.stdout
+
+    def test_buy_enchanted_armoire_times_and_until_out_of_gp_conflict_fail(self):
+        runner = CliRunner()
+        result: Result = runner.invoke(enchanted_armoire, ["--times", 10, "--until-out-of-gp"])
+
+        expected_msg = "Error: --times and --until-out-of-gp are mutually exclusive.\n"
+        assert result.stdout.endswith(expected_msg)
+        assert result.exit_code == 2
