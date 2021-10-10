@@ -48,10 +48,10 @@ class SpellData:
     }
 
     single_arg_spells: List[SpellName] = (
-            list(warrior_spells_single_arg.keys())
-            + list(mage_spells_single_arg.keys())
-            + list(rogue_spells_single_arg.keys())
-            + list(healer_spells_single_arg.keys())
+            list(warrior_spells_single_arg)
+            + list(mage_spells_single_arg)
+            + list(rogue_spells_single_arg)
+            + list(healer_spells_single_arg)
     )
     """Listing of all spell names that don't require a UUID."""
 
@@ -87,17 +87,5 @@ class Spell:
         if self.name in SpellData.rogue_spells_single_arg:
             return "rogue"
 
-        raise YouFoundABugRewardError(f"Spell '{self.name}' not implemented yet")
-        # Mage: fireball="Burst of Flames", mpheal="Ethereal Surge", earth="Earthquake",
-        #         frost="Chilling Frost"
-        # Warrior: smash="Brutal Smash", defensiveStance="Defensive Stance",
-        #          valorousPresence="Valorous Presence", intimidate="Intimidating Gaze"
-
-        # Rogue: pickPocket="Pickpocket", backStab="Backstab", toolsOfTrade="Tools of the Trade",
-        # stealth="Stealth"
-
-        # Healer: heal="Healing Light", protectAura="Protective Aura",
-        #          brightness="Searing Brightness",
-        #         healAll="Blessing"
-        # Transformation Items: snowball="Snowball", spookySparkles="Spooky Sparkles",
-        #                       seafoam="Seafoam", shinySeed="Shiny Seed"
+        err_msg = f"Spell '{self.name}' not implemented yet"
+        raise YouFoundABugRewardError(err_msg)  # pragma: no cover

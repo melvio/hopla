@@ -46,7 +46,7 @@ def cast(spell_name: str, until_out_of_mana: bool) -> None:
     [APIDOCS](https://habitica.com/apidoc/#api-User-UserCast)
     :param spell_name: The spell to cast.
     :param until_out_of_mana: Flag that indicates that the spell should be repeated until
-     there is unsufficient mana left to keep casting the specified spell.
+     there is insufficient mana left to keep casting the specified spell.
     :return:
     """
     log.debug(f"hopla cast {spell_name=}")

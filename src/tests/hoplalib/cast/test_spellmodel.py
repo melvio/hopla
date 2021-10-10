@@ -3,6 +3,7 @@ import pytest
 
 from hopla.hoplalib.cast.spellmodel import Spell, SpellData
 from hopla.hoplalib.errors import YouFoundABugRewardError
+from tests.hoplalib.cast.test_classmodels import HabiticaClassData
 
 
 class TestSpellData:
@@ -41,7 +42,7 @@ class TestSpell:
         spell = Spell(name=spell_name)
         assert spell.name == spell_name
         assert 15 <= spell.mana_required <= 45
-        assert spell.class_name in ["wizard", "healer", "rogue", "warrior"]
+        assert spell.class_name in HabiticaClassData.class_names
         assert spell.target_id is None  # not supported for now
 
     def test__init__fail(self):
