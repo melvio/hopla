@@ -39,20 +39,21 @@ def __confirm_with_user_or_abort(plan: ZookeeperFeedPlan) -> Optional[NoReturn]:
     click.confirm(text=prompt_msg, abort=True)
 
 
-def feed_all_pets_and_exit() -> NoReturn:
+def feed_all_pets_and_exit(*, no_interactive: bool = False) -> NoReturn:
     """Feed all the pets"""
     plan: ZookeeperFeedPlan = __get_feed_plan_or_exit()
     if plan.isempty():
         click.echo(
-            "The feed plan is empty. Reasons could include:\n"
-            "1. There is insufficient food available to turn pets into mounts\n"
+            "The feed plan is empty. Reasons for this could be:\n"
+            "1. There is insufficient food available to turn pets into mounts.\n"
             "2. You don't have any feedable pets."
         )
         sys.exit(0)
 
-    __confirm_with_user_or_abort(plan)
+    if no_interactive is False:
+        __confirm_with_user_or_abort(plan)
 
-    feed_requests: List[Callable[[None], None]] = []
+    feed_requests: List[Callable[[], None]] = []
     for item in plan:
         feed_requester: FeedPostRequester = FeedPostRequester.build_from(item)
         feed_requests.append(feed_requester.post_feed_request_get_data_or_exit)
@@ -63,7 +64,12 @@ def feed_all_pets_and_exit() -> NoReturn:
 
 
 @click.command()
-def feed_all():
+@click.option(
+    "--force", "--yes", "-f", "no_interactive",
+    is_flag=True, default=False, show_default=True,
+    help="Don't ask for confirmation. "
+)
+def feed_all(no_interactive: bool) -> None:
     """Feed all your pets.
 
     This command will first feed normal pets, then your quest pets, and
@@ -71,6 +77,25 @@ def feed_all():
 
     Not this command will first show you the feed plan, and for safety,
     ask for your confirmation. Pets will only if you confirm this prompt.
+
+
+    \b
+    Examples
+    --------
+    # list the feeding plan, ask for confirmation, feed all pets if confirmed.
+    $ hopla feed-all
+    > Pet BearCub-Zombie will get 9 RottenMeat.
+    > Pet Fox-CottonCandyBlue will get 9 CottonCandyBlue.
+    > Do you want to proceed? [y/N]: yes
+
+
+    \b
+    # feed all the pets without asking for confirmation
+    $ hopla feed-all --yes
+    $ hopla feed-all --force
+
+    \f
+    :param no_interactive:
     """
     log.debug("hopla feed-all")
-    feed_all_pets_and_exit()
+    feed_all_pets_and_exit(no_interactive=no_interactive)

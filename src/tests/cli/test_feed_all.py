@@ -30,6 +30,7 @@ class MockOkResponse:
 class TestFeedAllCliCommand:
     yes_responses = ["y", "Y", "yes", "Yes", "YES"]
     no_responses = ["n", "N", "no", "No", "NO", "", "anything else"]
+    force_options = ["-f", "--force", "--yes"]
     released_zoo_users = [
         HabiticaUser({
             "items": {"pets": {"Seahorse-White": 0},
@@ -102,6 +103,28 @@ class TestFeedAllCliCommand:
         assert '"feed_status": -1' in result.stdout
         assert result.exit_code == 0
 
+    @pytest.mark.parametrize("force_option", force_options)
+    @patch("hopla.cli.feed_all.FeedPostRequester.post_feed_request")
+    @patch("hopla.cli.feed_all.HabiticaUserRequest.request_user_data_or_exit")
+    def test_feed_all_force_ok(self,
+                               mock_user_request: MagicMock,
+                               mock_feed_request: MagicMock,
+                               user_with_feedable_pet: HabiticaUser,
+                               force_option: str):
+        # This user has a pet that can be grown into a mount by feeding 8 Fish
+        mock_user_request.return_value = user_with_feedable_pet
+
+        feed_msg = "You have tamed Skeleton Velociraptor, let's go for a ride!"
+        mock_feed_request.return_value = MockOkResponse(msg=feed_msg)
+
+        runner = CliRunner()
+        result: Result = runner.invoke(feed_all, [force_option])
+
+        assert "Do you want to proceed?" not in result.stdout
+        assert feed_msg in result.stdout
+        assert '"feed_status": -1' in result.stdout
+        assert result.exit_code == 0
+
     @pytest.mark.parametrize("yes_response", yes_responses)
     @pytest.mark.parametrize("released_zoo_user", released_zoo_users)
     @patch("hopla.cli.feed.HabiticaUserRequest.request_user_data_or_exit")
@@ -113,8 +136,8 @@ class TestFeedAllCliCommand:
         runner = CliRunner()
         result: Result = runner.invoke(feed_all, input=yes_response)
 
-        expected_msg = ("The feed plan is empty. Reasons could include:\n"
-                        "1. There is insufficient food available to turn pets into mounts\n"
+        expected_msg = ("The feed plan is empty. Reasons for this could be:\n"
+                        "1. There is insufficient food available to turn pets into mounts.\n"
                         "2. You don't have any feedable pets.")
         assert expected_msg in result.stdout
 
