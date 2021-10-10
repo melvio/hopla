@@ -8,6 +8,7 @@ from typing import Callable, List, NoReturn, Optional, Union
 
 import click
 
+from hopla.hoplalib import hopla_option
 from hopla.cli.groupcmds.get_user import HabiticaUser, HabiticaUserRequest
 from hopla.hoplalib.throttling import ApiRequestThrottler
 from hopla.hoplalib.zoo.foodmodels import FoodStockpile, FoodStockpileBuilder
@@ -64,11 +65,7 @@ def feed_all_pets_and_exit(*, no_interactive: bool = False) -> NoReturn:
 
 
 @click.command()
-@click.option(
-    "--force", "--yes", "-f", "no_interactive",
-    is_flag=True, default=False, show_default=True,
-    help="Don't ask for confirmation. "
-)
+@hopla_option.no_interactive_option()
 def feed_all(no_interactive: bool) -> None:
     """Feed all your pets.
 
@@ -97,5 +94,5 @@ def feed_all(no_interactive: bool) -> None:
     \f
     :param no_interactive:
     """
-    log.debug("hopla feed-all")
+    log.debug(f"hopla feed-all {no_interactive=}")
     feed_all_pets_and_exit(no_interactive=no_interactive)

@@ -2,11 +2,13 @@
 """
 The module with CLI code that handles the `hopla hatch-all` command.
 """
+import logging
 import sys
 from typing import Dict, List
 
 import click
 
+from hopla.hoplalib import hopla_option
 from hopla.hoplalib.hatchery.eggmodels import EggCollection
 from hopla.hoplalib.hatchery.hatchalgorithms import HatchPlan, HatchPlanMaker
 from hopla.hoplalib.hatchery.hatchcontroller import HatchRequester
@@ -17,9 +19,12 @@ from hopla.hoplalib.user.usermodels import HabiticaUser
 from hopla.hoplalib.zoo.foodmodels import FeedStatus
 from hopla.hoplalib.zoo.petmodels import Pet
 
+log = logging.getLogger()
+
 
 @click.command()
-def hatch_all():
+@hopla_option.no_interactive_option()
+def hatch_all(no_interactive: bool) -> None:
     """Hatch all the available eggs.
 
     \b
@@ -30,6 +35,7 @@ def hatch_all():
     \b
     Examples:
     ----
+    # Show hatching list, ask for confirmation, optionally hatch eggs.
     $ hopla hatch-all
     > A Treeling egg will be hatched by a Zombie potion.
     > A Robot egg will be hatched by a Desert potion.
@@ -37,7 +43,14 @@ def hatch_all():
     Successfully hatched a Treeling-Zombie.
     Successfully hatched a Robot-Desert.
 
+    \b
+    # Hatch all available eggs without asking for confirmation.
+    $ hopla hatch-all --yes
+    Successfully hatched a Treeling-Zombie.
+    Successfully hatched a Robot-Desert.
+
     """
+    log.debug(f"hopla hatch-all {no_interactive=}")
     user: HabiticaUser = HabiticaUserRequest().request_user_data_or_exit()
     eggs = EggCollection(user.get_eggs())
     potions = HatchPotionCollection(user.get_hatch_potions())
@@ -49,19 +62,28 @@ def hatch_all():
     plan: HatchPlan = plan_maker.make_plan()
 
     if plan.is_empty():
-        click.echo("The hatch plan is empty. Do you have enough eggs and hatching potions?")
-        click.echo("Exiting")
+        click.echo(
+            "The hatch plan is empty. Do you have enough eggs and hatching potions?\n"
+            "Exiting"
+        )
         sys.exit(1)
 
+    if no_interactive is True:
+        _hatch_eggs_without_confirmation(plan)
+    else:
+        _ask_for_confirmation_and_maybe_hatch(plan)
+
+
+def _ask_for_confirmation_and_maybe_hatch(plan: HatchPlan) -> None:
     plan_text: str = plan.format_plan()
     user_confirmed: bool = click.confirm(text=plan_text + "Do you wish to proceed?")
     if user_confirmed is True:
-        _hatch_eggs(plan)
+        _hatch_eggs_without_confirmation(plan)
     else:
         click.echo("No eggs were hatched.")
 
 
-def _hatch_eggs(plan: HatchPlan) -> None:
+def _hatch_eggs_without_confirmation(plan: HatchPlan) -> None:
     """Hatch all the eggs. Print the result to the terminal.
     Warning: this function does not ask for confirmation.
     """
