@@ -49,7 +49,7 @@ def hatch_all():
     plan: HatchPlan = plan_maker.make_plan()
 
     if plan.is_empty():
-        click.echo("The hatch plan is empty. Do you have enough pets and hatching potions?")
+        click.echo("The hatch plan is empty. Do you have enough eggs and hatching potions?")
         click.echo("Exiting")
         sys.exit(1)
 
