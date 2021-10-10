@@ -59,18 +59,18 @@ class SpellData:
 @dataclass
 class Spell:
     """A spell."""
-    spell_name: str
+    name: str
     target_id: Optional[UUID] = None
     """target_id not supported for now."""
 
     def __post_init__(self):
-        if self.spell_name not in SpellData.single_arg_spells:
-            raise YouFoundABugRewardError(f"{self.spell_name=} does not exist.")
+        if self.name not in SpellData.single_arg_spells:
+            raise YouFoundABugRewardError(f"Spell '{self.name}' does not exist.")
 
     @property
     def mana_required(self) -> int:
         """Return how much mana is needed to cast this spell."""
-        return SpellData.spell_book_single_arg[self.class_name][self.spell_name]
+        return SpellData.spell_book_single_arg[self.class_name][self.name]
 
     @property
     def class_name(self) -> str:
@@ -78,16 +78,16 @@ class Spell:
 
         see: https://habitica.fandom.com/wiki/Class_System
         """
-        if self.spell_name in SpellData.warrior_spells_single_arg:
+        if self.name in SpellData.warrior_spells_single_arg:
             return "warrior"
-        if self.spell_name in SpellData.mage_spells_single_arg:
+        if self.name in SpellData.mage_spells_single_arg:
             return "wizard"
-        if self.spell_name in SpellData.healer_spells_single_arg:
+        if self.name in SpellData.healer_spells_single_arg:
             return "healer"
-        if self.spell_name in SpellData.rogue_spells_single_arg:
+        if self.name in SpellData.rogue_spells_single_arg:
             return "rogue"
 
-        raise YouFoundABugRewardError(f"{self.spell_name=} not implemented yet")
+        raise YouFoundABugRewardError(f"Spell '{self.name}' not implemented yet")
         # Mage: fireball="Burst of Flames", mpheal="Ethereal Surge", earth="Earthquake",
         #         frost="Chilling Frost"
         # Warrior: smash="Brutal Smash", defensiveStance="Defensive Stance",

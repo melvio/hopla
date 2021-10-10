@@ -38,8 +38,8 @@ class TestSpell:
 
     @pytest.mark.parametrize("spell_name", SpellData.single_arg_spells)
     def test__init__ok(self, spell_name: str):
-        spell = Spell(spell_name=spell_name)
-        assert spell.spell_name == spell_name
+        spell = Spell(name=spell_name)
+        assert spell.name == spell_name
         assert 15 <= spell.mana_required <= 45
         assert spell.class_name in ["wizard", "healer", "rogue", "warrior"]
         assert spell.target_id is None  # not supported for now

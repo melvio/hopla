@@ -21,7 +21,7 @@ class PostCastRequest(HabiticaRequest):
     @property
     def url(self) -> str:
         """Get the url"""
-        path_extension = f"/user/class/cast/{self.spell.spell_name}"
+        path_extension = f"/user/class/cast/{self.spell.name}"
         return UrlBuilder(path_extension=path_extension).url
 
     def post_spell(self) -> requests.Response:
