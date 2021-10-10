@@ -4,20 +4,20 @@ import pytest
 from click.testing import CliRunner, Result
 
 from hopla.cli.buy.enchanted_armoire import get_buy_times_within_budget, \
-    times_until_poor, enchanted_armoire
+    times_until_out_of_gp, enchanted_armoire
 from hopla.cli.groupcmds.get_user import HabiticaUser
 from tests.testutils.user_test_utils import UserTestUtil
 
 
 class TestTimesUntilPoor:
-    def test_times_until_poor__budget_is0(self):
-        assert times_until_poor(0.) == 0
+    def test_times_until_out_of_gp_budget_is0(self):
+        assert times_until_out_of_gp(0.) == 0
 
-    def test_times_until_poor__budget_is_below100(self):
-        assert times_until_poor(92.3) == 0
+    def test_times_until_out_of_gp_budget_is_below100(self):
+        assert times_until_out_of_gp(92.3) == 0
 
-    def test_times_until_poor__budget_is_over100(self):
-        assert times_until_poor(212) == 2
+    def test_times_until_out_of_gp_budget_is_over100(self):
+        assert times_until_out_of_gp(212) == 2
 
 
 class TestBuyTimesWithBudget:
@@ -25,12 +25,12 @@ class TestBuyTimesWithBudget:
     @pytest.mark.parametrize(
         "gold,expected_buy_times", [(550.1, 5), (5., 0), (69., 0), (9000.1, 90)]
     )
-    def test_get_buy_times_within_budget_until_poor(self, gold: float,
-                                                    expected_buy_times: int):
+    def test_get_buy_times_within_budget_out_of_gp(self, gold: float,
+                                                   expected_buy_times: int):
         user: HabiticaUser = UserTestUtil.user_with_gp(gold=gold)
 
         times: int = get_buy_times_within_budget(user=user,
-                                                 until_poor_flag=True,
+                                                 until_out_of_gp_flag=True,
                                                  requested_times=None)
 
         assert times == expected_buy_times
@@ -51,7 +51,7 @@ class TestBuyTimesWithBudget:
         user: HabiticaUser = UserTestUtil.user_with_gp(gold=gold)
 
         times: int = get_buy_times_within_budget(user=user,
-                                                 until_poor_flag=False,
+                                                 until_out_of_gp_flag=False,
                                                  requested_times=requested_times)
 
         assert times == expected_times
@@ -61,7 +61,8 @@ class TestBuyEnchantedArmoireCliCommand:
 
     @patch("hopla.cli.buy.enchanted_armoire.BuyEnchantedArmoireRequest.post_buy_request")
     @patch("hopla.cli.buy.enchanted_armoire.HabiticaUserRequest.request_user_data_or_exit")
-    def test_buy_enchanted_armoire_ok(self, user_request: MagicMock,
+    def test_buy_enchanted_armoire_ok(self,
+                                      user_request: MagicMock,
                                       buy_request: MagicMock):
         gold = 500.
         user_request.return_value = UserTestUtil.user_with_gp(gold=gold)
@@ -90,3 +91,11 @@ class TestBuyEnchantedArmoireCliCommand:
         assert result.exit_code == 0
         assert '"type": "experience",' in result.stdout
         assert f'"value": {exp}' in result.stdout
+
+    def test_buy_enchanted_armoire_times_and_until_out_of_gp_conflict_fail(self):
+        runner = CliRunner()
+        result: Result = runner.invoke(enchanted_armoire, ["--times", 10, "--until-out-of-gp"])
+
+        expected_msg = "Error: --times and --until-out-of-gp are mutually exclusive.\n"
+        assert result.stdout.endswith(expected_msg)
+        assert result.exit_code == 2

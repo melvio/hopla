@@ -62,7 +62,7 @@ hopla_buy_armoire10:
 # This command will buy from the enchanted-armoire until you
 # cannot afford it anymore.
 hopla_buy_armoire_until_poor:
-	hopla buy enchanted-armoire --until-poor
+	hopla buy enchanted-armoire --until-out-of-gp
 
 
 hopla_version:

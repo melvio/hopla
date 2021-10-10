@@ -2,46 +2,21 @@
 """
 The module with CLI code that handles the `hopla buy enchanted-armoire` command.
 """
-from dataclasses import dataclass
 import logging
-from typing import NoReturn, Optional, Union
+from dataclasses import dataclass
+from typing import Final, Optional
 
 import click
-import requests
 
-from hopla.hoplalib.requests_helper import get_data_or_exit
-from hopla.hoplalib.http import HabiticaRequest, UrlBuilder
+from hopla.cli.groupcmds.get_user import HabiticaUser, HabiticaUserRequest
+from hopla.hoplalib.buy.buy_controllers import BuyEnchantedArmoireRequest
 from hopla.hoplalib.outputformatter import JsonFormatter
-from hopla.cli.groupcmds.get_user import HabiticaUserRequest, HabiticaUser
 from hopla.hoplalib.throttling import ApiRequestThrottler
 
 log = logging.getLogger()
 
 
-@dataclass
-class BuyEnchantedArmoireRequest(HabiticaRequest):
-    """HabiticaRequest that buys from the enchanted armoire."""
-
-    @property
-    def url(self) -> str:
-        """The habitica API buy url."""
-        return UrlBuilder(path_extension="/user/buy-armoire").url
-
-    def post_buy_request(self) -> requests.Response:
-        """POST a buy request to the habitica API."""
-        return requests.post(url=self.url, headers=self.default_headers)
-
-    def post_buy_request_get_data_or_exit(self) -> Union[dict, NoReturn]:
-        """POST a buy request and return the result, exit if the request failed.
-
-        :return: If successful, the armoire content.
-        """
-        response: requests.Response = self.post_buy_request()
-        # By default, we get way too much JSON info, so filter on "armoire".
-        return get_data_or_exit(response)["armoire"]
-
-
-def buy_from_enchanted_armoire_once():
+def buy_from_enchanted_armoire_once() -> None:
     """buy once from the enchanted armoire"""
     buy_request = BuyEnchantedArmoireRequest()
 
@@ -51,40 +26,70 @@ def buy_from_enchanted_armoire_once():
     click.echo(enchanted_armoire_award)
 
 
-def times_until_poor(gp_budget: float) -> int:
-    """Returns how many times you can buy from enchanted_armoire given some budget.
+def times_until_out_of_gp(gp: float) -> int:
+    """Returns how often you can buy from the enchanted_armoire given some budget.
 
     \f
-    :param gp_budget:
+    :param gp:
     :return:
     """
     enchanted_armoire_price = 100
-    times: float = gp_budget / enchanted_armoire_price
+    times: float = gp / enchanted_armoire_price
     return int(times)  # int will round down positive floats for us
 
 
+class EnchantedArmoireException(click.UsageError):
+    """
+    Exception raised when there is an error with
+    a `hopla buy enchanted-armoire` invocation.
+    """
+
+
+_TIMES_OPT_NAME: Final[str] = "--times"
+_UNTIL_OUT_GP_OPT_NAME: Final[str] = "--until-out-of-gp"
+
+
+@dataclass(frozen=True)
+class BuyEnchantedArmoireCommandHelper:
+    """Helper class for the `hopla buy enchanted-armoire` command."""
+    requested_times: Optional[int]
+    until_out_gp_flag: bool
+
+    def __post_init__(self):
+        if self.requested_times is not None and self.until_out_gp_flag is True:
+            err_msg = f"{_TIMES_OPT_NAME} and {_UNTIL_OUT_GP_OPT_NAME} are mutually exclusive."
+            raise EnchantedArmoireException(message=err_msg)
+
+
 @click.command()
-@click.option("--times", "-t", "requested_times",
-              type=click.IntRange(min=0),
-              metavar="[TIMES]",
-              help="number of times to buy from the enchanted-armoire")
-@click.option("--until-poor", "-u", "until_poor_flag",
-              help="buy from enchanted-armoire until gp runs out",
-              default=False, is_flag=True, show_default=True)
-def enchanted_armoire(requested_times: int, until_poor_flag: bool):
+@click.option(
+    _TIMES_OPT_NAME, "-t", "requested_times",
+    type=click.IntRange(min=0),
+    metavar="[TIMES]",
+    help="Number of times to buy from the enchanted-armoire.\n"
+         f"Note that {_TIMES_OPT_NAME} cannot be combined with {_UNTIL_OUT_GP_OPT_NAME}"
+
+)
+@click.option(
+    _UNTIL_OUT_GP_OPT_NAME, "-u", "until_out_of_gp_flag",
+    is_flag=True, default=False, show_default=True,
+    help="Buy from enchanted-armoire until gp runs out.\n"
+         f"Note that {_UNTIL_OUT_GP_OPT_NAME} cannot be combined with {_TIMES_OPT_NAME}"
+
+)
+def enchanted_armoire(requested_times: Optional[int],
+                      until_out_of_gp_flag: bool):
     """Buy from the enchanted armoire
 
-    TIMES - the number of times to buy from the enchanted armoire. Must be at least 0.
-    When TIMES is omitted, 1 is the default. When TIMES is larger than the budget allows,
-    --until-poor will be used instead. This behavior is likely to change in the
-    future: <https://github.com/melvio/hopla/issues/100>
+    -t TIMES - the number of times to buy from the enchanted armoire. Must be at
+    least 0. When TIMES and -u are omitted, 1 is the default.
 
     If no options are specified, you buy once.
 
     \b
     Examples
     ----
-    # buy once
+    # Buy once from the enchanted armoire.
     $ hopla buy enchanted-armoire
 
     \b
@@ -96,14 +101,17 @@ def enchanted_armoire(requested_times: int, until_poor_flag: bool):
 
     \b
     # buy until you cannot afford the enchanted-armoire anymore
-    $ hopla buy enchanted-armoire --until-poor
+    $ hopla buy enchanted-armoire --until-out-of-gp
     $ hopla buy enchanted-armoire -u
     """
-    log.debug(f"hopla buy enchanted-armoire times={requested_times}, until_poor={until_poor_flag}")
+    log.debug(f"hopla buy enchanted-armoire {requested_times=}, {until_out_of_gp_flag=}")
+    BuyEnchantedArmoireCommandHelper(
+        requested_times=requested_times, until_out_gp_flag=until_out_of_gp_flag
+    )
 
     user: HabiticaUser = HabiticaUserRequest().request_user_data_or_exit()
     times: int = get_buy_times_within_budget(user=user,
-                                             until_poor_flag=until_poor_flag,
+                                             until_out_of_gp_flag=until_out_of_gp_flag,
                                              requested_times=requested_times)
 
     buy_requests = [buy_from_enchanted_armoire_once for _ in range(times)]
@@ -112,13 +120,13 @@ def enchanted_armoire(requested_times: int, until_poor_flag: bool):
 
 
 def get_buy_times_within_budget(*, user: HabiticaUser,
-                                until_poor_flag: bool,
+                                until_out_of_gp_flag: bool,
                                 requested_times: Optional[int]) -> int:
     """Return how often we can buy, given the requested amount and our budget."""
     budget: float = user.get_gp()
 
-    max_times = times_until_poor(budget)
-    if until_poor_flag:
+    max_times = times_until_out_of_gp(budget)
+    if until_out_of_gp_flag:
         wanted_times = max_times
     else:
         wanted_times = requested_times or 1
