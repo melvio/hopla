@@ -2,9 +2,11 @@
 from typing import Dict, List
 from unittest.mock import MagicMock, patch
 
+import pytest
 from click.testing import CliRunner, Result
 
 from hopla.cli.hatch_all import hatch_all, to_pet_list
+from hopla.hoplalib.hopla_option import NO_INTERACTION_OPTION_NAMES
 from hopla.hoplalib.user.usermodels import HabiticaUser
 from hopla.hoplalib.zoo.foodmodels import FeedStatus
 from hopla.hoplalib.zoo.petmodels import Pet
@@ -21,6 +23,7 @@ class MockThrottler:
 
 
 class TestHatchAllCliCommand:
+
     @patch("hopla.cli.hatch_all.HabiticaUserRequest.request_user_data_or_exit")
     def test_hatch_all_nothing_to_hatch_fail(self, mock_user_request: MagicMock):
         nothing_to_hatch_user = HabiticaUser({"items": {
@@ -95,6 +98,35 @@ class TestHatchAllCliCommand:
             f"{response1}\n"
             f"{response2}\n"
         )
+        assert result.exit_code == 0
+        assert result.stdout == expected_msg
+
+    @pytest.mark.parametrize("force_option", NO_INTERACTION_OPTION_NAMES)
+    @patch("hopla.cli.hatch_all.ApiRequestThrottler")
+    @patch("hopla.cli.hatch_all.HabiticaUserRequest.request_user_data_or_exit")
+    def test_hatch_all_something_to_hatch_force_ok(self,
+                                                   mock_user_request: MagicMock,
+                                                   mock_throttler: MagicMock,
+                                                   force_option: str):
+        egg_name = "Wolf"
+        potion1_name = "Base"
+        potion2_name = "Fluorite"
+        mock_user_request.return_value = HabiticaUser({"items": {
+            "pets": {},
+            "eggs": {egg_name: 2},
+            "hatchingPotions": {potion1_name: 1, potion2_name: 1}
+        }})
+
+        response1 = f"Successfully hatched {egg_name}-{potion1_name}\n"
+        response2 = f"Successfully hatched {egg_name}-{potion2_name}\n"
+        mock_throttler.return_value = MockThrottler(
+            response1=response1, response2=response2
+        )
+
+        runner = CliRunner()
+        result: Result = runner.invoke(hatch_all, [force_option])
+
+        expected_msg = f"{response1}\n{response2}\n"
         assert result.exit_code == 0
         assert result.stdout == expected_msg
 
