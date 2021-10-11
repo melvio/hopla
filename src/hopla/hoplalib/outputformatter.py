@@ -10,9 +10,7 @@ class JsonFormatter:
     """
     Class for formatting JSON s.t. it can be used in bash pipelines.
     """
-
-    def __init__(self, json_as_dict: dict):
-        self.json_as_dict = json_as_dict
+    json_as_dict: dict
 
     def format_with_double_quotes(self, indent: int = 2) -> str:
         """format a dictionary such that it has double quotes
