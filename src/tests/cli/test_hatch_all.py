@@ -6,6 +6,7 @@ import pytest
 from click.testing import CliRunner, Result
 
 from hopla.cli.hatch_all import hatch_all, to_pet_list
+from hopla.hoplalib.hopla_option import NO_INTERACTION_OPTION_NAMES
 from hopla.hoplalib.user.usermodels import HabiticaUser
 from hopla.hoplalib.zoo.foodmodels import FeedStatus
 from hopla.hoplalib.zoo.petmodels import Pet
@@ -22,7 +23,6 @@ class MockThrottler:
 
 
 class TestHatchAllCliCommand:
-    force_options = ["-f", "--force", "--yes"]
 
     @patch("hopla.cli.hatch_all.HabiticaUserRequest.request_user_data_or_exit")
     def test_hatch_all_nothing_to_hatch_fail(self, mock_user_request: MagicMock):
@@ -101,7 +101,7 @@ class TestHatchAllCliCommand:
         assert result.exit_code == 0
         assert result.stdout == expected_msg
 
-    @pytest.mark.parametrize("force_option", force_options)
+    @pytest.mark.parametrize("force_option", NO_INTERACTION_OPTION_NAMES)
     @patch("hopla.cli.hatch_all.ApiRequestThrottler")
     @patch("hopla.cli.hatch_all.HabiticaUserRequest.request_user_data_or_exit")
     def test_hatch_all_something_to_hatch_force_ok(self,

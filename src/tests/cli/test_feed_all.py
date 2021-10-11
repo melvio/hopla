@@ -7,6 +7,7 @@ from requests.status_codes import codes
 
 from hopla.cli.feed_all import feed_all
 from hopla.cli.groupcmds.get_user import HabiticaUser
+from hopla.hoplalib.hopla_option import NO_INTERACTION_OPTION_NAMES
 
 
 class MockBadGatewayResponse:
@@ -30,7 +31,6 @@ class MockOkResponse:
 class TestFeedAllCliCommand:
     yes_responses = ["y", "Y", "yes", "Yes", "YES"]
     no_responses = ["n", "N", "no", "No", "NO", "", "anything else"]
-    force_options = ["-f", "--force", "--yes"]
     released_zoo_users = [
         HabiticaUser({
             "items": {"pets": {"Seahorse-White": 0},
@@ -103,7 +103,7 @@ class TestFeedAllCliCommand:
         assert '"feed_status": -1' in result.stdout
         assert result.exit_code == 0
 
-    @pytest.mark.parametrize("force_option", force_options)
+    @pytest.mark.parametrize("force_option", NO_INTERACTION_OPTION_NAMES)
     @patch("hopla.cli.feed_all.FeedPostRequester.post_feed_request")
     @patch("hopla.cli.feed_all.HabiticaUserRequest.request_user_data_or_exit")
     def test_feed_all_force_ok(self,
