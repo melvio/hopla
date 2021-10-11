@@ -2,6 +2,7 @@
 Library code to help with Habitica API HTTPS-requests
 """
 from dataclasses import dataclass
+from typing import Final
 
 from hopla.hoplalib.authorization import AuthorizationHandler
 from hopla.hoplalib.common import GlobalConstants
@@ -36,6 +37,14 @@ class RequestHeaders:
             RequestHeaders.X_API_USER_HEADER_NAME: self.hopla_auth_parser.user_id,
             RequestHeaders.X_API_KEY_HEADER_NAME: self.hopla_auth_parser.api_token
         }
+
+
+class ResponseHeaders:
+    """
+    Class with information about Habitica HTTP response headers.
+    """
+    XRATE_LIMIT_REMAINING_HEADER_NAME: Final[str] = "X-RateLimit-Remaining"
+    XRATE_LIMIT_RESET_HEADER_NAME: Final[str] = "X-RateLimit-Reset"
 
 
 class UrlBuilder:
