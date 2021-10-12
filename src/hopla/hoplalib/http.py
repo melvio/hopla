@@ -47,21 +47,12 @@ class ResponseHeaders:
     XRATE_LIMIT_RESET_HEADER_NAME: Final[str] = "X-RateLimit-Reset"
 
 
+@dataclass(frozen=True)
 class UrlBuilder:
-    """
-    Helper class for building habitica API URLs.
-    """
-
-    def __init__(self, *,
-                 domain: str = GlobalConstants.API_DOMAIN,
-                 api_version: str = GlobalConstants.HABITICA_API_VERSION,
-                 path_extension: str = ""):
-        self.domain = domain
-        self.api_version = api_version
-        self.path_extension = path_extension
-
-    def __str__(self) -> str:
-        return f"UrlBuilder(url={self.url})"
+    """Helper class for building habitica API URLs."""
+    domain: str = GlobalConstants.API_DOMAIN
+    api_version: str = GlobalConstants.HABITICA_API_VERSION
+    path_extension: str = ""
 
     def _get_base_url(self) -> str:
         return f"{self.domain}/api/{self.api_version}"
