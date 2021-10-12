@@ -14,13 +14,13 @@ from hopla.hoplalib.throttling import ApiRequestThrottler
 from hopla.hoplalib.zoo.foodmodels import FoodStockpile, FoodStockpileBuilder
 from hopla.hoplalib.zoo.petcontroller import FeedPostRequester
 from hopla.hoplalib.zoo.zoomodels import Zoo, ZooBuilder
-from hopla.hoplalib.zoo.zoofeed_algorithms import FeedAlgorithm, ZookeeperFeedPlan
+from hopla.hoplalib.zoo.zoofeed_algorithms import FeedAlgorithm, FeedPlan
 
 log = logging.getLogger()
 
 
-def __get_feed_plan_or_exit() -> Union[NoReturn, ZookeeperFeedPlan]:
-    """Get the user and build the zookeeper plan"""
+def __get_feed_plan_or_exit() -> Union[NoReturn, FeedPlan]:
+    """Get the user and build the feed plan"""
     user: HabiticaUser = HabiticaUserRequest().request_user_data_or_exit()
     stockpile: FoodStockpile = FoodStockpileBuilder().user(user).build()
     zoo: Zoo = ZooBuilder(user).build()
@@ -29,10 +29,10 @@ def __get_feed_plan_or_exit() -> Union[NoReturn, ZookeeperFeedPlan]:
     return algorithm.make_plan()
 
 
-def __confirm_with_user_or_abort(plan: ZookeeperFeedPlan) -> Optional[NoReturn]:
+def __confirm_with_user_or_abort(plan: FeedPlan) -> Optional[NoReturn]:
     """Ask the user to confirm the specified plan.
 
-    :param plan: the zookeeper feed plan to display
+    :param plan: the feed plan to display
     :return: Don't return if the user wants to abort
     """
 
@@ -42,7 +42,7 @@ def __confirm_with_user_or_abort(plan: ZookeeperFeedPlan) -> Optional[NoReturn]:
 
 def feed_all_pets_and_exit(*, no_interactive: bool = False) -> NoReturn:
     """Feed all the pets"""
-    plan: ZookeeperFeedPlan = __get_feed_plan_or_exit()
+    plan: FeedPlan = __get_feed_plan_or_exit()
     if plan.isempty():
         click.echo(
             "The feed plan is empty. Reasons for this could be:\n"
