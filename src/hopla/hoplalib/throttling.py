@@ -152,13 +152,22 @@ class RateLimitingAwareThrottler:
         time_till_reset: timedelta = self._xrate_limit_reset - now_utc
 
         if self._xrate_limit_remaining == 0:
-            sleep_time: float = time_till_reset.total_seconds()
+            # No request remains. Let's chill out a lot.
+            sleep_time: float = time_till_reset.total_seconds() + 5.
+        elif self._xrate_limit_remaining == 1:
+            # Only 1 request remains. Let's chill out.
+            sleep_time: float = time_till_reset.total_seconds() + 3
+        elif self._xrate_limit_remaining == 2:
+            # Only 2 requests remain. By slowing down in this manner, we can run
+            # hopla commands concurrently.
+            sleep_time: float = time_till_reset.total_seconds() + 2
         else:
+            # Go fast.
             time_interval: timedelta = time_till_reset / self._xrate_limit_remaining
             sleep_time: float = time_interval.total_seconds()
 
         # use max(..., 0) for when x-rate limit is in the past.
-        return max(sleep_time + self.leeway_seconds, 0)
+        return max(sleep_time, 0) + self.leeway_seconds
 
     def _set_xrate_limit_remaining(self, headers: CaseInsensitiveDict):
         """Set the xrate_limit_remaining from a given Habitica API response headers."""
