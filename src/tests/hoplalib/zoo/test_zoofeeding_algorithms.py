@@ -5,34 +5,34 @@ from hopla.cli.groupcmds.get_user import HabiticaUser
 from hopla.hoplalib.zoo.fooddata import FoodData
 from hopla.hoplalib.zoo.foodmodels import FoodStockpile, FoodStockpileBuilder
 from hopla.hoplalib.zoo.zoomodels import Zoo, ZooBuilder
-from hopla.hoplalib.zoo.zoofeed_algorithms import FeedPlanItem, ZooFeedAlgorithm, \
-    ZookeeperFeedPlan
+from hopla.hoplalib.zoo.zoofeed_algorithms import FeedPlanItem, \
+    FeedAlgorithm, FeedPlan
 from tests.testutils.user_test_utils import UserTestUtil
 
 
-def plan_with_single_item(food_name: str, pet_name: str, times: int) -> ZookeeperFeedPlan:
-    plan = ZookeeperFeedPlan()
+def plan_with_single_item(food_name: str, pet_name: str, times: int) -> FeedPlan:
+    plan = FeedPlan()
     plan.add_to_feed_plan(pet_name=pet_name, food_name=food_name, times=times)
     return plan
 
 
-class TestZookeeperFeedPlan:
+class TestFeedPlan:
 
     def test___init___ok(self):
-        plan = ZookeeperFeedPlan()
+        plan = FeedPlan()
 
         assert plan.feed_plan == []
 
     def test__repr__empty(self):
-        plan = ZookeeperFeedPlan()
+        plan = FeedPlan()
         result: str = repr(plan)
-        assert result == "ZookeeperFeedPlan(__feed_plan=[])"
+        assert result == "FeedPlan(__feed_plan=[])"
 
     def test__repr__nonempty(self):
         pet_name = "Wolf-White"
         food_name = "Milk"
         times = 2
-        plan: ZookeeperFeedPlan = plan_with_single_item(food_name, pet_name, times)
+        plan: FeedPlan = plan_with_single_item(food_name, pet_name, times)
 
         result: str = repr(plan)
 
@@ -42,27 +42,27 @@ class TestZookeeperFeedPlan:
 
     @pytest.mark.parametrize("plan,expected_empty", [
         (plan_with_single_item("Wolf-Red", "Fish", 1), False),
-        (ZookeeperFeedPlan(), True)
+        (FeedPlan(), True)
     ])
-    def test__is_empty(self, plan: ZookeeperFeedPlan, expected_empty: bool):
+    def test__is_empty(self, plan: FeedPlan, expected_empty: bool):
         assert plan.isempty() is expected_empty
 
     @pytest.mark.parametrize("plan,expected_len", [
         (plan_with_single_item("Wolf-Red", "Strawberry", 3), 1),
-        (ZookeeperFeedPlan(), 0)
+        (FeedPlan(), 0)
     ])
-    def test__len(self, plan: ZookeeperFeedPlan, expected_len: int):
+    def test__len(self, plan: FeedPlan, expected_len: int):
         assert len(plan) == expected_len
 
     def test_format_plan_empty(self):
-        result: str = ZookeeperFeedPlan().format_plan()
+        result: str = FeedPlan().format_plan()
         assert result == ""
 
     def test_format_plan_non_empty(self):
         pet_name = "Rat-Shade"
         food_name = "Chocolate"
         times = 8
-        plan: ZookeeperFeedPlan = plan_with_single_item(
+        plan: FeedPlan = plan_with_single_item(
             pet_name=pet_name, food_name=food_name, times=times
         )
 
@@ -70,7 +70,7 @@ class TestZookeeperFeedPlan:
         assert result == f'Pet {pet_name} will get {times} {food_name}.'
 
     def test_add_to_feed_plan_ok(self):
-        plan = ZookeeperFeedPlan()
+        plan = FeedPlan()
         pet_name = "Axolotl-Zombie"
         food_name = "RottenMeat"
         times = 9
@@ -88,51 +88,51 @@ class TestZooFeedAlgorithm:
 
     def test__repr__(self, feedable_pets_zoo: Zoo,
                      filled_stockpile: FoodStockpile):
-        algorithm = ZooFeedAlgorithm(zoo=feedable_pets_zoo, stockpile=filled_stockpile)
+        algorithm = FeedAlgorithm(zoo=feedable_pets_zoo, stockpile=filled_stockpile)
 
         repr_before: str = repr(algorithm)
-        plan: ZookeeperFeedPlan = algorithm.make_plan()
+        plan: FeedPlan = algorithm.make_plan()
         repr_after: str = repr(algorithm)
 
-        before_expected = "ZooFeedAlgorithm(\n  __zookeeper_plan=\n)"
+        before_expected = "FeedAlgorithm(\n  __feed_plan=\n)"
         assert repr_before == before_expected
 
-        after_expected = f"ZooFeedAlgorithm(\n  __zookeeper_plan={plan.format_plan()}\n)"
+        after_expected = f"FeedAlgorithm(\n  __feed_plan={plan.format_plan()}\n)"
         assert repr_after == after_expected
 
     def test_make_plan_empty_stockpile_results_in_empty_plan_ok(self,
                                                                 empty_zoo,
                                                                 empty_stockpile):
-        algorithm = ZooFeedAlgorithm(zoo=empty_zoo,
-                                     stockpile=empty_stockpile)
+        algorithm = FeedAlgorithm(zoo=empty_zoo,
+                                  stockpile=empty_stockpile)
 
-        plan: ZookeeperFeedPlan = algorithm.make_plan()
+        plan: FeedPlan = algorithm.make_plan()
 
-        expected_empty_plan = ZookeeperFeedPlan()
+        expected_empty_plan = FeedPlan()
         assert plan == expected_empty_plan
         assert algorithm.stockpile == empty_stockpile
 
     def test_make_plan_empty_stockpile_filled_zoo_results_in_empty_plan_ok(self,
                                                                            feedable_pets_zoo,
                                                                            empty_stockpile):
-        algorithm = ZooFeedAlgorithm(zoo=feedable_pets_zoo,
-                                     stockpile=empty_stockpile)
+        algorithm = FeedAlgorithm(zoo=feedable_pets_zoo,
+                                  stockpile=empty_stockpile)
 
-        plan: ZookeeperFeedPlan = algorithm.make_plan()
+        plan: FeedPlan = algorithm.make_plan()
 
-        expected_empty_plan = ZookeeperFeedPlan()
+        expected_empty_plan = FeedPlan()
         assert plan == expected_empty_plan
         assert algorithm.stockpile == empty_stockpile
 
     def test_make_plan_filled_stockpile_empty_zoo_results_in_empty_plan_ok(self,
                                                                            empty_zoo,
                                                                            filled_stockpile):
-        algorithm = ZooFeedAlgorithm(zoo=empty_zoo,
-                                     stockpile=filled_stockpile)
+        algorithm = FeedAlgorithm(zoo=empty_zoo,
+                                  stockpile=filled_stockpile)
 
-        plan: ZookeeperFeedPlan = algorithm.make_plan()
+        plan: FeedPlan = algorithm.make_plan()
 
-        expected_empty_plan = ZookeeperFeedPlan()
+        expected_empty_plan = FeedPlan()
         assert plan == expected_empty_plan
 
     def test_make_plan_filled_stockpile_hungry_zoo_results_in_plan_ok(self):
@@ -156,9 +156,9 @@ class TestZooFeedAlgorithm:
             })
         )
 
-        algorithm = ZooFeedAlgorithm(zoo=zoo, stockpile=start_stockpile)
+        algorithm = FeedAlgorithm(zoo=zoo, stockpile=start_stockpile)
 
-        result_plan: ZookeeperFeedPlan = algorithm.make_plan()
+        result_plan: FeedPlan = algorithm.make_plan()
 
         expected_first_pet_feed_times = 9
         expected_second_pet_feed_times = 8
@@ -182,7 +182,7 @@ class TestZooFeedAlgorithm:
 
         assert algorithm.stockpile == expected_stockpile
         assert all(feed_item in result_plan for feed_item in expected_feed_plan)
-        assert result_plan == algorithm.zookeeper_plan  # sanity check
+        assert result_plan == algorithm.feed_plan  # sanity check
 
     def test_make_plan_feed_single_pet(self):
         pet_name = "Velociraptor-Skeleton"
@@ -195,9 +195,9 @@ class TestZooFeedAlgorithm:
         }})
         zoo: Zoo = ZooBuilder(user).build()
         stockpile: FoodStockpile = FoodStockpileBuilder().user(user).build()
-        algorithm = ZooFeedAlgorithm(zoo=zoo, stockpile=stockpile)
+        algorithm = FeedAlgorithm(zoo=zoo, stockpile=stockpile)
 
-        feed_plan: ZookeeperFeedPlan = algorithm.make_plan()
+        feed_plan: FeedPlan = algorithm.make_plan()
 
         expected_fish_given = 8
         assert len(feed_plan) == 1
