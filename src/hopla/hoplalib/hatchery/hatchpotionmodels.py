@@ -3,7 +3,7 @@
 Module with models for hatching potions.
 """
 from dataclasses import dataclass, field
-from typing import Dict
+from typing import Dict, Iterator
 
 from hopla.hoplalib.errors import YouFoundABugRewardError
 from hopla.hoplalib.hatchery.hatchdata import HatchPotionData
@@ -58,7 +58,7 @@ class HatchPotionCollection:
     def __len__(self) -> int:
         return len(self.__potions)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[str]:
         return iter(self.__potions)
 
     def __getitem__(self, name: str) -> HatchPotion:
@@ -67,7 +67,7 @@ class HatchPotionCollection:
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.__potions=})"
 
-    def values(self):
+    def values(self) -> Iterator[HatchPotion]:
         """Like dict.values but for an HatchPotionCollection."""
         for potion in self.__potions.values():
             yield potion

@@ -3,7 +3,7 @@
 Module with models for eggs.
 """
 from dataclasses import dataclass, field
-from typing import Any, Dict
+from typing import Any, Dict, Iterator
 
 from hopla.hoplalib.errors import YouFoundABugRewardError
 from hopla.hoplalib.hatchery.hatchdata import EggData
@@ -69,7 +69,7 @@ class EggCollection:
     def __len__(self) -> int:
         return len(self.__eggs)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[str]:
         return iter(self.__eggs)
 
     def __getitem__(self, name: str) -> Egg:
@@ -78,7 +78,7 @@ class EggCollection:
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.__eggs=})"
 
-    def values(self):
+    def values(self) -> Iterator[Egg]:
         """Like dict.values but for an EggCollection."""
         for egg in self.__eggs.values():
             yield egg

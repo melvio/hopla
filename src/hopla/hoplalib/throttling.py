@@ -7,7 +7,7 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from time import sleep
-from typing import Any, Callable, Iterable, List, Optional
+from typing import Any, Callable, Iterator, List, Optional
 
 import click
 from requests import Response
@@ -34,7 +34,7 @@ class ApiRequestThrottler:
         self.throttle_limit = throttle_limit
         """Maximum of calls that you can do without throttling."""
 
-    def release(self):
+    def release(self) -> Iterator[Any]:
         """Yields the next api requests ready to be executed.
 
         :return:
@@ -56,7 +56,7 @@ class ApiRequestThrottler:
         for api_request in self.release():
             _ = api_request()
 
-    def throttle(self):
+    def throttle(self) -> None:
         """Wait before executing the next api request."""
         sleep(self.throttle_seconds)
 
@@ -112,7 +112,7 @@ class RateLimitingAwareThrottler:
         self._api_requests_remaining: int = len(self.api_requests)
         """The number of Api requests that we haven't executed yet."""
 
-    def perform_and_yield_response(self) -> Iterable[Response]:
+    def perform_and_yield_response(self) -> Iterator[Response]:
         """
         Execute the next request. This function acts as a dispatcher.
         :return:
