@@ -5,8 +5,8 @@ from hopla.cli.groupcmds.get_user import HabiticaUser
 from hopla.hoplalib.zoo.fooddata import FoodData
 from hopla.hoplalib.zoo.foodmodels import FoodStockpile, FoodStockpileBuilder
 from hopla.hoplalib.zoo.zoomodels import Zoo, ZooBuilder
-from hopla.hoplalib.zoo.zoofeed_algorithms import FeedPlanItem, ZooFeedAlgorithm, \
-    ZookeeperFeedPlan
+from hopla.hoplalib.zoo.zoofeed_algorithms import FeedPlanItem, \
+    FeedAlgorithm, ZookeeperFeedPlan
 from tests.testutils.user_test_utils import UserTestUtil
 
 
@@ -88,23 +88,23 @@ class TestZooFeedAlgorithm:
 
     def test__repr__(self, feedable_pets_zoo: Zoo,
                      filled_stockpile: FoodStockpile):
-        algorithm = ZooFeedAlgorithm(zoo=feedable_pets_zoo, stockpile=filled_stockpile)
+        algorithm = FeedAlgorithm(zoo=feedable_pets_zoo, stockpile=filled_stockpile)
 
         repr_before: str = repr(algorithm)
         plan: ZookeeperFeedPlan = algorithm.make_plan()
         repr_after: str = repr(algorithm)
 
-        before_expected = "ZooFeedAlgorithm(\n  __zookeeper_plan=\n)"
+        before_expected = "FeedAlgorithm(\n  __zookeeper_plan=\n)"
         assert repr_before == before_expected
 
-        after_expected = f"ZooFeedAlgorithm(\n  __zookeeper_plan={plan.format_plan()}\n)"
+        after_expected = f"FeedAlgorithm(\n  __zookeeper_plan={plan.format_plan()}\n)"
         assert repr_after == after_expected
 
     def test_make_plan_empty_stockpile_results_in_empty_plan_ok(self,
                                                                 empty_zoo,
                                                                 empty_stockpile):
-        algorithm = ZooFeedAlgorithm(zoo=empty_zoo,
-                                     stockpile=empty_stockpile)
+        algorithm = FeedAlgorithm(zoo=empty_zoo,
+                                  stockpile=empty_stockpile)
 
         plan: ZookeeperFeedPlan = algorithm.make_plan()
 
@@ -115,8 +115,8 @@ class TestZooFeedAlgorithm:
     def test_make_plan_empty_stockpile_filled_zoo_results_in_empty_plan_ok(self,
                                                                            feedable_pets_zoo,
                                                                            empty_stockpile):
-        algorithm = ZooFeedAlgorithm(zoo=feedable_pets_zoo,
-                                     stockpile=empty_stockpile)
+        algorithm = FeedAlgorithm(zoo=feedable_pets_zoo,
+                                  stockpile=empty_stockpile)
 
         plan: ZookeeperFeedPlan = algorithm.make_plan()
 
@@ -127,8 +127,8 @@ class TestZooFeedAlgorithm:
     def test_make_plan_filled_stockpile_empty_zoo_results_in_empty_plan_ok(self,
                                                                            empty_zoo,
                                                                            filled_stockpile):
-        algorithm = ZooFeedAlgorithm(zoo=empty_zoo,
-                                     stockpile=filled_stockpile)
+        algorithm = FeedAlgorithm(zoo=empty_zoo,
+                                  stockpile=filled_stockpile)
 
         plan: ZookeeperFeedPlan = algorithm.make_plan()
 
@@ -156,7 +156,7 @@ class TestZooFeedAlgorithm:
             })
         )
 
-        algorithm = ZooFeedAlgorithm(zoo=zoo, stockpile=start_stockpile)
+        algorithm = FeedAlgorithm(zoo=zoo, stockpile=start_stockpile)
 
         result_plan: ZookeeperFeedPlan = algorithm.make_plan()
 
@@ -195,7 +195,7 @@ class TestZooFeedAlgorithm:
         }})
         zoo: Zoo = ZooBuilder(user).build()
         stockpile: FoodStockpile = FoodStockpileBuilder().user(user).build()
-        algorithm = ZooFeedAlgorithm(zoo=zoo, stockpile=stockpile)
+        algorithm = FeedAlgorithm(zoo=zoo, stockpile=stockpile)
 
         feed_plan: ZookeeperFeedPlan = algorithm.make_plan()
 

@@ -79,10 +79,10 @@ class ZookeeperFeedPlan:
 
 
 @dataclass
-class ZooFeedAlgorithm:
+class FeedAlgorithm:
     """
     This class contains an algorithm that makes a plan to distribute food
-    from a food stockpile over pets in a zoo.
+    from a food stockpile over all pets.
     """
 
     def __init__(self, *, zoo: Zoo, stockpile: FoodStockpile):

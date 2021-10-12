@@ -14,7 +14,7 @@ from hopla.hoplalib.throttling import ApiRequestThrottler
 from hopla.hoplalib.zoo.foodmodels import FoodStockpile, FoodStockpileBuilder
 from hopla.hoplalib.zoo.petcontroller import FeedPostRequester
 from hopla.hoplalib.zoo.zoomodels import Zoo, ZooBuilder
-from hopla.hoplalib.zoo.zoofeed_algorithms import ZooFeedAlgorithm, ZookeeperFeedPlan
+from hopla.hoplalib.zoo.zoofeed_algorithms import FeedAlgorithm, ZookeeperFeedPlan
 
 log = logging.getLogger()
 
@@ -25,7 +25,7 @@ def __get_feed_plan_or_exit() -> Union[NoReturn, ZookeeperFeedPlan]:
     stockpile: FoodStockpile = FoodStockpileBuilder().user(user).build()
     zoo: Zoo = ZooBuilder(user).build()
 
-    algorithm = ZooFeedAlgorithm(zoo=zoo, stockpile=stockpile)
+    algorithm = FeedAlgorithm(zoo=zoo, stockpile=stockpile)
     return algorithm.make_plan()
 
 
