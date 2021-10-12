@@ -2,7 +2,7 @@
 A modules with algorithms for feeding multiple pets at once.
 """
 from dataclasses import dataclass
-from typing import List
+from typing import Iterator, List
 from copy import deepcopy
 
 from hopla.hoplalib.zoo.foodmodels import FoodStockpile
@@ -38,14 +38,14 @@ class FeedPlan:
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(__feed_plan={self.__feed_plan})"
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[FeedPlanItem]:
         return iter(self.__feed_plan)
 
     def __len__(self) -> int:
         """Return the number of FeedPlanItems in this feed plan."""
         return len(self.__feed_plan)
 
-    def isempty(self):
+    def isempty(self) -> bool:
         """Return true if the feed plan is empty."""
         return len(self) == 0
 
