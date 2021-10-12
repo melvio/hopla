@@ -105,7 +105,7 @@ class TestRateLimitingAwareThrottler:
         empty_throttler = RateLimitingAwareThrottler()
 
         assert empty_throttler.api_requests == []
-        assert empty_throttler._is_first is True
+        assert empty_throttler._is_rate_initialized is False
         assert empty_throttler._xrate_limit_remaining is None
         assert empty_throttler._xrate_limit_reset is None
         assert empty_throttler._api_requests_remaining == 0
@@ -175,11 +175,13 @@ class TestRateLimitingAwareThrottler:
 
         response_generator = throttler.perform_and_yield_response()
 
+        assert throttler._is_rate_initialized is False
         assert throttler._api_requests_remaining == 1
+
         assert mock_response is next(response_generator)
         assert throttler._api_requests_remaining == 0
 
-        assert throttler._is_first is False
+        assert throttler._is_rate_initialized is True
         assert throttler._xrate_limit_remaining == int(xrate_remaining)
 
         reset_datetime: datetime = throttler._xrate_limit_reset
@@ -194,12 +196,10 @@ class TestRateLimitingAwareThrottler:
             next(response_generator)
 
     @patch("hopla.hoplalib.throttling.Response")
+    @patch("hopla.hoplalib.throttling.Response")
     def test_perform_and_yield_response_multiple_requests_ok(self,
-                                                             mock_response: MagicMock):
-        def mock_api_request(response_headers) -> Callable[[], MagicMock]:
-            mock_response.headers = response_headers
-            return lambda: mock_response
-
+                                                             mock_response1: MagicMock,
+                                                             mock_response2: MagicMock):
         xrate_remaining1 = "14"
         quick: datetime = datetime.now(timezone.utc) + timedelta(microseconds=100)
         xrate_reset1 = (
@@ -210,6 +210,7 @@ class TestRateLimitingAwareThrottler:
             ResponseHeaders.XRATE_LIMIT_REMAINING_HEADER_NAME: xrate_remaining1,
             ResponseHeaders.XRATE_LIMIT_RESET_HEADER_NAME: xrate_reset1
         }
+        mock_response1.headers = headers1
 
         # hop from 14 to 10 is normal when executing concurrently
         xrate_remaining2 = "10"
@@ -217,24 +218,29 @@ class TestRateLimitingAwareThrottler:
             ResponseHeaders.XRATE_LIMIT_REMAINING_HEADER_NAME: xrate_remaining2,
             ResponseHeaders.XRATE_LIMIT_RESET_HEADER_NAME: xrate_reset1
         }
+        mock_response2.headers = headers2
 
-        request1: Callable[[], MagicMock] = mock_api_request(headers1)
-        request2: Callable[[], MagicMock] = mock_api_request(headers2)
-        throttler = RateLimitingAwareThrottler(api_requests=[request1, request2])
+        throttler = RateLimitingAwareThrottler(api_requests=[
+            lambda: mock_response1, lambda: mock_response2
+        ])
 
         generator = throttler.perform_and_yield_response()
 
         assert throttler._api_requests_remaining == 2
+        assert throttler._xrate_limit_remaining is None
+        assert throttler._xrate_limit_reset is None
 
         response1 = next(generator)
-        assert response1 == request1()
+        assert response1 == mock_response1
         assert throttler._api_requests_remaining == 1
         assert throttler._throttling_required() is False
+        assert throttler._xrate_limit_remaining == int(xrate_remaining1)
 
         response2 = next(generator)
-        assert response2 == request2()
+        assert response2 == mock_response2
         assert throttler._api_requests_remaining == 0
         assert throttler._throttling_required() is False
+        assert throttler._xrate_limit_remaining == int(xrate_remaining2)
 
         with pytest.raises(StopIteration):
             next(generator)

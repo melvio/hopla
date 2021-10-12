@@ -74,20 +74,38 @@ class RateLimitingAwareThrottler:
     [WIKI](https://habitica.fandom.com/wiki/Guidance_for_Comrades#Rate_Limiting)
     """
     api_requests: List[Callable[[], Response]] = field(default_factory=list)
+    """The queue of API requests. (Currently implemented as a list.)"""
     leeway_seconds: float = 0.1
     """Number of seconds to wait over the requested limit."""
-    _is_first: bool = field(init=False, default=True)
-    """
-    Value derived from the X-RateLimit-Remaining header.
-
-    The number of remaining requests that can be made in the current 60 second
-    period.
-    """
 
     def __post_init__(self):
-        self._api_requests_remaining = len(self.api_requests)
+        # pylint: disable=pointless-string-statement
+        # I think pylint doesn't recognize that these strings act as documentation
+        # in the __post_init__ function.
+        self._is_rate_initialized = False
+        """We only know rate limiting information after the first API request."""
+
+        self._api_requests_remaining: int = len(self.api_requests)
+        """The number of Api requests that we haven't executed yet."""
+
         self._xrate_limit_remaining: Optional[int] = None
+        """
+        The number of remaining requests that can be made in the current
+        60 second period.
+
+        This value is derived from the X-RateLimit-Remaining header and
+        is initialized to None because we won't know it yet at the first
+        initialization.
+        """
+
         self._xrate_limit_reset: Optional[datetime] = None
+        """
+        The time on which the current rate-limit will be reset.
+
+        This value derived from the X-RateLimit-Reset header and
+        is initialized to None because we won't know it yet at the first
+        initialization.
+        """
 
     def perform_and_yield_response(self):
         """
@@ -95,20 +113,21 @@ class RateLimitingAwareThrottler:
         :return:
         """
         for api_request in self.api_requests:
-            if self._is_first is True:
-                # Always skip throttling for the first request because
-                # we don't have any rate limiting information.
-                self._is_first = False
-            elif self._throttling_required():
+            if self._is_rate_initialized is True and self._throttling_required():
                 self._throttle()
 
             response: Response = api_request()
-            self._set_xrate_limit_remaining(response.headers)
-            self._set_xrate_limit_reset(response.headers)
-            # Consider dequeueing from a queue instead calculating remaining requests.
-            self._api_requests_remaining -= 1
+            self.__update_rate_info(response)
 
             yield response
+
+    def __update_rate_info(self, response: Response):
+        """Use the response to update rate limiting information"""
+        self._set_xrate_limit_remaining(response.headers)
+        self._set_xrate_limit_reset(response.headers)
+        # Consider dequeueing from a queue instead calculating remaining requests.
+        self._api_requests_remaining -= 1
+        self._is_rate_initialized = True
 
     def _throttling_required(self) -> bool:
         """Return True when queue is relatively long compared to xrate-limit."""
