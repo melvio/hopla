@@ -135,7 +135,7 @@ class TestRateLimitingAwareThrottler:
 
         sleep_result_secs: float = throttler._calculate_sleep_time()
 
-        expected_sleep: float = secs_till_reset + throttler.leeway_seconds
+        expected_sleep: float = secs_till_reset + throttler.leeway_seconds + 5
         assert is_close(sleep_result_secs, expected_sleep)
 
     @pytest.mark.parametrize("secs_till_reset", [60, 40, 15, 10, 6.7])
