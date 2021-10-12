@@ -22,7 +22,7 @@ class MockBadGatewayResponse:
 class MockOkResponse:
     def __init__(self, msg: str):
         self.status_code = codes.ok
-        self.__json = {"success": True, "data": -1, "message": msg}
+        self.__json = {"success": True, "message": msg}
 
     def json(self):
         return self.__json
@@ -81,48 +81,54 @@ class TestFeedAllCliCommand:
         assert result.stdout.startswith("The feed plan is empty.")
 
     @pytest.mark.parametrize("yes_response", yes_responses)
+    @patch("hopla.cli.feed_all.RateLimitingAwareThrottler.perform_and_yield_response")
     @patch("hopla.cli.feed_all.FeedPostRequester.post_feed_request")
     @patch("hopla.cli.feed_all.HabiticaUserRequest.request_user_data_or_exit")
     def test_feed_all_ok(self,
                          mock_user_request: MagicMock,
                          mock_feed_request: MagicMock,
+                         mock_throttle_iter: MagicMock,
                          user_with_feedable_pet: HabiticaUser,
                          yes_response: str):
         # This user has a pet that can be grown into a mount by feeding 8 Fish
         mock_user_request.return_value = user_with_feedable_pet
 
         feed_msg = "You have tamed Skeleton Velociraptor, let's go for a ride!"
-        mock_feed_request.return_value = MockOkResponse(msg=feed_msg)
+        mocked_response = MockOkResponse(msg=feed_msg)
+        mock_feed_request.return_value = mocked_response
+        mock_throttle_iter.return_value = iter([mocked_response])
 
         runner = CliRunner()
         result: Result = runner.invoke(feed_all, input=yes_response)
 
-        assert "Pet Velociraptor-Skeleton will get 8 Fish.\n" in result.stdout
-        assert f"Do you want to proceed? [y/N]: {yes_response}\n" in result.stdout
-        assert feed_msg in result.stdout
-        assert '"feed_status": -1' in result.stdout
+        expected_plan = "Pet Velociraptor-Skeleton will get 8 Fish."
+        expected_prompt = f"Do you want to proceed? [y/N]: {yes_response}"
+
+        assert result.stdout == f"{expected_plan}\n{expected_prompt}\n{feed_msg}\n"
         assert result.exit_code == 0
 
     @pytest.mark.parametrize("force_option", NO_INTERACTION_OPTION_NAMES)
+    @patch("hopla.cli.feed_all.RateLimitingAwareThrottler.perform_and_yield_response")
     @patch("hopla.cli.feed_all.FeedPostRequester.post_feed_request")
     @patch("hopla.cli.feed_all.HabiticaUserRequest.request_user_data_or_exit")
     def test_feed_all_force_ok(self,
                                mock_user_request: MagicMock,
                                mock_feed_request: MagicMock,
+                               mock_throttle_iter: MagicMock,
                                user_with_feedable_pet: HabiticaUser,
                                force_option: str):
         # This user has a pet that can be grown into a mount by feeding 8 Fish
         mock_user_request.return_value = user_with_feedable_pet
 
         feed_msg = "You have tamed Skeleton Velociraptor, let's go for a ride!"
-        mock_feed_request.return_value = MockOkResponse(msg=feed_msg)
+        mocked_response = MockOkResponse(msg=feed_msg)
+        mock_feed_request.return_value = mocked_response
+        mock_throttle_iter.return_value = iter([mocked_response])
 
         runner = CliRunner()
         result: Result = runner.invoke(feed_all, [force_option])
 
-        assert "Do you want to proceed?" not in result.stdout
-        assert feed_msg in result.stdout
-        assert '"feed_status": -1' in result.stdout
+        assert result.stdout == f"{feed_msg}\n"
         assert result.exit_code == 0
 
     @pytest.mark.parametrize("yes_response", yes_responses)

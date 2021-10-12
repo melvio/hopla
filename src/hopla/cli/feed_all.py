@@ -4,13 +4,14 @@ The module with CLI code that handles the `hopla feed-all` command.
 """
 import logging
 import sys
-from typing import Callable, List, NoReturn, Optional, Union
+from typing import Any, Callable, Dict, Iterator, List, NoReturn, Optional, Union
 
 import click
+from requests import Response
 
 from hopla.hoplalib import hopla_option
 from hopla.cli.groupcmds.get_user import HabiticaUser, HabiticaUserRequest
-from hopla.hoplalib.throttling import ApiRequestThrottler
+from hopla.hoplalib.throttling import RateLimitingAwareThrottler
 from hopla.hoplalib.zoo.foodmodels import FoodStockpile, FoodStockpileBuilder
 from hopla.hoplalib.zoo.petcontroller import FeedPostRequester
 from hopla.hoplalib.zoo.zoomodels import Zoo, ZooBuilder
@@ -40,28 +41,27 @@ def __confirm_with_user_or_abort(plan: FeedPlan) -> Optional[NoReturn]:
     click.confirm(text=prompt_msg, abort=True)
 
 
-def feed_all_pets_and_exit(*, no_interactive: bool = False) -> NoReturn:
-    """Feed all the pets"""
-    plan: FeedPlan = __get_feed_plan_or_exit()
-    if plan.isempty():
-        click.echo(
-            "The feed plan is empty. Reasons for this could be:\n"
-            "1. There is insufficient food available to turn pets into mounts.\n"
-            "2. You don't have any feedable pets."
-        )
-        sys.exit(0)
+def __feed_pets_without_confirmation(plan: FeedPlan):
+    """Feed all the pets in the plan. Print the result to the terminal.
 
-    if no_interactive is False:
-        __confirm_with_user_or_abort(plan)
-
-    feed_requests: List[Callable[[], None]] = []
+    Warning: this function does ask for confirmation.
+    """
+    # Feel free to refactor this such that we don't iterate over
+    # the plan twice.
+    feed_requests: List[Callable[[], Response]] = [
+        FeedPostRequester.build_from(item).post_feed_request
+        for item in plan
+    ]
+    throttler = RateLimitingAwareThrottler(feed_requests)
+    feed_response_iter: Iterator[Response] = throttler.perform_and_yield_response()
     for item in plan:
-        feed_requester: FeedPostRequester = FeedPostRequester.build_from(item)
-        feed_requests.append(feed_requester.post_feed_request_get_data_or_exit)
-
-    throttler = ApiRequestThrottler(feed_requests)
-    throttler.execute_all_requests()
-    sys.exit(0)
+        feed_response: Response = next(feed_response_iter)
+        response_json: Dict[str, Any] = feed_response.json()
+        if response_json["success"] is True:
+            click.echo(response_json["message"])
+        else:
+            click.echo(f"Failed to feed {item.pet_name}\n"
+                       f"{response_json['error']}: {response_json['message']}")
 
 
 @click.command()
@@ -95,4 +95,16 @@ def feed_all(no_interactive: bool) -> None:
     :param no_interactive:
     """
     log.debug(f"hopla feed-all {no_interactive=}")
-    feed_all_pets_and_exit(no_interactive=no_interactive)
+    plan: FeedPlan = __get_feed_plan_or_exit()
+    if plan.isempty():
+        click.echo(
+            "The feed plan is empty. Reasons for this could be:\n"
+            "1. There is insufficient food available to turn pets into mounts.\n"
+            "2. You don't have any feedable pets."
+        )
+        sys.exit(0)
+
+    if no_interactive is False:
+        __confirm_with_user_or_abort(plan)
+
+    __feed_pets_without_confirmation(plan)

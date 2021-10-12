@@ -84,7 +84,7 @@ class TestFeedPlan:
         assert plan.feed_plan == expected_plan
 
 
-class TestZooFeedAlgorithm:
+class TestFeedAlgorithm:
 
     def test__repr__(self, feedable_pets_zoo: Zoo,
                      filled_stockpile: FoodStockpile):
