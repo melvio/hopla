@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import Any, Dict
 
 import requests
+
 from hopla.hoplalib.http import HabiticaRequest, UrlBuilder
 
 

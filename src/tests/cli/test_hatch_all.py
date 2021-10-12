@@ -22,6 +22,14 @@ class MockThrottler:
         yield lambda: self.response2
 
 
+class MockOkHatchResponse:
+    def __init__(self, msg):
+        self.msg = msg
+
+    def json(self):
+        return {"success": True, "message": self.msg}
+
+
 class TestHatchAllCliCommand:
 
     @patch("hopla.cli.hatch_all.HabiticaUserRequest.request_user_data_or_exit")
@@ -67,7 +75,7 @@ class TestHatchAllCliCommand:
         assert result.exit_code == 0
         assert result.stdout.endswith(expected_msg)
 
-    @patch("hopla.cli.hatch_all.ApiRequestThrottler")
+    @patch("hopla.cli.hatch_all.RateLimitingAwareThrottler.perform_and_yield_response")
     @patch("hopla.cli.hatch_all.HabiticaUserRequest.request_user_data_or_exit")
     def test_hatch_all_something_to_hatch_user_confirms_ok(self,
                                                            mock_user_request: MagicMock,
@@ -81,11 +89,12 @@ class TestHatchAllCliCommand:
             "hatchingPotions": {potion1_name: 1, potion2_name: 1}
         }})
 
-        response1 = f"Successfully hatched {egg_name}-{potion1_name}\n"
-        response2 = f"Successfully hatched {egg_name}-{potion2_name}\n"
-        mock_throttler.return_value = MockThrottler(
-            response1=response1, response2=response2
-        )
+        msg1 = f"Successfully hatched a {egg_name}-{potion1_name}."
+        msg2 = f"Successfully hatched a {egg_name}-{potion2_name}."
+        response1 = MockOkHatchResponse(msg1)
+        response2 = MockOkHatchResponse(msg2)
+
+        mock_throttler.return_value = iter([response1, response2])
 
         runner = CliRunner()
         user_confirms_input: str = "yes"
@@ -95,14 +104,14 @@ class TestHatchAllCliCommand:
             f"A {egg_name} egg will be hatched by a {potion1_name} potion.\n"
             f"A {egg_name} egg will be hatched by a {potion2_name} potion.\n"
             f"Do you wish to proceed? [y/N]: {user_confirms_input}\n"
-            f"{response1}\n"
-            f"{response2}\n"
+            f"{msg1}\n"
+            f"{msg2}\n"
         )
         assert result.exit_code == 0
         assert result.stdout == expected_msg
 
     @pytest.mark.parametrize("force_option", NO_INTERACTION_OPTION_NAMES)
-    @patch("hopla.cli.hatch_all.ApiRequestThrottler")
+    @patch("hopla.cli.hatch_all.RateLimitingAwareThrottler.perform_and_yield_response")
     @patch("hopla.cli.hatch_all.HabiticaUserRequest.request_user_data_or_exit")
     def test_hatch_all_something_to_hatch_force_ok(self,
                                                    mock_user_request: MagicMock,
@@ -117,18 +126,18 @@ class TestHatchAllCliCommand:
             "hatchingPotions": {potion1_name: 1, potion2_name: 1}
         }})
 
-        response1 = f"Successfully hatched {egg_name}-{potion1_name}\n"
-        response2 = f"Successfully hatched {egg_name}-{potion2_name}\n"
-        mock_throttler.return_value = MockThrottler(
-            response1=response1, response2=response2
-        )
+        msg1 = f"Successfully hatched a {egg_name}-{potion1_name}."
+        msg2 = f"Successfully hatched a {egg_name}-{potion2_name}."
+        response1 = MockOkHatchResponse(msg1)
+        response2 = MockOkHatchResponse(msg2)
+
+        mock_throttler.return_value = iter([response1, response2])
 
         runner = CliRunner()
         result: Result = runner.invoke(hatch_all, [force_option])
 
-        expected_msg = f"{response1}\n{response2}\n"
         assert result.exit_code == 0
-        assert result.stdout == expected_msg
+        assert result.stdout == f"{msg1}\n{msg2}\n"
 
 
 class TestToPetList:

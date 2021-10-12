@@ -2,17 +2,20 @@
 """
 Module with throttling logic.
 """
+import logging
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from time import sleep
-from typing import Any, Callable, List, Optional
+from typing import Any, Callable, Iterable, List, Optional
 
 import click
 from requests import Response
 from requests.structures import CaseInsensitiveDict
 
 from hopla.hoplalib.http import ResponseHeaders
+
+log = logging.getLogger()
 
 
 @dataclass
@@ -73,46 +76,49 @@ class RateLimitingAwareThrottler:
 
     [WIKI](https://habitica.fandom.com/wiki/Guidance_for_Comrades#Rate_Limiting)
     """
-    api_requests: List[Callable[[], Response]] = field(default_factory=list)
+    api_requests: List[Callable[[], Response]] = field(
+        default_factory=list,
+        repr=False
+    )
     """The queue of API requests. (Currently implemented as a list.)"""
-    leeway_seconds: float = 0.1
+    leeway_seconds: float = 0.25
     """Number of seconds to wait over the requested limit."""
+    _is_rate_initialized: bool = field(init=False, default=False)
+    """We only know rate limiting information after the first API request."""
+    _xrate_limit_remaining: Optional[int] = field(init=False, default=None)
+    """
+    The number of remaining requests that can be made in the current
+    60 second period.
+
+    This value is derived from the X-RateLimit-Remaining header and
+    is initialized to None because we won't know it yet at the first
+    initialization.
+    """
+
+    _xrate_limit_reset: Optional[datetime] = field(init=False, default=None)
+    """
+    The time on which the current rate-limit will be reset.
+
+    This value derived from the X-RateLimit-Reset header and
+    is initialized to None because we won't know it yet at the first
+    initialization.
+    """
 
     def __post_init__(self):
         # pylint: disable=pointless-string-statement
         # I think pylint doesn't recognize that these strings act as documentation
         # in the __post_init__ function.
-        self._is_rate_initialized = False
-        """We only know rate limiting information after the first API request."""
 
         self._api_requests_remaining: int = len(self.api_requests)
         """The number of Api requests that we haven't executed yet."""
 
-        self._xrate_limit_remaining: Optional[int] = None
-        """
-        The number of remaining requests that can be made in the current
-        60 second period.
-
-        This value is derived from the X-RateLimit-Remaining header and
-        is initialized to None because we won't know it yet at the first
-        initialization.
-        """
-
-        self._xrate_limit_reset: Optional[datetime] = None
-        """
-        The time on which the current rate-limit will be reset.
-
-        This value derived from the X-RateLimit-Reset header and
-        is initialized to None because we won't know it yet at the first
-        initialization.
-        """
-
-    def perform_and_yield_response(self):
+    def perform_and_yield_response(self) -> Iterable[Response]:
         """
         Execute the next request. This function acts as a dispatcher.
         :return:
         """
         for api_request in self.api_requests:
+            log.debug(self)
             if self._is_rate_initialized is True and self._throttling_required():
                 self._throttle()
 

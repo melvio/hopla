@@ -4,16 +4,17 @@ The module with CLI code that handles the `hopla hatch-all` command.
 """
 import logging
 import sys
-from typing import Dict, List
+from typing import Any, Callable, Dict, Iterator, List
 
 import click
+from requests import Response
 
 from hopla.hoplalib import hopla_option
 from hopla.hoplalib.hatchery.eggmodels import EggCollection
 from hopla.hoplalib.hatchery.hatchalgorithms import HatchPlan, HatchPlanMaker
 from hopla.hoplalib.hatchery.hatchcontroller import HatchRequester
 from hopla.hoplalib.hatchery.hatchpotionmodels import HatchPotionCollection
-from hopla.hoplalib.throttling import ApiRequestThrottler
+from hopla.hoplalib.throttling import RateLimitingAwareThrottler
 from hopla.hoplalib.user.usercontroller import HabiticaUserRequest
 from hopla.hoplalib.user.usermodels import HabiticaUser
 from hopla.hoplalib.zoo.foodmodels import FeedStatus
@@ -87,13 +88,23 @@ def _hatch_eggs_without_confirmation(plan: HatchPlan) -> None:
     """Hatch all the eggs. Print the result to the terminal.
     Warning: this function does not ask for confirmation.
     """
-    throttler = ApiRequestThrottler(api_requests=[
-        HatchRequester(item.egg.name, item.potion.name).post_hatch_egg for item in plan
-    ])
+    # Feel free to refactor this such that we don't iterate over
+    # the plan twice.
+    api_requests: List[Callable[[], Response]] = [
+        HatchRequester(item.egg.name, item.potion.name).post_hatch_egg_request for item in plan
+    ]
 
-    for hatch_request in throttler.release():
-        response_msg: str = hatch_request()
-        click.echo(response_msg)
+    throttler = RateLimitingAwareThrottler(api_requests)
+    api_responses: Iterator[Response] = throttler.perform_and_yield_response()
+    for item in plan:
+        response: Response = next(api_responses)
+        response_json: Dict[str, Any] = response.json()
+        pet_name = f"{item.egg.name}-{item.potion.name}"
+        if response_json["success"] is True:
+            click.echo(f"Successfully hatched a {pet_name}.")
+        else:
+            click.echo(f"Failed to hatch {pet_name}:\n"
+                       f"{response_json['error']}: {response_json['message']}")
 
 
 def to_pet_list(pets: Dict[str, int]) -> List[Pet]:
