@@ -44,6 +44,10 @@ class HabiticaUser:
         """Get the mana of a user."""
         return self.get_stats()["mp"]
 
+    def get_hp(self) -> float:
+        """Get the health of a user."""
+        return self.get_stats()["hp"]
+
     def get_inventory(self) -> dict:
         """Index the user_dict for 'items' and return the result"""
         return self["items"]
