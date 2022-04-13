@@ -7,7 +7,8 @@ import pytest
 
 from hopla.hoplalib.errors import YouFoundABugRewardError
 from hopla.hoplalib.hatchery.eggmodels import Egg, EggCollection, EggException
-from hopla.hoplalib.hatchery.hatchdata import EggData, HatchPotionData
+from hopla.hoplalib.hatchery.egg_data import EggData
+from hopla.hoplalib.hatchery.hatchpotion_data import HatchPotionData
 from hopla.hoplalib.hatchery.hatchpotionmodels import HatchPotion
 
 _SAMPLE_SIZE = 9

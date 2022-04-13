@@ -7,6 +7,7 @@ cached locally. We then need to refresh our cache only when the
 appVersion of the Habitica API increases. However, this approach
 is overkill for now.
 """
+from hopla.hoplalib.hatchery.egg_data import EggData
 
 
 class PetData:
@@ -23,10 +24,6 @@ class PetData:
     * hopla api content | jq .specialPets
     * hopla api content | jq .wackyPets
     """
-    _default_pets = [
-        "BearCub", "Cactus", "Dragon", "FlyingPig", "Fox", "LionCub",
-        "PandaCub", "TigerCub", "Wolf"
-    ]
 
     generation1_pet_names = [
         "Wolf-Base", "Wolf-White", "Wolf-Desert", "Wolf-Red", "Wolf-Shade", "Wolf-Skeleton",
@@ -276,7 +273,9 @@ class PetData:
 
     # hopla api content | jq '[.petInfo[] | select(.type=="wacky")]'
     wacky_pet_names = [
-        pet + "-" + pot for pet in _default_pets for pot in ["Veggie", "Dessert", "VirtualPet"]
+        pet + "-" + pot
+        for pet in EggData.drop_egg_names
+        for pot in ["Veggie", "Dessert", "VirtualPet"]
     ]
 
     world_boss_reward_pet_names = [

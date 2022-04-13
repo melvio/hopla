@@ -7,7 +7,8 @@ import logging
 import click
 
 from hopla.cli.groupcmds.hatch import hatch_egg
-from hopla.hoplalib.hatchery.hatchdata import EggData, HatchPotionData
+from hopla.hoplalib.hatchery.egg_data import EggData
+from hopla.hoplalib.hatchery.hatchpotion_data import HatchPotionData
 
 log = logging.getLogger()
 

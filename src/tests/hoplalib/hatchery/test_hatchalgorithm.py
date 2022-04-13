@@ -5,7 +5,7 @@ import pytest
 
 from hopla.hoplalib.hatchery.eggmodels import Egg, EggCollection
 from hopla.hoplalib.hatchery.hatchalgorithms import HatchPlan, HatchPlanItem, HatchPlanMaker
-from hopla.hoplalib.hatchery.hatchdata import EggData
+from hopla.hoplalib.hatchery.egg_data import EggData
 from hopla.hoplalib.hatchery.hatchpotionmodels import HatchPotion, HatchPotionCollection
 from hopla.hoplalib.zoo.foodmodels import FeedStatus
 from hopla.hoplalib.zoo.petmodels import Pet

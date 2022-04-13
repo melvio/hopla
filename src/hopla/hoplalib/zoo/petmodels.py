@@ -6,7 +6,7 @@ from typing import Optional
 
 from hopla.hoplalib.common import GlobalConstants
 from hopla.hoplalib.errors import PrintableException, YouFoundABugRewardError
-from hopla.hoplalib.hatchery.hatchdata import HatchPotionData
+from hopla.hoplalib.hatchery.hatchpotion_data import HatchPotionData
 from hopla.hoplalib.zoo.fooddata import FoodData
 from hopla.hoplalib.zoo.foodmodels import FeedStatus
 from hopla.hoplalib.zoo.petdata import PetData

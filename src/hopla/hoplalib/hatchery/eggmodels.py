@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, Iterator
 
 from hopla.hoplalib.errors import YouFoundABugRewardError
-from hopla.hoplalib.hatchery.hatchdata import EggData
+from hopla.hoplalib.hatchery.egg_data import EggData
 from hopla.hoplalib.hatchery.hatchpotionmodels import HatchPotion
 
 
