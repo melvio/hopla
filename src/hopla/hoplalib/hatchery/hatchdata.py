@@ -61,7 +61,7 @@ class HatchPotionData:
     hopla api content | jq .premiumHatchingPotions | jq keys
     """
 
-    wacky_hatch_potion_names = ["Dessert", "Veggie"]
+    wacky_hatch_potion_names = ["Dessert", "Veggie", "VirtualPet"]
     """Wacky hatching potions. This list was retrieved by using:
            hopla api content | jq '.wackyHatchingPotions|keys'
     """

@@ -23,6 +23,10 @@ class PetData:
     * hopla api content | jq .specialPets
     * hopla api content | jq .wackyPets
     """
+    _default_pets = [
+        "BearCub", "Cactus", "Dragon", "FlyingPig", "Fox", "LionCub",
+        "PandaCub", "TigerCub", "Wolf"
+    ]
 
     generation1_pet_names = [
         "Wolf-Base", "Wolf-White", "Wolf-Desert", "Wolf-Red", "Wolf-Shade", "Wolf-Skeleton",
@@ -272,10 +276,7 @@ class PetData:
 
     # hopla api content | jq '[.petInfo[] | select(.type=="wacky")]'
     wacky_pet_names = [
-        "Wolf-Veggie", "Wolf-Dessert", "TigerCub-Veggie", "TigerCub-Dessert", "PandaCub-Veggie",
-        "PandaCub-Dessert", "LionCub-Veggie", "LionCub-Dessert", "Fox-Veggie", "Fox-Dessert",
-        "FlyingPig-Veggie", "FlyingPig-Dessert", "Dragon-Veggie", "Dragon-Dessert",
-        "Cactus-Veggie", "Cactus-Dessert", "BearCub-Veggie", "BearCub-Dessert"
+        pet + "-" + pot for pet in _default_pets for pot in ["Veggie", "Dessert", "VirtualPet"]
     ]
 
     world_boss_reward_pet_names = [
