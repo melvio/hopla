@@ -12,7 +12,8 @@ class HatchPotionData:
         "Red", "Shade", "Skeleton", "White", "Zombie"
     ]
     """
-    Drop hatching potions. This list was retrieved by using:
+    Drop hatching potions. Also known as 1st gen potions.
+    This list was retrieved by using:
     hopla api content | jq.dropHatchingPotions | jq keys
     """
 
@@ -32,9 +33,11 @@ class HatchPotionData:
     """
 
     wacky_hatch_potion_names = ["Dessert", "Veggie", "VirtualPet"]
-    """Wacky hatching potions. This list was retrieved by using:
+    """
+    Wacky hatching potions. This list was retrieved by using:
            hopla api content | jq '.wackyHatchingPotions|keys'
     """
+
     non_drop_hatch_potion_names: List[str] = (
             magic_hatch_potion_names
             + wacky_hatch_potion_names

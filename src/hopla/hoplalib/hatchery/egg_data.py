@@ -8,7 +8,7 @@ from typing import List
 class EggData:
     """Class with data about eggs."""
 
-    drop_egg_names = [
+    drop_egg_names: List[str] = [
         "BearCub", "Cactus", "Dragon", "FlyingPig", "Fox", "LionCub",
         "PandaCub", "TigerCub", "Wolf"
     ]
@@ -16,7 +16,7 @@ class EggData:
     Drop eggs. This is list was retrieved using: `hopla api content | jq .dropEggs | jq. keys`
     """
 
-    quest_egg_names = [
+    quest_egg_names: List[str] = [
         "Alligator", "Armadillo", "Axolotl", "Badger", "Beetle", "Bunny",
         "Butterfly", "Cheetah", "Cow", "Cuttlefish", "Deer", "Dolphin", "Egg",
         "Falcon", "Ferret", "Frog", "Gryphon", "GuineaPig", "Hedgehog",
@@ -28,7 +28,8 @@ class EggData:
         "Whale", "Yarn"
     ]
     """
-    Quest Eggs. This is list was retrieved using: `hopla api content | jq .questEggs | jq keys`
+    Quest Eggs. This is list was retrieved using:
+    hopla api content | jq .questEggs | jq keys
     """
 
     egg_names: List[str] = drop_egg_names + quest_egg_names
