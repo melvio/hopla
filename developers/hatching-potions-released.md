@@ -35,6 +35,18 @@ https://habitica.fandom.com/wiki/Summer_Splash
 | Sand Sculpture | N    | Y    | Y    | .    | .    | .    | .    | .    | .    |
 | Sunset         | Y    | Y    | .    | .    | .    | .    | .    | .    | .    |
 
+### Fall Festival
+https://habitica.fandom.com/wiki/Fall_Festival
+
+
+| fall potion  | 2022 | 2021 | 2020 | 2019 | 2018 | 2017 | 2016 | 2015 | 2014 |
+|--------------|------|------|------|------|------|------|------|------|------|
+| Vampire      | Y    | Y    | Y    | .    | .    | .    | .    | .    | .    |
+| Shadow       | Y    | N    | Y    | Y    | .    | .    | .    | .    | .    |
+| Ghost        | Y    | N    | Y    | N    | Y    | Y    | Y    | .    | .    |
+| Glow in Dark | N    | Y    | N    | Y    | Y    | .    | .    | .    | .    |
+| Spooky       | N    | Y    | N    | Y    | N    | Y    | Y    | Y    | .    |
+
 
 
 ### Winter wonder land
