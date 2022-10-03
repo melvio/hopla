@@ -39,7 +39,11 @@ class HabiticaGroupRequest(HabiticaRequest):
 
     def get_group_request(self) -> requests.Response:
         """Perform a GET request to get a group information."""
-        return requests.get(url=self.url, headers=self.default_headers)
+        return requests.get(
+            url=self.url,
+            headers=self.default_headers,
+            timeout=HabiticaRequest.TIMEOUT
+        )
 
     def get_group_data_or_exit(self) -> dict:
         """Get the group data or exit if the API request failed."""

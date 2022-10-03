@@ -43,8 +43,12 @@ class FeedPostRequester(HabiticaRequest):
 
     def post_feed_request(self) -> requests.Response:
         """Performs the feed pet post requests and return the response"""
-        return requests.post(url=self.feed_pet_food_url, headers=self.default_headers,
-                             params=self.query_params)
+        return requests.post(
+            url=self.feed_pet_food_url,
+            headers=self.default_headers,
+            params=self.query_params,
+            timeout=HabiticaRequest.TIMEOUT
+        )
 
     def post_feed_request_get_data_or_exit(self) -> Union[NoReturn, dict]:
         """

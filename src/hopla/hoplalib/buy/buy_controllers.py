@@ -22,7 +22,11 @@ class BuyEnchantedArmoireRequest(HabiticaRequest):
 
     def post_buy_request(self) -> requests.Response:
         """POST a buy request to the habitica API."""
-        return requests.post(url=self.url, headers=self.default_headers)
+        return requests.post(
+            url=self.url,
+            headers=self.default_headers,
+            timeout=HabiticaRequest.TIMEOUT
+        )
 
     def post_buy_request_get_data_or_exit(self) -> Union[dict, NoReturn]:
         """POST a buy request and return the result, exit if the request failed.

@@ -7,7 +7,7 @@ import click
 import requests
 
 from hopla.hoplalib.requests_helper import get_data_or_exit
-from hopla.hoplalib.http import UrlBuilder
+from hopla.hoplalib.http import HabiticaRequest, UrlBuilder
 from hopla.hoplalib.common import GlobalConstants
 from hopla.hoplalib.outputformatter import JsonFormatter
 
@@ -27,7 +27,7 @@ class ApiContentRequest:
 
     def request_api_content(self) -> requests.Response:
         """Perform the get API content request and return the response"""
-        return requests.get(url=self.url)
+        return requests.get(url=self.url, timeout=HabiticaRequest.TIMEOUT)
 
     def request_api_content_on_fail_exit(self) -> dict:
         """
@@ -93,7 +93,10 @@ def model(model_name: str) -> dict:
     log.debug(f"hopla api model name={model_name}")
 
     url_builder = UrlBuilder(path_extension=f"/models/{model_name}/paths")
-    response = requests.get(url=url_builder.url)
+    response = requests.get(
+        url=url_builder.url,
+        timeout=HabiticaRequest.TIMEOUT
+    )
     model_data = get_data_or_exit(response)
 
     click.echo(JsonFormatter(model_data).format_with_double_quotes())
@@ -123,8 +126,8 @@ def status() -> dict:
     """
     log.debug("hopla api status")
 
-    url_builder = UrlBuilder(path_extension="/status")
-    response = requests.get(url=url_builder.url)
+    url = UrlBuilder(path_extension="/status").url
+    response = requests.get(url=url, timeout=HabiticaRequest.TIMEOUT)
     status_data = get_data_or_exit(response)
 
     click.echo(JsonFormatter(status_data).format_with_double_quotes())

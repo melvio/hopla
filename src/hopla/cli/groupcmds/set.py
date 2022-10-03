@@ -8,6 +8,7 @@ import requests
 
 from hopla.hoplalib.http import RequestHeaders, UrlBuilder
 from hopla.hoplalib.outputformatter import JsonFormatter
+from hopla.hoplalib.http import HabiticaRequest
 
 log = logging.getLogger()
 
@@ -56,7 +57,12 @@ def day_start(day_start_hour, json_flag: bool):
     body = {"dayStart": day_start_hour}
     url = UrlBuilder(path_extension="/user/custom-day-start").url
 
-    response = requests.post(url=url, headers=headers, json=body)
+    response = requests.post(
+        url=url,
+        headers=headers,
+        json=body,
+        timeout=HabiticaRequest.TIMEOUT
+    )
 
     json = response.json()
     json_data = json["data"]

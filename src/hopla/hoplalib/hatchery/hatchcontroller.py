@@ -26,4 +26,8 @@ class HatchRequester(HabiticaRequest):
 
     def post_hatch_egg_request(self) -> requests.Response:
         """Perform a POST request on the Habitica API to hatch an egg."""
-        return requests.post(url=self.url, headers=self.default_headers)
+        return requests.post(
+            url=self.url,
+            headers=self.default_headers,
+            timeout=HabiticaRequest.TIMEOUT
+        )

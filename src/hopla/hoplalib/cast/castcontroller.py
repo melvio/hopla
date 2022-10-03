@@ -26,4 +26,8 @@ class PostCastRequest(HabiticaRequest):
 
     def post_spell(self) -> requests.Response:
         """Perform the user get request and return the response"""
-        return requests.post(url=self.url, headers=self.default_headers)
+        return requests.post(
+            url=self.url,
+            headers=self.default_headers,
+            timeout=HabiticaRequest.TIMEOUT
+        )

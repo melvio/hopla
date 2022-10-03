@@ -21,6 +21,7 @@ class AddTodoRequest(HabiticaRequest):
         response = requests.post(
             url=self.url,
             headers=self.default_headers,
-            json=self.habitica_todo.to_json_dict()
+            json=self.habitica_todo.to_json_dict(),
+            timeout=HabiticaRequest.TIMEOUT
         )
         return get_data_or_exit(response)

@@ -69,6 +69,8 @@ class HabiticaRequest:
     A generic API request class with inheritable logic for specific
     request classes.
     """
+    TIMEOUT = 60
+    """standard timeout for requests"""
 
     @property
     def default_headers(self):
