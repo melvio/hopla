@@ -49,7 +49,8 @@ class TestFeedPostRequester:
         mock_post_request.assert_called_with(
             url=expected_url,
             headers=mock_headers,
-            params={"amount": expected_times}
+            params={"amount": expected_times},
+            timeout=60
         )
 
     @pytest.mark.parametrize(

@@ -17,7 +17,11 @@ class HabiticaUserRequest(HabiticaRequest):
 
     def request_user(self) -> requests.Response:
         """Perform the user get request and return the response"""
-        return requests.get(url=self.url, headers=self.default_headers)
+        return requests.get(
+            url=self.url,
+            headers=self.default_headers,
+            timeout=HabiticaRequest.TIMEOUT
+        )
 
     def request_user_data_or_exit(self) -> HabiticaUser:
         """
