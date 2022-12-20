@@ -52,14 +52,14 @@ https://habitica.fandom.com/wiki/Fall_Festival
 ### Winter wonder land
 https://habitica.fandom.com/wiki/Winter_Wonderland
 
-| winter potion   | 2021 | 2020 | 2019 | 2018 | 2017 | 2016 | 2015 | 2014 | 
-| -------------   | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | 
-| Peppermint      | Y    | N    | N    | N    | N    | Y    | Y    | .    |
-| Holly           | Y    | N    | Y    | Y    | Y    | Y    | .    | .    |
-| Starry Night    | N    | N    | Y    | Y    | Y    | .    | .    | .    |
-| Icy Snow        | N    | Y    | N    | Y    | .    | .    | .    | .    |
-| Aurora          | N    | Y    | Y    | .    | .    | .    | .    | .    |
-| Stained Glass   | Y    | Y    | .    | .    | .    | .    | .    | .    |
+| winter potion   | 2022 |2021 | 2020 | 2019 | 2018 | 2017 | 2016 | 2015 | 2014 | 
+| -------------   | ---- |---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | 
+| Peppermint      | N    |Y    | N    | N    | N    | N    | Y    | Y    | .    |
+| Holly           | Y    |Y    | N    | Y    | Y    | Y    | Y    | .    | .    |
+| Starry Night    | Y    |N    | N    | Y    | Y    | Y    | .    | .    | .    |
+| Icy Snow        | N    |N    | Y    | N    | Y    | .    | .    | .    | .    |
+| Aurora          | Y    |N    | Y    | Y    | .    | .    | .    | .    | .    |
+| Stained Glass   | N    |Y    | Y    | .    | .    | .    | .    | .    | .    |
 
 
 
