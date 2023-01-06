@@ -14,7 +14,7 @@ class HatchPotionData:
     """
     Drop hatching potions. Also known as 1st gen potions.
     This list was retrieved by using:
-    hopla api content | jq.dropHatchingPotions | jq keys
+    hopla api content | jq .dropHatchingPotions | jq keys
     """
 
     magic_hatch_potion_names = [
