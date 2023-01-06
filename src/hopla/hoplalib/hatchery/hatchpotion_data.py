@@ -21,8 +21,8 @@ class HatchPotionData:
         "Amber", "Aquatic", "Aurora", "AutumnLeaf", "BirchBark", "BlackPearl",
         "Bronze", "Celestial", "Cupid", "Ember", "Fairy", "Floral",
         "Fluorite", "Frost", "Ghost", "Glass", "Glow", "Holly", "IcySnow",
-        "Moonglow", "MossyStone", "Onyx", "Peppermint", "PolkaDot", "Rainbow",
-        "RoseQuartz", "RoyalPurple", "Ruby", "SandSculpture", "Shadow",
+        "Moonglow", "MossyStone", "Onyx", "Peppermint", "PolkaDot", "Porcelain",
+        "Rainbow", "RoseQuartz", "RoyalPurple", "Ruby", "SandSculpture", "Shadow",
         "Shimmer", "Silver", "SolarSystem", "Spooky", "StainedGlass",
         "StarryNight", "Sunset", "Sunshine", "Thunderstorm", "Turquoise",
         "Vampire", "Watery", "Windup"
