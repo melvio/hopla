@@ -77,7 +77,7 @@ class PetData:
 
     other_pet_names = [
         "Jackalope-RoyalPurple", "BearCub-Polar", "Dragon-Hydra", "Wolf-Cerberus",
-        "Gryphon-Gryphatrice", "Aether-Invisible"
+        "Gryphatrice-Jubilant", "Gryphon-Gryphatrice", "Aether-Invisible"
     ]
 
     rare_pet_names = world_boss_reward_pet_names + event_sequence_pet_names + other_pet_names
