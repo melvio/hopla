@@ -25,7 +25,7 @@ def info_alias_to_official_habitica_name(user_info_name: str) -> str:
     return user_info_name
 
 
-@click.command(context_settings=dict(token_normalize_func=info_alias_to_official_habitica_name))
+@click.command(context_settings={"token_normalize_func": info_alias_to_official_habitica_name})
 @click.argument("user_info_name", type=valid_info_names, default="all")
 @pass_user
 def info(user: HabiticaUser,

@@ -66,10 +66,10 @@ def setup_logging() -> logging.Logger:
 log = setup_logging()
 log.debug(f"start application with arguments: {sys.argv}")
 
-HOPLA_CONTEXT_SETTINGS = dict(
-    help_option_names=["-h", "--help"],  # add -h
-    auto_envvar_prefix=GlobalConstants.APPLICATION_NAME
-)
+HOPLA_CONTEXT_SETTINGS = {
+    "help_option_names": ["-h", "--help"],  # add -h
+    "auto_envvar_prefix": GlobalConstants.APPLICATION_NAME
+}
 
 
 @click.group(context_settings=HOPLA_CONTEXT_SETTINGS)

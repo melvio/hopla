@@ -28,7 +28,7 @@ def auth_alias_to_official_habitica_name(auth_info_name: str):
 
 
 @click.command(
-    context_settings=dict(token_normalize_func=auth_alias_to_official_habitica_name)
+    context_settings={"token_normalize_func": auth_alias_to_official_habitica_name}
 )
 @click.argument("auth_info_name", type=valid_auth_info_names, default="all")
 @pass_user
