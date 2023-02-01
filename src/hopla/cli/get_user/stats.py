@@ -50,7 +50,7 @@ def stat_alias_to_official_habitica_name(stat_name: str) -> str:  # noqa: C901 (
 
 
 @click.command(
-    context_settings=dict(token_normalize_func=stat_alias_to_official_habitica_name)
+    context_settings={"token_normalize_func": stat_alias_to_official_habitica_name}
 )
 @click.argument("stat_name", type=valid_stat_names, default="all")
 @pass_user

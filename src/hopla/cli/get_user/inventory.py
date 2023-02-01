@@ -38,7 +38,7 @@ def inventory_alias_to_official_habitica_name(inventory_name: str):
 
 
 @click.command(
-    context_settings=dict(token_normalize_func=inventory_alias_to_official_habitica_name)
+    context_settings={"token_normalize_func": inventory_alias_to_official_habitica_name}
 )
 @click.argument("item_group_name", type=valid_item_groups, default="all")
 @pass_user
