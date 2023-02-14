@@ -18,14 +18,17 @@ class HatchPotionData:
     """
 
     magic_hatch_potion_names = [
-        "Amber", "Aquatic", "Aurora", "AutumnLeaf", "BirchBark", "BlackPearl",
-        "Bronze", "Celestial", "Cupid", "Ember", "Fairy", "Floral",
-        "Fluorite", "Frost", "Ghost", "Glass", "Glow", "Holly", "IcySnow",
-        "Moonglow", "MossyStone", "Onyx", "Peppermint", "PolkaDot", "Porcelain",
-        "Rainbow", "RoseQuartz", "RoyalPurple", "Ruby", "SandSculpture", "Shadow",
-        "Shimmer", "Silver", "SolarSystem", "Spooky", "StainedGlass",
-        "StarryNight", "Sunset", "Sunshine", "Thunderstorm", "Turquoise",
-        "Vampire", "Watery", "Windup"
+        "Amber", "Aquatic", "Aurora", "AutumnLeaf",
+        "BirchBark", "BlackPearl", "Bronze",
+        "Celestial", "Cupid", "Ember",
+        "Fairy", "Floral", "Fluorite", "Frost",
+        "Ghost", "Glass", "Glow", "Holly",
+        "IcySnow", "Moonglow", "MossyStone", "Onyx",
+        "Peppermint", "PinkMarble", "PolkaDot", "Porcelain",
+        "Rainbow", "RoseQuartz", "RoyalPurple", "Ruby",
+        "SandSculpture", "Shadow", "Shimmer", "Silver", "SolarSystem",
+        "Spooky", "StainedGlass", "StarryNight", "Sunset", "Sunshine",
+        "Thunderstorm", "Turquoise", "Vampire", "Watery", "Windup"
     ]
     """
     Magic hatching potions. This list was retrieved by using:
