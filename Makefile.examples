@@ -113,6 +113,9 @@ hopla_request_invite_for_lunar_quest_every_10mins:
 	watch --differences=permanent --interval=600 'hopla request -XPOST /api/v3/groups/party/quests/invite/moon3'
 
 
+hopla_request_post_cast_fireball_on_target_id:
+	hopla request -XPOST '/api/v3/user/class/cast/fireball?targetId=b95d8edf-6fd5-4fb3-9a56-bc6b19c64bb4'
+
 
 # hopla get-user auth
 hopla_get_user_auth:
