@@ -139,7 +139,7 @@ def todo(difficulty: str,
 
     \b
     # Override the default 'easy' difficulty using either hard|medium|trivial.
-    $ hopla add --difficulty=hard todo 'This is a hard todo'
+    $ hopla add todo --difficulty=hard 'This is a hard todo'
 
     \b
     # --due-date and --deadline work as synonyms.
