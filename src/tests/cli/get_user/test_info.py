@@ -36,7 +36,7 @@ class TestPrefilterOnUserInfo:
 
         expected_guilds = test_user["guilds"]
         assert filter_result == expected_guilds
-        assert type(filter_result) == list
+        assert isinstance(filter_result, list)
 
     def test_tags_returns_list_of_objects(self):
         test_user: HabiticaUser = get_test_user()
@@ -45,7 +45,7 @@ class TestPrefilterOnUserInfo:
 
         expected_tags = test_user["tags"]
         assert filter_result == expected_tags
-        assert type(filter_result) == list
+        assert isinstance(filter_result, list)
 
 
 def get_test_user() -> HabiticaUser:
