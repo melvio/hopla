@@ -1,4 +1,4 @@
-build:
+hopla_build:
 	# https://setuptools.readthedocs.io/en/latest/userguide/quickstart.html
 	python -m build && pip install .
 
@@ -7,9 +7,9 @@ make_dist:
 	python setup.py sdist
 
 clean:
-	rm -r -- dist/*
+	rm -r -- dist/
 
-clean_build: clean build
+clean_build: clean hopla_build
 
 develop:
 	pip install --upgrade --editable .
@@ -53,4 +53,4 @@ unittest:
 	pytest -c ./.github/workflows/pytest.ini
 
 
-release: test clean_build make_dist develop validate_docs_for_pypi send_package_to_pypi tag_commit tag_push
+release: test clean_build develop validate_docs_for_pypi send_package_to_pypi tag_commit tag_push
