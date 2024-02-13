@@ -25,7 +25,7 @@ class HatchPotionData:
         "Ghost", "Glass", "Glow", "Holly",
         "IcySnow", "Moonglow", "MossyStone", "Onyx",
         "Peppermint", "PinkMarble", "PolkaDot", "Porcelain",
-        "Rainbow", "RoseQuartz", "RoyalPurple", "Ruby",
+        "Rainbow", "RoseGold", "RoseQuartz", "RoyalPurple", "Ruby",
         "SandSculpture", "Shadow", "Shimmer", "Silver", "SolarSystem",
         "Spooky", "StainedGlass", "StarryNight", "Sunset", "Sunshine",
         "Thunderstorm", "Turquoise", "Vampire", "Watery", "Windup"
