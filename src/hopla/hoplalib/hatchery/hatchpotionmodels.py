@@ -68,9 +68,8 @@ class HatchPotionCollection:
         return f"{self.__class__.__name__}({self.__potions=})"
 
     def values(self) -> Iterator[HatchPotion]:
-        """Like dict.values but for an HatchPotionCollection."""
-        for potion in self.__potions.values():
-            yield potion
+        """Like dict.values() but for an HatchPotionCollection."""
+        yield from self.__potions.values()
 
     def remove_hatch_potion(self, potion: HatchPotion) -> "HatchPotionCollection":
         """Remove a single hatching potion from this collection.
