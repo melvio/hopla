@@ -79,9 +79,8 @@ class EggCollection:
         return f"{self.__class__.__name__}({self.__eggs=})"
 
     def values(self) -> Iterator[Egg]:
-        """Like dict.values but for an EggCollection."""
-        for egg in self.__eggs.values():
-            yield egg
+        """Like dict.values() but for an EggCollection."""
+        yield from self.__eggs.values()
 
     def remove_egg(self, egg: Egg) -> "EggCollection":
         """Remove a single eggs from the EggCollection.
