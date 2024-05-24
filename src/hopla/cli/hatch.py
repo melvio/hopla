@@ -32,7 +32,7 @@ def hatch(*, egg_name: str, potion_name: str) -> NoReturn:
 
     \b
     POTION_NAME =
-    Name of the potion. Must be a standard drop hatching potion.
+    Name of the potion. Must be a hatching potion.
 
     \b
     Examples
@@ -51,14 +51,6 @@ def hatch(*, egg_name: str, potion_name: str) -> NoReturn:
     \b
     # hatch a Fox-SolarSystem
     $ hopla hatch standard-egg Fox SolarSystem
-    """
-    hatch_egg(egg_name=egg_name, potion_name=potion_name)
-
-
-def hatch_egg(*, egg_name: str, potion_name: str) -> NoReturn:
-    """
-    Hatch an egg by performing an API request and echo the result to the
-    terminal.
     """
     requester = HatchRequester(
         egg_name=egg_name,

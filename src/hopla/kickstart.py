@@ -25,8 +25,8 @@ from hopla.cli.groupcmds.add import add
 from hopla.cli.groupcmds.api import api
 from hopla.cli.groupcmds.buy import buy
 from hopla.cli.groupcmds.get_user import get_user
-from hopla.cli.hatch import hatch
 from hopla.cli.groupcmds.set import set  # pylint: disable=redefined-builtin
+from hopla.cli.hatch import hatch
 from hopla.cli.hatch_all import hatch_all
 from hopla.cli.request import request
 from hopla.cli.support_development import support_development
