@@ -25,10 +25,8 @@ from hopla.cli.groupcmds.add import add
 from hopla.cli.groupcmds.api import api
 from hopla.cli.groupcmds.buy import buy
 from hopla.cli.groupcmds.get_user import get_user
-from hopla.cli.groupcmds.hatch import hatch
+from hopla.cli.hatch import hatch
 from hopla.cli.groupcmds.set import set  # pylint: disable=redefined-builtin
-from hopla.cli.hatch.quest_egg import quest_egg
-from hopla.cli.hatch.standard_egg import standard_egg
 from hopla.cli.hatch_all import hatch_all
 from hopla.cli.request import request
 from hopla.cli.support_development import support_development
@@ -80,13 +78,12 @@ def hopla():
 
 def organize_cli() -> None:
     """Attach the subgroups and subcommands to the top hopla group command"""
-    # pylint: disable=too-many-statements
-
     # authenticate
     hopla.add_command(authenticate)
 
     # add
     hopla.add_command(add)
+
     add.add_command(todo)
 
     # api
@@ -123,8 +120,6 @@ def organize_cli() -> None:
 
     # hatch
     hopla.add_command(hatch)
-    hatch.add_command(standard_egg)
-    hatch.add_command(quest_egg)
 
     # hatch-all
     hopla.add_command(hatch_all)
@@ -143,7 +138,7 @@ def organize_cli() -> None:
 
 
 def init_hopla_config_files() -> None:
-    """Setup the config file."""
+    """Set up the config file."""
     had_to_create_new_config_file: bool = ConfigInitializer().initialize_before_running_cmds()
     if had_to_create_new_config_file is True:
         click.echo(f"Thank you for trying out {GlobalConstants.APPLICATION_NAME}")
@@ -154,7 +149,7 @@ def init_hopla_config_files() -> None:
 
 
 def kickstart_hopla() -> None:
-    """Setup the config files, organize the CLI, and call the base command group."""
+    """Set up the config files, organize the CLI, and call the base command group."""
     init_hopla_config_files()
     organize_cli()
     hopla()
