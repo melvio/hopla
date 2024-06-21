@@ -7,7 +7,7 @@ from typing import Final, Optional
 
 MAJOR_VERSION: Final[int] = 0
 MINOR_VERSION: Final[int] = 0
-PATCH_VERSION: Final[int] = 37
+PATCH_VERSION: Final[int] = 38
 PRE_RELEASE: Final[Optional[str]] = "alpha"
 
 
