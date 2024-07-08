@@ -53,4 +53,4 @@ unittest:
 	pytest -c ./.github/workflows/pytest.ini
 
 
-release: test clean_build develop validate_docs_for_pypi send_package_to_pypi tag_commit tag_push
+release: clean_build test develop validate_docs_for_pypi send_package_to_pypi tag_commit tag_push
