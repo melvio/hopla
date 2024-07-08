@@ -41,6 +41,6 @@ class HoplaVersion:
         """
 
         version_core = f"{self.major_version}.{self.minor_version}.{self.patch_version}"
-        sep = "-" if self.pre_release != "" else ""
+        sep = "" if self.pre_release == "" else "-"
 
         return f"{version_core}{sep}{self.pre_release}"
