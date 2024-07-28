@@ -19,7 +19,7 @@ class EggData:
     quest_egg_names: List[str] = [
         "Alligator", "Armadillo", "Axolotl",
         "Badger", "Beetle", "Bunny", "Butterfly",
-        "Cheetah", "Cow", "Cuttlefish",
+        "Chameleon", "Cheetah", "Cow", "Cuttlefish",
         "Deer", "Dolphin", "Egg",
         "Falcon", "Ferret", "Frog",
         "Giraffe", "Gryphon", "GuineaPig",
