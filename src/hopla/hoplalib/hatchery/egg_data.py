@@ -13,13 +13,14 @@ class EggData:
         "PandaCub", "TigerCub", "Wolf"
     ]
     """
-    Drop eggs. This is list was retrieved using: `hopla api content | jq .dropEggs | jq. keys`
+    Drop eggs. This is list was retrieved using: 
+    hopla api content | jq .dropEggs | jq. keys
     """
 
     quest_egg_names: List[str] = [
         "Alligator", "Armadillo", "Axolotl",
         "Badger", "Beetle", "Bunny", "Butterfly",
-        "Chameleon", "Cheetah", "Cow", "Cuttlefish",
+        "Chameleon", "Cheetah", "Cow", "Cuttlefish", "Crab",
         "Deer", "Dolphin", "Egg",
         "Falcon", "Ferret", "Frog",
         "Giraffe", "Gryphon", "GuineaPig",
