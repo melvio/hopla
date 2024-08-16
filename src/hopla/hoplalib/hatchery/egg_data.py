@@ -13,7 +13,7 @@ class EggData:
         "PandaCub", "TigerCub", "Wolf"
     ]
     """
-    Drop eggs. This is list was retrieved using: 
+    Drop eggs. This is list was retrieved using:
     hopla api content | jq .dropEggs | jq. keys
     """
 
