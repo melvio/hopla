@@ -139,7 +139,7 @@ class HatchPlanMaker:
         )
 
     def make_plan(self) -> HatchPlan:
-        """Given an collection of eggs and hatching potions, make a plan to hatch the eggs."""
+        """Given a collection of eggs and hatching potions, make a plan to hatch the eggs."""
         for egg in self.__eggs.values():
             for potion in self.__potions.values():
                 can_hatch: bool = (

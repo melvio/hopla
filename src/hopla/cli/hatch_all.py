@@ -109,6 +109,4 @@ def _hatch_eggs_without_confirmation(plan: HatchPlan) -> None:
 
 def to_pet_list(pets: Dict[str, int]) -> List[Pet]:
     """Helper method that takes a pet_dict and returns a List[Pet]."""
-    return [
-        Pet(name, feed_status=FeedStatus(n)) for (name, n) in pets.items()
-    ]
+    return [Pet(name, feed_status=FeedStatus(n)) for (name, n) in pets.items()]
