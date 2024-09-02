@@ -122,5 +122,4 @@ def to_pet_list(pets: Dict[str, int], dont_raise_on_unrecognized_pets=False) -> 
             except InvalidPet as exc:
                 log.info(f"{pet_name=} not supported,skipping.", exc_info=exc)
         return result
-
     return [Pet(name, feed_status=FeedStatus(n)) for (name, n) in pets.items()]
