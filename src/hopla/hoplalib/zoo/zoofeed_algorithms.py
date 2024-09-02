@@ -45,7 +45,7 @@ class FeedPlan:
         """Return the number of FeedPlanItems in this feed plan."""
         return len(self.__feed_plan)
 
-    def isempty(self) -> bool:
+    def is_empty(self) -> bool:
         """Return true if the feed plan is empty."""
         return len(self) == 0
 

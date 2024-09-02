@@ -96,7 +96,7 @@ def feed_all(no_interactive: bool) -> None:
     """
     log.debug(f"hopla feed-all {no_interactive=}")
     plan: FeedPlan = __get_feed_plan_or_exit()
-    if plan.isempty():
+    if plan.is_empty():
         click.echo(
             "The feed plan is empty. Reasons for this could be:\n"
             "1. There is insufficient food available to turn pets into mounts.\n"

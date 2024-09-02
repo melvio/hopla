@@ -215,7 +215,7 @@ class FoodStockpileBuilder:
     def build(self) -> FoodStockpile:
         """
         Build a normalized FoodStockpile. This stockpile never has rare items, and
-        it add a 0 count for foods that we don't have.
+        it adds a 0 count for foods that we don't have.
         """
         return FoodStockpile(self.__stockpile)
 

@@ -81,7 +81,7 @@ class HatchPlan:
         return len(self.plan)
 
     def is_empty(self) -> bool:
-        """Return true if there no items in the hatch plan."""
+        """Return True when there are no items in the hatch plan."""
         return len(self.plan) == 0
 
     def format_plan(self) -> str:
