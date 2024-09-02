@@ -45,7 +45,7 @@ class TestFeedPlan:
         (FeedPlan(), True)
     ])
     def test__is_empty(self, plan: FeedPlan, expected_empty: bool):
-        assert plan.isempty() is expected_empty
+        assert plan.is_empty() is expected_empty
 
     @pytest.mark.parametrize("plan,expected_len", [
         (plan_with_single_item("Wolf-Red", "Strawberry", 3), 1),
