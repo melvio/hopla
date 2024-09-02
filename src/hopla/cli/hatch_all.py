@@ -18,7 +18,7 @@ from hopla.hoplalib.throttling import RateLimitingAwareThrottler
 from hopla.hoplalib.user.usercontroller import HabiticaUserRequest
 from hopla.hoplalib.user.usermodels import HabiticaUser
 from hopla.hoplalib.zoo.foodmodels import FeedStatus
-from hopla.hoplalib.zoo.petmodels import Pet
+from hopla.hoplalib.zoo.petmodels import Pet, InvalidPet
 
 log = logging.getLogger()
 
@@ -55,7 +55,7 @@ def hatch_all(no_interactive: bool) -> None:
     user: HabiticaUser = HabiticaUserRequest().request_user_data_or_exit()
     eggs = EggCollection(user.get_eggs())
     potions = HatchPotionCollection(user.get_hatch_potions())
-    pets: List[Pet] = to_pet_list(user.get_pets())
+    pets: List[Pet] = to_pet_list(user.get_pets(), dont_raise_on_unrecognized_pets=True)
 
     plan_maker = HatchPlanMaker(
         egg_collection=eggs, hatch_potion_collection=potions, pets=pets
@@ -107,8 +107,20 @@ def _hatch_eggs_without_confirmation(plan: HatchPlan) -> None:
                        f"{response_json['error']}: {response_json['message']}")
 
 
-def to_pet_list(pets: Dict[str, int]) -> List[Pet]:
-    """Helper method that takes a pet_dict and returns a List[Pet]."""
-    return [
-        Pet(name, feed_status=FeedStatus(n)) for (name, n) in pets.items()
-    ]
+def to_pet_list(pets: Dict[str, int], dont_raise_on_unrecognized_pets=False) -> List[Pet]:
+    """
+    Helper method that takes a pet_dict and returns a List[Pet].
+    :param pets: dictionary of pets
+    :param dont_raise_on_unrecognized_pets: if True, swallow InvalidPet exceptions
+    :return: corresponding List[Pet]
+    """
+    result: List[Pet] = []
+    if dont_raise_on_unrecognized_pets:
+        for (pet_name, feed_status) in pets.items():
+            try:
+                result.append(Pet(pet_name, feed_status=FeedStatus(feed_status)))
+            except InvalidPet as exc:
+                log.info(f"{pet_name=} not supported,skipping.", exc_info=exc)
+        return result
+
+    return [Pet(name, feed_status=FeedStatus(n)) for (name, n) in pets.items()]

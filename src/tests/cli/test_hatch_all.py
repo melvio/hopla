@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import unittest
 from typing import Dict, List
 from unittest.mock import MagicMock, patch
 
@@ -9,7 +10,7 @@ from hopla.cli.hatch_all import hatch_all, to_pet_list
 from hopla.hoplalib.hopla_option import NO_INTERACTION_OPTION_NAMES
 from hopla.hoplalib.user.usermodels import HabiticaUser
 from hopla.hoplalib.zoo.foodmodels import FeedStatus
-from hopla.hoplalib.zoo.petmodels import Pet
+from hopla.hoplalib.zoo.petmodels import Pet, InvalidPet
 
 
 class MockThrottler:
@@ -140,7 +141,7 @@ class TestHatchAllCliCommand:
         assert result.stdout == f"{msg1}\n{msg2}\n"
 
 
-class TestToPetList:
+class TestToPetList(unittest.TestCase):
     def test_to_pet_list_empty_dict_ok(self):
         result: List[Pet] = to_pet_list({})
         assert result == []
@@ -164,4 +165,31 @@ class TestToPetList:
             Pet(pet3, feed_status=FeedStatus(feed_status3)),
             Pet(pet4, feed_status=FeedStatus(feed_status4))
         ]
+        assert result == expected
+
+    def test_to_pet_list_fail(self):
+        pets = {"Wolf-Doesnotexist": 5}
+
+        with self.assertRaises(InvalidPet):
+            to_pet_list(pets)
+
+    def test_to_pet_list_ok_dont_raise(self):
+        pet1, feed_status1 = "Wolf-Base", 5
+        pet2, feed_status2 = "Axolotl-Red", 10
+        pet3, feed_status3 = "Fox-Golden", -1
+        pet4, feed_status4 = "Giraffe-doesnt-exist", 0
+
+        pets: Dict[str, int] = {
+            pet1: feed_status1, pet2: feed_status2,
+            pet3: feed_status3, pet4: feed_status4
+        }
+
+        result: List[Pet] = to_pet_list(pets, dont_raise_on_unrecognized_pets=True)
+
+        expected: List[Pet] = [
+            Pet(pet1, feed_status=FeedStatus(feed_status1)),
+            Pet(pet2, feed_status=FeedStatus(feed_status2)),
+            Pet(pet3, feed_status=FeedStatus(feed_status3))
+        ]
+
         assert result == expected
