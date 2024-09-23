@@ -144,7 +144,9 @@ class TestFeedAllCliCommand:
 
         expected_msg = ("The feed plan is empty. Reasons for this could be:\n"
                         "1. There is insufficient food available to turn pets into mounts.\n"
-                        "2. You don't have any feedable pets.")
+                        "2. You don't have any feedable pets\n"
+                        "3. You do have feedable pets, but they are not supported yet by hopla\n")
+
         assert expected_msg in result.stdout
 
     @pytest.fixture

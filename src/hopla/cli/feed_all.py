@@ -24,7 +24,7 @@ def __get_feed_plan_or_exit() -> Union[NoReturn, FeedPlan]:
     """Get the user and build the feed plan"""
     user: HabiticaUser = HabiticaUserRequest().request_user_data_or_exit()
     stockpile: FoodStockpile = FoodStockpileBuilder().user(user).build()
-    zoo: Zoo = ZooBuilder(user).build()
+    zoo: Zoo = ZooBuilder(user).build(skip_unsupported_pets=True)
 
     algorithm = FeedAlgorithm(zoo=zoo, stockpile=stockpile)
     return algorithm.make_plan()
@@ -100,7 +100,8 @@ def feed_all(no_interactive: bool) -> None:
         click.echo(
             "The feed plan is empty. Reasons for this could be:\n"
             "1. There is insufficient food available to turn pets into mounts.\n"
-            "2. You don't have any feedable pets."
+            "2. You don't have any feedable pets\n"
+            "3. You do have feedable pets, but they are not supported yet by hopla\n"
         )
         sys.exit(0)
 
