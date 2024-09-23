@@ -78,14 +78,14 @@ class ZooBuilder:
     def build(self, skip_unsupported_pets: bool = False) -> Zoo:
         """ Build the Zoo.
 
-        :param skip_unsupported_pets: if True, skips pets that are not supported (mounts are always included)
+        :param skip_unsupported_pets: if True, skip unsupported pets (excludes mounts)
         :return: the Zoo in case of success
         """
 
         # loop through the pets
         for pet_name, feed_status in self.pets.items():
             if skip_unsupported_pets and (pet_name not in PetData.pet_names):
-                logging.error(f"{pet_name=} not supported yet: skipping {pet_name} in the feed plan")
+                logging.error(f"{pet_name=} not supported yet: skipped {pet_name}")
                 continue
 
             pet = Pet(pet_name, feed_status=FeedStatus(feed_status))
