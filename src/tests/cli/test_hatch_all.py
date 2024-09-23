@@ -172,4 +172,3 @@ class TestToPetList(unittest.TestCase):
 
         with self.assertRaises(InvalidPet):
             to_pet_list(pets)
-
