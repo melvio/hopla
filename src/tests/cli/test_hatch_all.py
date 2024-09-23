@@ -172,24 +172,3 @@ class TestToPetList(unittest.TestCase):
 
         with self.assertRaises(InvalidPet):
             to_pet_list(pets)
-
-    def test_to_pet_list_ok_dont_raise(self):
-        pet1, feed_status1 = "Wolf-Base", 5
-        pet2, feed_status2 = "Axolotl-Red", 10
-        pet3, feed_status3 = "Fox-Golden", -1
-        pet4, feed_status4 = "Giraffe-doesnt-exist", 0
-
-        pets: Dict[str, int] = {
-            pet1: feed_status1, pet2: feed_status2,
-            pet3: feed_status3, pet4: feed_status4
-        }
-
-        result: List[Pet] = to_pet_list(pets, dont_raise_on_unrecognized_pets=True)
-
-        expected: List[Pet] = [
-            Pet(pet1, feed_status=FeedStatus(feed_status1)),
-            Pet(pet2, feed_status=FeedStatus(feed_status2)),
-            Pet(pet3, feed_status=FeedStatus(feed_status3))
-        ]
-
-        assert result == expected

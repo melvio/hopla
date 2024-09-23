@@ -2,6 +2,7 @@
 """
 Module with models for eggs.
 """
+import logging
 from dataclasses import dataclass, field
 from typing import Any, Dict, Iterator
 
@@ -62,9 +63,12 @@ class EggCollection:
 
     def __post_init__(self):
         """Use the given eggs to create __eggs."""
-        self.__eggs: Dict[str, Egg] = {
-            name: Egg(name, quantity=quantity) for (name, quantity) in self.eggs.items()
-        }
+        self.__eggs: Dict[str, Egg] = {}
+        for name, n in self.eggs.items():
+            if name in EggData.egg_names:
+                self.__eggs[name] = Egg(name, quantity=n)
+            else:
+                logging.error(f"{name} is not yet a supported egg name")
 
     def __len__(self) -> int:
         return len(self.__eggs)
