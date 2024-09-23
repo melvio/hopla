@@ -57,7 +57,7 @@ def request(method: str,
             show_status_code_flag: bool,
             show_response_flag: bool,
             path: str):
-    # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-arguments,too-many-positional-arguments
     """Perform an HTTP request on the Habitica API.
 
     PATH This is the path of the endpoint that you want to perform a HTTP
