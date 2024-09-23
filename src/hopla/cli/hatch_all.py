@@ -53,7 +53,10 @@ def hatch_all(no_interactive: bool) -> None:
     """
     log.debug(f"hopla hatch-all {no_interactive=}")
     user: HabiticaUser = HabiticaUserRequest().request_user_data_or_exit()
-    eggs = EggCollection(user.get_eggs())
+    log.debug("Her")
+    eggs = EggCollection(user.get_eggs()) # fails on new eggs
+
+    log.debug("HER2")
     potions = HatchPotionCollection(user.get_hatch_potions())
     pets: List[Pet] = to_pet_list(user.get_pets(), dont_raise_on_unrecognized_pets=True)
 
