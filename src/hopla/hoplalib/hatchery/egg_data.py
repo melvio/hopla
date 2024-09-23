@@ -27,7 +27,7 @@ class EggData:
         "Hedgehog", "Hippo", "Horse",
         "Kangaroo", "Monkey", "Nudibranch", "Octopus", "Owl",
         "Parrot", "Peacock", "Penguin", "Pterodactyl",
-        "Rat", "Robot", "Rock", "Rooster",
+        "Raccoon", "Rat", "Robot", "Rock", "Rooster",
         "Sabretooth", "SeaSerpent", "Seahorse", "Sheep", "Slime",
         "Sloth", "Snail", "Snake", "Spider", "Squirrel",
         "TRex", "Treeling", "Triceratops", "Turtle",
