@@ -58,7 +58,7 @@ def request(method: str,
             show_response_flag: bool,
             path: str):
     # pylint: disable=too-many-arguments
-    """Perform a HTTP request on the Habitica API.
+    """Perform an HTTP request on the Habitica API.
 
     PATH This is the path of the endpoint that you want to perform a HTTP
     request on. For example, /api/v3/groups.
