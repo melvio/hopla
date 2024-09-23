@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
+import pytest
+
 from hopla.cli.groupcmds.get_user import HabiticaUser
 from hopla.hoplalib.zoo.foodmodels import FeedStatus
-from hopla.hoplalib.zoo.petmodels import Pet, PetMountPair
+from hopla.hoplalib.zoo.petmodels import Pet, PetMountPair, InvalidPet
 from hopla.hoplalib.zoo.zoomodels import Zoo, ZooBuilder, ZooHelper
 from tests.testutils.user_test_utils import UserTestUtil
 
@@ -38,9 +40,6 @@ class TestZooBuilder:
         zoo: Zoo = ZooBuilder(user).build()
 
         assert zoo == {}
-
-    def test_build_released_zoo(self):
-        pass
 
     def test_build_raised_pets(self):
         animal_name = "BearCub-Shadow"
@@ -83,6 +82,32 @@ class TestZooBuilder:
         assert result_pair.pet.feed_status == FeedStatus(feed_status)
         assert result_pair.mount_available() is False
         assert result_pair.pet_available()
+
+    def test_build_not_supported_pets_fails(self):
+        animal_name_supported = "Dragon-Skeleton"
+        animal_name_not_supported = "Dragon-NOTSUPPORTED"
+        user = UserTestUtil.user_with_zoo(pets={animal_name_supported: 5, animal_name_not_supported: 5})
+
+        with pytest.raises(InvalidPet) as exc:
+            ZooBuilder(user).build()
+
+        assert animal_name_not_supported in str(exc.value)
+        assert animal_name_supported not in str(exc.value)
+
+    def test_build_not_supported_pets_success(self):
+        animal_name_supported = "Dragon-Skeleton"
+        animal_name_not_supported = "Dragon-NOTSUPPORTED"
+        feed_status = 5
+        user = UserTestUtil.user_with_zoo(pets={animal_name_supported: feed_status,
+                                                animal_name_not_supported: feed_status})
+
+        zoo: Zoo = ZooBuilder(user).build(skip_unsupported_pets=True)
+
+        assert len(zoo) == 1
+        result_pair: PetMountPair = zoo[animal_name_supported]
+        assert result_pair.pet.name == animal_name_supported
+        assert result_pair.pet.feed_status == FeedStatus(feed_status)
+        assert result_pair.mount_available() is False
 
 
 class TestZooHelper:
