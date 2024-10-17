@@ -21,7 +21,7 @@ class EggData:
         "Alligator", "Armadillo", "Axolotl",
         "Badger", "Beetle", "Bunny", "Butterfly",
         "Chameleon", "Cheetah", "Cow", "Cuttlefish", "Crab",
-        "Deer", "Dolphin", "Egg",
+        "Deer", "Dog", "Dolphin", "Egg",
         "Falcon", "Ferret", "Frog",
         "Giraffe", "Gryphon", "GuineaPig",
         "Hedgehog", "Hippo", "Horse",
