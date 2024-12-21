@@ -22,7 +22,7 @@ class HatchPotionData:
         "BirchBark", "BlackPearl", "Bronze",
         "Celestial", "Cupid", "Ember",
         "Fairy", "Floral", "Fluorite", "Frost",
-        "Ghost", "Glass", "Glow",
+        "Ghost", "Gingerbread", "Glass", "Glow",
         "Holly", "IcySnow", "Koi",
         "Moonglow", "MossyStone", "Onyx",
         "Peppermint", "PinkMarble", "PolkaDot", "Porcelain",
